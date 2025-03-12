@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, CSSProperties } from 'react';
 import { Layout, Menu, Button, Avatar, Dropdown, Typography, Space, Divider } from 'antd';
 import {
     MenuFoldOutlined,
@@ -20,28 +20,95 @@ const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
 
 /**
- * Application Layout component
- * Provides the main layout for the protected pages of the application
+ * Logo Component for the sidebar
  */
-const AppLayout: React.FC = () => {
-    const [collapsed, setCollapsed] = useState(false);
-    const location = useLocation();
-    const navigate = useNavigate();
-    const authManager = AuthManager.instance;
-    const currentUser = authManager.useCurrentUser() as User;
+interface LogoProps {
+    collapsed: boolean;
+}
 
-    // Handle sidebar toggle
-    const toggleSidebar = () => {
-        setCollapsed(!collapsed);
-    };
+const Logo: React.FC<LogoProps> = ({ collapsed }) => (
+    <div style={styles.logoContainer(collapsed)}>
+        <Link to="/dashboard">
+            <Title level={collapsed ? 5 : 4} style={styles.title(collapsed)}>
+                {collapsed ? 'CMS' : 'Church Management'}
+            </Title>
+        </Link>
+    </div>
+);
 
-    // Handle logout
-    const handleLogout = async () => {
-        await authManager.logout();
-        navigate('/login');
-    };
+/**
+ * Navigation menu component
+ */
+interface NavigationMenuProps {
+    collapsed: boolean;
+    currentPath: string;
+    authManager: AuthManager;
+}
 
-    // User menu items
+const NavigationMenu: React.FC<NavigationMenuProps> = ({ currentPath, authManager }) => {
+    const menuItems: ItemType<MenuItemType>[] = [
+        {
+            key: 'dashboard',
+            icon: <HomeOutlined />,
+            label: <Link to="/dashboard">Dashboard</Link>,
+        },
+        {
+            key: 'members',
+            icon: <TeamOutlined />,
+            label: authManager.hasPermission('member.findAll') ? (
+                <Link to="/members">Members</Link>
+            ) : (
+                <span style={styles.disabledMenuItem}>Members</span>
+            ),
+        },
+        {
+            key: 'fellowships',
+            icon: <PartitionOutlined />,
+            label: authManager.hasPermission('fellowship.findAll') ? (
+                <Link to="/fellowships">Fellowships</Link>
+            ) : (
+                <span style={styles.disabledMenuItem}>Fellowships</span>
+            ),
+        },
+        {
+            key: 'opportunities',
+            icon: <HeartOutlined />,
+            label: authManager.hasPermission('opportunity.findAll') ? (
+                <Link to="/opportunities">Opportunities</Link>
+            ) : (
+                <span style={styles.disabledMenuItem}>Opportunities</span>
+            ),
+        },
+        {
+            key: 'roles',
+            icon: <SettingOutlined />,
+            label: authManager.hasPermission('role.findAll') ? (
+                <Link to="/roles">Roles</Link>
+            ) : (
+                <span style={styles.disabledMenuItem}>Roles</span>
+            ),
+        },
+    ];
+
+    return (
+        <Menu
+            theme="dark"
+            mode="inline"
+            selectedKeys={[currentPath]}
+            items={menuItems}
+        />
+    );
+};
+
+/**
+ * User profile dropdown component
+ */
+interface UserProfileDropdownProps {
+    currentUser: User | null;
+    handleLogout: () => Promise<void>;
+}
+
+const UserProfileDropdown: React.FC<UserProfileDropdownProps> = ({ currentUser, handleLogout }) => {
     const userMenuItems: ItemType<MenuItemType>[] = [
         {
             key: 'profile',
@@ -64,8 +131,44 @@ const AppLayout: React.FC = () => {
         },
     ];
 
+    return (
+        <Dropdown
+            menu={{ items: userMenuItems }}
+            placement="bottomRight"
+            trigger={['click']}
+        >
+            <Space style={styles.userDropdown}>
+                <Avatar icon={<UserOutlined />} />
+                <Text>{currentUser?.name || 'User'}</Text>
+            </Space>
+        </Dropdown>
+    );
+};
+
+/**
+ * Application Layout component
+ * Provides the main layout for the protected pages of the application
+ */
+const AppLayout: React.FC = () => {
+    const [collapsed, setCollapsed] = useState<boolean>(false);
+    const location = useLocation();
+    const navigate = useNavigate();
+    const authManager = AuthManager.instance;
+    const currentUser = authManager.useCurrentUser() as User;
+
+    // Handle sidebar toggle
+    const toggleSidebar = (): void => {
+        setCollapsed(!collapsed);
+    };
+
+    // Handle logout
+    const handleLogout = async (): Promise<void> => {
+        await authManager.logout();
+        navigate('/login');
+    };
+
     // Get the current route path for menu selection
-    const getCurrentPath = () => {
+    const getCurrentPath = (): string => {
         const path = location.pathname;
         if (path.startsWith('/dashboard')) return 'dashboard';
         if (path.startsWith('/members')) return 'members';
@@ -75,91 +178,32 @@ const AppLayout: React.FC = () => {
         return '';
     };
 
+    const currentPath = getCurrentPath();
+
     return (
-        <Layout style={{ minHeight: '100vh' }}>
+        <Layout style={styles.layout}>
             {/* Sidebar */}
             <Sider
                 trigger={null}
                 collapsible
                 collapsed={collapsed}
                 width={250}
-                style={{
-                    overflow: 'auto',
-                    height: '100vh',
-                    position: 'fixed',
-                    left: 0,
-                    top: 0,
-                    bottom: 0,
-                    zIndex: 100
-                }}
+                style={styles.sider}
             >
-                {/* Logo */}
-                <div style={{ padding: collapsed ? '16px 0' : '16px', textAlign: collapsed ? 'center' : 'left' }}>
-                    <Link to="/dashboard">
-                        <Title level={collapsed ? 5 : 4} style={{ margin: 0, color: 'white' }}>
-                            {collapsed ? 'CMS' : 'Church Management'}
-                        </Title>
-                    </Link>
-                </div>
-
-                <Divider style={{ margin: '0 0 8px 0', borderColor: 'rgba(255, 255, 255, 0.2)' }} />
-
-                {/* Navigation Menu */}
-                <Menu
-                    theme="dark"
-                    mode="inline"
-                    selectedKeys={[getCurrentPath()]}
-                    items={[
-                        {
-                            key: 'dashboard',
-                            icon: <HomeOutlined />,
-                            label: <Link to="/dashboard">Dashboard</Link>,
-                        },
-                        {
-                            key: 'members',
-                            icon: <TeamOutlined />,
-                            label: authManager.hasPermission('member.findAll') ? (
-                                <Link to="/members">Members</Link>
-                            ) : (
-                                <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>Members</span>
-                            ),
-                        },
-                        {
-                            key: 'fellowships',
-                            icon: <PartitionOutlined />,
-                            label: authManager.hasPermission('fellowship.findAll') ? (
-                                <Link to="/fellowships">Fellowships</Link>
-                            ) : (
-                                <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>Fellowships</span>
-                            ),
-                        },
-                        {
-                            key: 'opportunities',
-                            icon: <HeartOutlined />,
-                            label: authManager.hasPermission('opportunity.findAll') ? (
-                                <Link to="/opportunities">Opportunities</Link>
-                            ) : (
-                                <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>Opportunities</span>
-                            ),
-                        },
-                        {
-                            key: 'roles',
-                            icon: <SettingOutlined />,
-                            label: authManager.hasPermission('role.findAll') ? (
-                                <Link to="/roles">Roles</Link>
-                            ) : (
-                                <span style={{ color: 'rgba(255, 255, 255, 0.5)' }}>Roles</span>
-                            ),
-                        },
-                    ]}
+                <Logo collapsed={collapsed} />
+                <Divider style={styles.divider} />
+                <NavigationMenu
+                    collapsed={collapsed}
+                    currentPath={currentPath}
+                    authManager={authManager}
                 />
             </Sider>
 
             {/* Main Layout */}
-            <Layout style={{ marginLeft: collapsed ? 80 : 250, transition: 'all 0.2s' }}>
+            <Layout style={styles.mainLayout(collapsed)}>
                 {/* Header */}
-                <Header style={{ padding: '0 16px', background: '#fff' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Header style={styles.header}>
+                    <div style={styles.headerContent}>
                         {/* Left side - Toggle button */}
                         <Button
                             type="text"
@@ -168,26 +212,89 @@ const AppLayout: React.FC = () => {
                         />
 
                         {/* Right side - User profile */}
-                        <Dropdown
-                            menu={{ items: userMenuItems }}
-                            placement="bottomRight"
-                            trigger={['click']}
-                        >
-                            <Space style={{ cursor: 'pointer' }}>
-                                <Avatar icon={<UserOutlined />} />
-                                <Text>{currentUser?.name || 'User'}</Text>
-                            </Space>
-                        </Dropdown>
+                        <UserProfileDropdown
+                            currentUser={currentUser}
+                            handleLogout={handleLogout}
+                        />
                     </div>
                 </Header>
 
                 {/* Content */}
-                <Content style={{ margin: '24px 16px', padding: 24, background: '#fff', minHeight: 280 }}>
+                <Content style={styles.content}>
                     <Outlet />
                 </Content>
             </Layout>
         </Layout>
     );
+};
+
+// Define a type for our styles object that handles both static styles and function styles
+type StylesType = {
+    layout: CSSProperties;
+    sider: CSSProperties;
+    logoContainer: (collapsed: boolean) => CSSProperties;
+    title: (collapsed: boolean) => CSSProperties;
+    divider: CSSProperties;
+    disabledMenuItem: CSSProperties;
+    mainLayout: (collapsed: boolean) => CSSProperties;
+    header: CSSProperties;
+    headerContent: CSSProperties;
+    userDropdown: CSSProperties;
+    content: CSSProperties;
+};
+
+const styles: StylesType = {
+    layout: {
+        minHeight: '100vh',
+        width: '100%'
+    },
+    sider: {
+        overflow: 'auto',
+        height: '100vh',
+        position: 'fixed',
+        left: 0,
+        top: 0,
+        bottom: 0,
+        zIndex: 100
+    },
+    logoContainer: (collapsed: boolean): CSSProperties => ({
+        padding: collapsed ? '16px 0' : '16px',
+        textAlign: collapsed ? 'center' : 'left'
+    }),
+    title: (_: boolean): CSSProperties => ({
+        margin: 0,
+        color: 'white'
+    }),
+    divider: {
+        margin: '0 0 8px 0',
+        borderColor: 'rgba(255, 255, 255, 0.2)'
+    },
+    disabledMenuItem: {
+        color: 'rgba(255, 255, 255, 0.5)'
+    },
+    mainLayout: (collapsed: boolean): CSSProperties => ({
+        marginLeft: collapsed ? 80 : 250,
+        transition: 'all 0.2s',
+        width: '100%'
+    }),
+    header: {
+        padding: '0 16px',
+        background: '#fff'
+    },
+    headerContent: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+    },
+    userDropdown: {
+        cursor: 'pointer'
+    },
+    content: {
+        margin: '24px 16px',
+        padding: 24,
+        background: '#fff',
+        minHeight: 280
+    }
 };
 
 export default AppLayout;

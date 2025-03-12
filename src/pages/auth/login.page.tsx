@@ -41,8 +41,7 @@ const LoginPage: React.FC = () => {
 
         {state.error && (
           <Alert
-            message="Login Failed"
-            description={state.error}
+            message={`Login failed: ${state.error}`}
             type="error"
             closable={true}
             onClose={state.removeError}

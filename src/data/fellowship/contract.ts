@@ -12,7 +12,7 @@ const c = initContract();
 export const fellowshipContract = c.router({
     getAll: {
         method: "GET",
-        path: "/fellowship",
+        path: "",
         responses: {
             200: z.array(fellowshipSchema),
             401: z.null(),
@@ -23,7 +23,7 @@ export const fellowshipContract = c.router({
 
     getById: {
         method: "GET",
-        path: "/fellowship/:id",
+        path: "/:id",
         responses: {
             200: fellowshipSchema,
             401: z.null(),
@@ -35,7 +35,7 @@ export const fellowshipContract = c.router({
 
     create: {
         method: "POST",
-        path: "/fellowship",
+        path: "",
         responses: {
             201: fellowshipSchema,
             400: badRequestErrorSchema,
@@ -48,7 +48,7 @@ export const fellowshipContract = c.router({
 
     update: {
         method: "PATCH",
-        path: "/fellowship/:id",
+        path: "/:id",
         responses: {
             200: fellowshipSchema,
             400: badRequestErrorSchema,
@@ -62,7 +62,7 @@ export const fellowshipContract = c.router({
 
     delete: {
         method: "DELETE",
-        path: "/fellowship/:id",
+        path: "/:id",
         responses: {
             200: fellowshipSchema,
             401: z.null(),

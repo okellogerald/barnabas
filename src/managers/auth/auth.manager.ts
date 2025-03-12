@@ -42,19 +42,21 @@ export class AuthManager {
      * @param credentials User credentials (username, password)
      * @returns Whether login was successful
      */
-    public async login(credentials: LoginRequest): Promise<boolean> {
+    public async login(credentials: LoginRequest): Promise<User> {
         try {
             const response = await this._repo.login(credentials);
 
+            const user = User.fromDTO(response.user);
+
             // Update store with authentication data
             useAuthStore.getState().setToken(response.token);
-            useAuthStore.getState().setUser(User.fromDTO(response.user));
+            useAuthStore.getState().setUser(user);
             useAuthStore.getState().setAllowedActions(response.allowedActions);
 
-            return true;
+            return user;
         } catch (error) {
             this.logout();
-            return false;
+            throw error;
         }
     }
 

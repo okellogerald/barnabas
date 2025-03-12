@@ -6,7 +6,7 @@ import AppRoutes from './navigation/routes';
 import ThemeProvider from './theme/provider';
 
 // Create a client for React Query
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,

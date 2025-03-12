@@ -3,7 +3,7 @@ import { AuthManager } from "@/managers/auth";
 import { useMutation } from "@tanstack/react-query";
 import { Form } from "antd";
 import { LogInPageState } from "./types";
-import { Navigation } from "@/app";
+import { useAppNavigation } from "@/app";
 
 const handleSubmit = async (values: LoginRequest) => {
     const result = loginRequestSchema.safeParse(values);
@@ -11,17 +11,14 @@ const handleSubmit = async (values: LoginRequest) => {
         console.log(result.error)
         throw new Error("Please make sure you have entered a valid email and password");
     }
+
     console.log(result.data);
-    const success = await AuthManager.instance.login(values);
-    if (success) {
-        Navigation.toDashboard();
-    } else {
-        throw new Error("Invalid email or password");
-    }
+    return await AuthManager.instance.login(values);
 };
 
 export const UseLogin = (): LogInPageState => {
     const [form] = Form.useForm<LoginRequest>();
+    const navigation = useAppNavigation()
 
     const onFinish = () => {
         mutation.mutate(form.getFieldsValue());
@@ -34,6 +31,10 @@ export const UseLogin = (): LogInPageState => {
     const mutation = useMutation({
         mutationKey: ["login"],
         mutationFn: handleSubmit,
+        onSuccess(data) {
+            console.log("Login success", data);
+            navigation.toDashboard()
+        },
     });
 
     return {

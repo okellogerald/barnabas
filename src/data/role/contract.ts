@@ -7,7 +7,7 @@ const c = initContract();
 export const roleContract = c.router({
     getAll: {
         method: "GET",
-        path: "/role",
+        path: "/",
         responses: {
             200: z.object({
                 data: z.array(roleSchema),
@@ -20,7 +20,7 @@ export const roleContract = c.router({
 
     getById: {
         method: "GET",
-        path: "/role/:id",
+        path: "/:id",
         responses: {
             200: roleSchema,
             401: z.null(),

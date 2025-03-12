@@ -7,7 +7,7 @@ const c = initContract();
 export const churchContract = c.router({
   getCurrentChurch: {
     method: 'GET',
-    path: '/church/me',
+    path: '/me',
     responses: {
       200: churchSchema,
       401: z.null(),

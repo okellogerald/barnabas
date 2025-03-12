@@ -12,7 +12,7 @@ const c = initContract();
 export const opportunityContract = c.router({
     getAll: {
         method: "GET",
-        path: "/opportunity",
+        path: "/",
         responses: {
             200: z.array(opportunitySchema),
             401: z.null(),
@@ -23,7 +23,7 @@ export const opportunityContract = c.router({
 
     getById: {
         method: "GET",
-        path: "/opportunity/:id",
+        path: "/:id",
         responses: {
             200: opportunitySchema,
             401: z.null(),
@@ -35,7 +35,7 @@ export const opportunityContract = c.router({
 
     create: {
         method: "POST",
-        path: "/opportunity",
+        path: "/",
         responses: {
             201: opportunitySchema,
             400: badRequestErrorSchema,
@@ -48,7 +48,7 @@ export const opportunityContract = c.router({
 
     update: {
         method: "PATCH",
-        path: "/opportunity/:id",
+        path: "/:id",
         responses: {
             200: opportunitySchema,
             400: badRequestErrorSchema,
@@ -62,7 +62,7 @@ export const opportunityContract = c.router({
 
     delete: {
         method: "DELETE",
-        path: "/opportunity/:id",
+        path: "/:id",
         responses: {
             200: opportunitySchema,
             401: z.null(),

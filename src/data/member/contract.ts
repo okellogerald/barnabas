@@ -8,7 +8,7 @@ const c = initContract();
 export const memberContract = c.router({
     getAll: {
         method: "GET",
-        path: "/member",
+        path: "",
         responses: {
             200: z.array(memberSchema),
             401: z.null(),
@@ -19,7 +19,7 @@ export const memberContract = c.router({
 
     getById: {
         method: "GET",
-        path: "/member/:id",
+        path: "/:id",
         responses: {
             200: memberSchema,
             401: z.null(),
@@ -31,7 +31,7 @@ export const memberContract = c.router({
 
     create: {
         method: "POST",
-        path: "/member",
+        path: "",
         responses: {
             201: memberSchema,
             400: badRequestErrorSchema,
@@ -44,7 +44,7 @@ export const memberContract = c.router({
 
     update: {
         method: "PATCH",
-        path: "/member/:id",
+        path: "/:id",
         responses: {
             200: memberSchema,
             400: badRequestErrorSchema,
@@ -58,7 +58,7 @@ export const memberContract = c.router({
 
     delete: {
         method: "DELETE",
-        path: "/member/:id",
+        path: "/:id",
         responses: {
             200: memberSchema,
             401: z.null(),

@@ -71,6 +71,7 @@ export class BaseRepository<TContract extends AppRouter> {
                 "Authorization": token ? `Bearer ${token}` : "",
                 "x-request-id": uuidv4(),
                 "Content-Type": "application/json",
+                "Accept": "application/json",
             },
         };
 
