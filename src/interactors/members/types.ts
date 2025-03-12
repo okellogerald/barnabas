@@ -11,6 +11,12 @@ import { Member } from "@/models";
 export interface MemberListPageUISuccessState
     extends UIStateBase<UI_STATE_TYPE.success> {
     renderTable: () => JSX.Element;
+    pagination: {
+        currentPage: number;
+        pageSize: number;
+        total: number;
+        onChange: (page: number) => void;
+    };
     actions: {
         addNew: () => void;
         refresh: () => void;

@@ -1,10 +1,15 @@
-import { MemberRepository } from "@/data/member";
+import { MemberQueryParams, MemberRepository } from "@/data/member";
 import {
     Actions,
     PermissionError,
     PermissionsManager,
 } from "@/managers/auth/permission";
 import { Member } from "@/models";
+
+type GetMembersResponse = {
+    members: Member[];
+    total: number;
+};
 
 /**
  * Member Manager
@@ -49,15 +54,17 @@ export class MemberManager {
      * @throws PermissionError if the user does not have the required permission.
      * @throws Error if there is an error retrieving members from the repository.
      */
-    public async getMembers(): Promise<Member[]> {
+    public async getMembers(
+        queryParams?: MemberQueryParams,
+    ): Promise<GetMembersResponse> {
         if (!this._permissionsManager.hasPermission(Actions.MEMBER_FIND_ALL)) {
             throw PermissionError.fromAction(Actions.MEMBER_FIND_ALL);
         }
 
         try {
-            const dtos = await this._repo.getAll();
-            const members = dtos.map(Member.fromDTO);
-            return members;
+            const response = await this._repo.getAll(queryParams);
+            const members = response.results.map(Member.fromDTO);
+            return { members, total: response.total };
         } catch (error) {
             console.error("Error retrieving members:", error);
             throw new Error("Failed to retrieve members.");

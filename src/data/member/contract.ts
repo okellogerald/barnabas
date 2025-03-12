@@ -1,6 +1,11 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import { createMemberSchema, memberSchema, updateMemberSchema } from "./schema";
+import {
+    createMemberSchema,
+    memberQueryParamsSchema,
+    memberSchema,
+    updateMemberSchema,
+} from "./schema";
 import { badRequestErrorSchema } from "@/data/_common";
 
 const c = initContract();
@@ -8,18 +13,27 @@ const c = initContract();
 export const memberContract = c.router({
     getAll: {
         method: "GET",
-        path: "?eager=[fellowship]",
+        path: "",
+        query: memberQueryParamsSchema,
         responses: {
-            200: z.array(memberSchema),
+            200: z.object({
+                results: z.array(memberSchema),
+                total: z.number(),
+            }),
             401: z.null(),
             403: z.null(),
         },
-        summary: "Get all members",
+        summary: "Get all members with filtering and pagination",
     },
 
     getById: {
         method: "GET",
         path: "/:id",
+        query: z.object({
+            eager: z.string().optional().default(
+                "fellowship,interests,dependants",
+            ),
+        }),
         responses: {
             200: memberSchema,
             401: z.null(),

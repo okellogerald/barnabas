@@ -114,3 +114,21 @@ export const updateMemberSchema = memberSchema.omit({
 });
 
 export type UpdateMemberDTO = z.infer<typeof updateMemberSchema>;
+
+// Define query parameters for getAll
+export const memberQueryParamsSchema = z.object({
+    eager: z.string().optional().default("fellowship,interests"),
+    rangeStart: z.coerce.number().optional().default(0),
+    rangeEnd: z.coerce.number().optional().default(9),
+    search: z.string().optional(),
+    fellowshipId: z.string().optional(),
+    gender: z.string().optional(),
+    memberRole: z.string().optional(),
+    baptized: z.coerce.boolean().optional(),
+    confirmed: z.coerce.boolean().optional(),
+    attendsFellowship: z.coerce.boolean().optional(),
+    sortBy: z.string().optional().default("firstName"),
+    sortOrder: z.enum(["asc", "desc"]).optional().default("asc"),
+});
+
+export type MemberQueryParams = z.infer<typeof memberQueryParamsSchema>;
