@@ -11,7 +11,7 @@
  * - Generic state determination function
  */
 
-import { ActionPermission } from "@/managers/auth/permission";
+import { ActionPermission, PermissionError } from "@/managers/auth/permission";
 
 /**
  * Enumeration of possible UI state types
@@ -62,6 +62,17 @@ export class UIStateFactory {
             actions: { retry: params.retry },
         };
     }
+
+    static unauthorized(
+        params: { error: PermissionError; retry?: () => void },
+    ): IPermissionErrorState {
+        return {
+            type: UI_STATE_TYPE.unauthorized,
+            message: params.error.message,
+            requiredPermissions: params.error.requiredPermissions,
+            actions: { retry: params.retry },
+        };
+    }
 }
 
 // Specific state type definitions for enhanced type safety
@@ -82,8 +93,8 @@ export type IErrorState = UIStateBase<UI_STATE_TYPE.error> & {
 
 export type IPermissionErrorState = UIStateBase<UI_STATE_TYPE.unauthorized> & {
     message?: string;
-    permissions: ActionPermission[];
+    requiredPermissions: ActionPermission[];
     actions: {
-        retry: () => void;
+        retry?: () => void;
     };
 };

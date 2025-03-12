@@ -7,10 +7,9 @@ import {
 import { Member } from "@/models";
 
 /**
- * Church Manager
+ * Member Manager
  *
- * Handles all authentication-related logic including login, logout,
- * session management, and permission checking.
+ * Handles member-related operations, including retrieving member data and enforcing permissions.
  */
 export class MemberManager {
     private static _instance: MemberManager;
@@ -18,37 +17,50 @@ export class MemberManager {
     private _permissionsManager: PermissionsManager;
 
     /**
-     * Private constructor to enforce singleton pattern
+     * Private constructor to enforce singleton pattern.
+     * @param repo The MemberRepository instance.
+     * @param permissionsManager The PermissionsManager instance.
      */
-    private constructor() {
-        this._repo = new MemberRepository();
-        this._permissionsManager = PermissionsManager.instance;
+    private constructor(
+        repo: MemberRepository,
+        permissionsManager: PermissionsManager,
+    ) {
+        this._repo = repo;
+        this._permissionsManager = permissionsManager;
     }
 
     /**
-     * Gets the singleton instance of AuthManager
+     * Gets the singleton instance of MemberManager.
+     * @returns The MemberManager instance.
      */
     public static get instance(): MemberManager {
         if (!MemberManager._instance) {
-            MemberManager._instance = new MemberManager();
+            MemberManager._instance = new MemberManager(
+                new MemberRepository(),
+                PermissionsManager.instance,
+            );
         }
         return MemberManager._instance;
     }
 
     /**
-     * Authenticates a user with the provided credentials
-     * @param credentials User credentials (username, password)
-     * @returns Whether login was successful
+     * Retrieves all members, enforcing the MEMBER_FIND_ALL permission.
+     * @returns A promise that resolves to an array of Member objects.
+     * @throws PermissionError if the user does not have the required permission.
+     * @throws Error if there is an error retrieving members from the repository.
      */
     public async getMembers(): Promise<Member[]> {
-        if (
-            !this._permissionsManager.hasPermission(Actions.MEMBER_FIND_ALL)
-        ) {
+        if (!this._permissionsManager.hasPermission(Actions.MEMBER_FIND_ALL)) {
             throw PermissionError.fromAction(Actions.MEMBER_FIND_ALL);
         }
 
-        const dtos = await this._repo.getAll();
-        const members = dtos.map(Member.fromDTO);
-        return members;
+        try {
+            const dtos = await this._repo.getAll();
+            const members = dtos.map(Member.fromDTO);
+            return members;
+        } catch (error) {
+            console.error("Error retrieving members:", error);
+            throw new Error("Failed to retrieve members.");
+        }
     }
 }

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { enums, idSchema, timestampFields } from "@/data/_common";
+import { fellowshipSchema } from "../fellowship";
 
 // Dependant schema for a member's dependant
 export const dependantSchema = z.object({
@@ -72,6 +73,7 @@ export const memberSchema = z.object({
     isConfirmed: z.boolean(),
     partakesLordSupper: z.boolean(),
     fellowshipId: idSchema.nullable(),
+    fellowship: fellowshipSchema.nullable(),
     nearestMemberName: z.string().nullable(),
     nearestMemberPhone: z.string().nullable(),
     attendsFellowship: z.boolean(),

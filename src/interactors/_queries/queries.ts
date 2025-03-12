@@ -1,72 +1,92 @@
 import { queryClient } from "@/app";
 
 export const QueryKeys = {
-    customers: {
-        all: ["customers"] as const,
-        detail: (id: string) => ["customers", id] as const,
+    auth: {
+        me: ["auth", "me"] as const,
     },
-    ubos: {
-        all: ["ubos"] as const,
-        detail: (id: string) => ["ubos", id] as const,
+    users: {
+        all: ["users"] as const,
+        detail: (id: string) => ["users", id] as const,
     },
-    transactions: {
-        all: ["transactions"] as const,
-        detail: (id: string) => ["transactions", id] as const,
+    church: {
+        me: ["church", "me"] as const,
     },
-    alerts: {
-        all: ["alerts"] as const,
-        detail: (id: string) => ["alerts", id] as const,
+    fellowships: {
+        all: ["fellowships"] as const,
+        detail: (id: string) => ["fellowships", id] as const,
     },
-    cases: {
-        all: ["cases"] as const,
-        detail: (id: string) => ["cases", id] as const,
+    members: {
+        all: ["members"] as const,
+        detail: (id: string) => ["members", id] as const,
+    },
+    opportunities: {
+        all: ["opportunities"] as const,
+        detail: (id: string) => ["opportunities", id] as const,
+    },
+    roles: {
+        all: ["roles"] as const,
+        detail: (id: string) => ["roles", id] as const,
     },
 } as const;
 
 export const InvalidationActions = {
-    refreshCustomers: () => {
-        queryClient.invalidateQueries({ queryKey: QueryKeys.customers.all });
+    refreshUsers: () => {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.users.all });
     },
-    refreshCustomer: (id: string) => {
+    refreshUser: (id: string) => {
         queryClient.invalidateQueries({
-            queryKey: QueryKeys.customers.detail(id),
+            queryKey: QueryKeys.users.detail(id),
         });
     },
-    refreshUBOs: () => {
-        queryClient.invalidateQueries({ queryKey: QueryKeys.ubos.all });
+    refreshCurrentUser: () => {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.auth.me });
     },
-    refreshUBO: (id: string) => {
-        queryClient.invalidateQueries({ queryKey: QueryKeys.ubos.detail(id) });
+    refreshChurch: () => {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.church.me });
     },
-    refreshTransactions: () => {
-        queryClient.invalidateQueries({ queryKey: QueryKeys.transactions.all });
+    refreshFellowships: () => {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.fellowships.all });
     },
-    refreshTransaction: (id: string) => {
+    refreshFellowship: (id: string) => {
         queryClient.invalidateQueries({
-            queryKey: QueryKeys.transactions.detail(id),
+            queryKey: QueryKeys.fellowships.detail(id),
         });
     },
-    refreshAlerts: () => {
-        queryClient.invalidateQueries({ queryKey: QueryKeys.alerts.all });
+    refreshMembers: () => {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.members.all });
     },
-    refreshAlert: (id: string) => {
+    refreshMember: (id: string) => {
         queryClient.invalidateQueries({
-            queryKey: QueryKeys.alerts.detail(id),
+            queryKey: QueryKeys.members.detail(id),
         });
     },
-    refreshCases: () => {
-        queryClient.invalidateQueries({ queryKey: QueryKeys.cases.all });
-    },
-    refreshCase: (id: string) => {
+    refreshOpportunities: () => {
         queryClient.invalidateQueries({
-            queryKey: QueryKeys.cases.detail(id),
+            queryKey: QueryKeys.opportunities.all,
+        });
+    },
+    refreshOpportunity: (id: string) => {
+        queryClient.invalidateQueries({
+            queryKey: QueryKeys.opportunities.detail(id),
+        });
+    },
+    refreshRoles: () => {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.roles.all });
+    },
+    refreshRole: (id: string) => {
+        queryClient.invalidateQueries({
+            queryKey: QueryKeys.roles.detail(id),
         });
     },
     refreshAll: () => {
-        queryClient.invalidateQueries({ queryKey: QueryKeys.customers.all });
-        queryClient.invalidateQueries({ queryKey: QueryKeys.ubos.all });
-        queryClient.invalidateQueries({ queryKey: QueryKeys.transactions.all });
-        queryClient.invalidateQueries({ queryKey: QueryKeys.alerts.all });
-        queryClient.invalidateQueries({ queryKey: QueryKeys.cases.all });
+        queryClient.invalidateQueries({ queryKey: QueryKeys.users.all });
+        queryClient.invalidateQueries({ queryKey: QueryKeys.fellowships.all });
+        queryClient.invalidateQueries({ queryKey: QueryKeys.members.all });
+        queryClient.invalidateQueries({
+            queryKey: QueryKeys.opportunities.all,
+        });
+        queryClient.invalidateQueries({ queryKey: QueryKeys.roles.all });
+        queryClient.invalidateQueries({ queryKey: QueryKeys.auth.me });
+        queryClient.invalidateQueries({ queryKey: QueryKeys.church.me });
     },
 } as const;

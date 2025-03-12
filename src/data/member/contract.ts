@@ -8,7 +8,7 @@ const c = initContract();
 export const memberContract = c.router({
     getAll: {
         method: "GET",
-        path: "",
+        path: "?eager=[fellowship]",
         responses: {
             200: z.array(memberSchema),
             401: z.null(),

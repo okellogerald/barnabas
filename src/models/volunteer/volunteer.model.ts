@@ -9,7 +9,7 @@ import {
  *
  * Represents a volunteer opportunity in the church
  */
-export class Opportunity {
+export class VolunteerOpportunity {
     id: string;
     churchId: string;
     name: string;
@@ -69,8 +69,8 @@ export class Opportunity {
     /**
      * Factory method to create an Opportunity from a DTO
      */
-    static fromDTO(dto: OpportunityDTO): Opportunity {
-        return new Opportunity(dto);
+    static fromDTO(dto: OpportunityDTO): VolunteerOpportunity {
+        return new VolunteerOpportunity(dto);
     }
 
     /**

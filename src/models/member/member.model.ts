@@ -1,5 +1,9 @@
 import { MemberDTO, UpdateMemberDTO } from "@/data/member";
 import { Dependant } from "./dependant.model";
+import { FellowshipDTO } from "@/data/fellowship";
+import { OpportunityDTO } from "@/data/volunteer";
+import { Fellowship } from "@/models/fellowship";
+import { VolunteerOpportunity } from "@/models/volunteer";
 
 /**
  * Member model representing a church member
@@ -46,7 +50,8 @@ export class Member {
 
   // Related entities
   dependants: Dependant[];
-  interests: any[]; // For simplicity, we're keeping this as 'any' for now
+  fellowship: Fellowship | null;
+  interests: VolunteerOpportunity[];
 
   constructor(dto: MemberDTO) {
     this.id = dto.id;
@@ -92,7 +97,28 @@ export class Member {
 
     // Handle related collections
     this.dependants = dto.dependants?.map((d) => Dependant.fromDTO(d)) || [];
-    this.interests = dto.interests || [];
+
+    // Handle fellowship if present in the DTO
+    this.fellowship = dto.fellowship
+      ? Fellowship.fromDTO(dto.fellowship as unknown as FellowshipDTO)
+      : null;
+
+    // Handle interests array
+    this.interests = dto.interests?.map((i) => {
+      // If the interest is already a full opportunity object
+      if (typeof i === "object" && i.id) {
+        return VolunteerOpportunity.fromDTO(i as unknown as OpportunityDTO);
+      }
+      // If the interest is just an ID or object with ID
+      return new VolunteerOpportunity({
+        id: typeof i === "string" ? i : i.id,
+        churchId: this.churchId,
+        name: typeof i === "object" && i.name ? i.name : "Unknown",
+        description: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }) || [];
   }
 
   /**
@@ -135,6 +161,34 @@ export class Member {
     }
 
     return `${this.dependants.length} dependant(s)`;
+  }
+
+  /**
+   * Gets the fellowship name if available
+   */
+  getFellowshipName(): string {
+    if (!this.fellowship) {
+      return "Not assigned";
+    }
+    return this.fellowship.name;
+  }
+
+  /**
+   * Gets a list of interest names
+   */
+  getInterestNames(): string[] {
+    return this.interests.map((interest) => interest.name);
+  }
+
+  /**
+   * Gets interest names as a comma-separated string
+   */
+  getInterestsSummary(): string {
+    if (this.interests.length === 0) {
+      return "No volunteer interests";
+    }
+
+    return this.interests.map((i) => i.name).join(", ");
   }
 
   /**
@@ -205,7 +259,8 @@ export class Member {
       createdAt: this.createdAt.toISOString(),
       updatedAt: this.updatedAt.toISOString(),
       dependants: this.dependants.map((d) => d.toDTO()),
-      interests: this.interests,
+      fellowship: this.fellowship ? this.fellowship.toDTO() : null,
+      interests: this.interests.map((i) => i.toDTO()),
     };
   }
 

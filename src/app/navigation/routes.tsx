@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { Navigate, Routes, Route, useNavigate } from 'react-router-dom';
-import AppLayout from '@/components/layout/app_layout';
+import AppLayout from '@/components/layout/app.layout';
 import { ROUTES } from './constants';
 import { AuthManager } from '@/managers/auth/auth.manager';
 import ProtectedRoute from './protected_route';
@@ -8,7 +8,7 @@ import ProtectedRoute from './protected_route';
 // Lazy-loaded components
 const LoginPage = lazy(() => import('@/pages/auth/login.page'));
 const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard.page'));
-// const MembersPage = lazy(() => import('@/pages/members/members.page'));
+const MembersPage = lazy(() => import('@/pages/member/member_list.page'));
 // const MemberDetailsPage = lazy(() => import('@/pages/members/member-details.page'));
 // const MemberCreatePage = lazy(() => import('@/pages/members/member-create.page'));
 // const MemberEditPage = lazy(() => import('@/pages/members/member-edit.page'));
@@ -66,6 +66,9 @@ const AppRoutes: React.FC = () => {
           {/* Dashboard */}
           <Route index element={<Navigate to={ROUTES.DASHBOARD} replace />} />
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
+          
+          {/* Members routes */}
+          <Route path={ROUTES.MEMBERS.LIST} element={<MembersPage />} />
 
           {/* 404 catch-all */}
           <Route path="*" element={<NotFoundPage />} />
