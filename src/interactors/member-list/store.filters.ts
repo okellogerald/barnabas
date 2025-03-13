@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { MEMBER_UI } from "@/constants";
 
 /**
  * Direct mapping to member model properties for objection-find
@@ -56,6 +57,9 @@ export interface MemberFilterActions {
      */
     setSorting: (field: string, direction: "asc" | "desc") => void;
 
+    /**
+     * Get query params for API calls
+     */
     getQueryParams: () => MemberQueryParams;
 }
 
@@ -68,126 +72,10 @@ const initialFilterState: MemberFilterState = {
     fellowshipId: undefined,
     isBaptized: undefined,
     attendsFellowship: undefined,
-    orderBy: "firstName", // Default sorting
+    orderBy: MEMBER_UI.SORTING.DEFAULT_FIELD,
     orderByDesc: undefined,
     filtersVisible: false,
     filtersApplied: false,
-};
-
-/**
- * Create a persisted filter store
- */
-export const memberFilterStore = create<
-    MemberFilterState & MemberFilterActions
->()(
-    (set, get) => ({
-        ...initialFilterState,
-
-        setFilter: (key, value) => {
-            set((state) => ({
-                ...state,
-                [key]: value,
-                //  filtersApplied: true,
-            }));
-        },
-
-        applyFilters: (filters) => {
-            set((state) => ({
-                ...state,
-                ...filters,
-                filtersApplied: canApplyFilters(filters),
-            }));
-        },
-
-        clearFilters: () => {
-            set({
-                ...initialFilterState,
-                filtersVisible: true, // Keep panel open after clearing
-                filtersApplied: false,
-            });
-        },
-
-        toggleFiltersVisible: () => {
-            set((state) => ({
-                ...state,
-                filtersVisible: !state.filtersVisible,
-            }));
-        },
-
-        setSorting: (field, direction) => {
-            if (direction === "asc") {
-                set({
-                    orderBy: field,
-                    orderByDesc: undefined,
-                    filtersApplied: false,
-                });
-            } else {
-                set({
-                    orderBy: undefined,
-                    orderByDesc: field,
-                    filtersApplied: false,
-                });
-            }
-        },
-
-        getQueryParams: () => {
-            const state = get();
-
-            // Only include non-undefined values to avoid sending empty parameters
-            const params: MemberQueryParams = {};
-
-            if (state.firstName) params.firstName = state.firstName;
-            if (state.lastName) params.lastName = state.lastName;
-            if (state.fellowshipId) {
-                params.fellowshipId = state.fellowshipId;
-            }
-            if (state.isBaptized !== undefined) {
-                params.isBaptized = state.isBaptized;
-            }
-            if (state.attendsFellowship !== undefined) {
-                params.attendsFellowship = state.attendsFellowship;
-            }
-
-            // Handle sorting - only include one sorting parameter
-            if (state.orderByDesc) {
-                params.orderByDesc = state.orderByDesc;
-            } else if (state.orderBy) {
-                params.orderBy = state.orderBy;
-            }
-
-            return params;
-        },
-    }),
-);
-
-/**
- * Retrieves the current filter parameters from the member filter store,
- * formatted to match the backend model keys. This function does not use React hooks.
- *
- * @returns {MemberQueryParams} The current filter parameters.
- */
-export const getFilterParams = (): MemberQueryParams => {
-    const state = memberFilterStore.getState();
-
-    // Only include non-undefined values to avoid sending empty parameters
-    const params: MemberQueryParams = {};
-
-    if (state.firstName) params.firstName = state.firstName;
-    if (state.lastName) params.lastName = state.lastName;
-    if (state.fellowshipId) params.fellowshipId = state.fellowshipId;
-    if (state.isBaptized !== undefined) params.isBaptized = state.isBaptized;
-    if (state.attendsFellowship !== undefined) {
-        params.attendsFellowship = state.attendsFellowship;
-    }
-
-    // Handle sorting - only include one sorting parameter
-    if (state.orderByDesc) {
-        params.orderByDesc = state.orderByDesc;
-    } else if (state.orderBy) {
-        params.orderBy = state.orderBy;
-    }
-
-    return params;
 };
 
 /**
@@ -219,9 +107,97 @@ export const canApplyFilters = (
         filters.attendsFellowship !== initialFilterState.attendsFellowship;
 
     // Return true if any filter is applied
-    return isFirstNameApplied ||
+    return (
+        isFirstNameApplied ||
         isLastNameApplied ||
         isFellowshipApplied ||
         isBaptizedApplied ||
-        isAttendsFellowshipApplied;
+        isAttendsFellowshipApplied
+    );
+};
+
+/**
+ * Create a filter store
+ */
+export const memberFilterStore = create<
+    MemberFilterState & MemberFilterActions
+>()((set, get) => ({
+    ...initialFilterState,
+
+    setFilter: (key, value) => {
+        set((state) => ({
+            ...state,
+            [key]: value,
+        }));
+    },
+
+    applyFilters: (filters) => {
+        set((state) => ({
+            ...state,
+            ...filters,
+            filtersApplied: canApplyFilters(filters),
+        }));
+    },
+
+    clearFilters: () => {
+        set({
+            ...initialFilterState,
+            filtersVisible: true, // Keep panel open after clearing
+            filtersApplied: false,
+        });
+    },
+
+    toggleFiltersVisible: () => {
+        set((state) => ({
+            ...state,
+            filtersVisible: !state.filtersVisible,
+        }));
+    },
+
+    setSorting: (field, direction) => {
+        if (direction === "asc") {
+            set({
+                orderBy: field,
+                orderByDesc: undefined,
+            });
+        } else {
+            set({
+                orderBy: undefined,
+                orderByDesc: field,
+            });
+        }
+    },
+
+    getQueryParams: () => {
+        const state = get();
+        const params: MemberQueryParams = {};
+
+        // Only include non-undefined/non-empty string values
+        if (state.firstName) params.firstName = state.firstName;
+        if (state.lastName) params.lastName = state.lastName;
+        if (state.fellowshipId) params.fellowshipId = state.fellowshipId;
+        if (state.isBaptized !== undefined) {
+            params.isBaptized = state.isBaptized;
+        }
+        if (state.attendsFellowship !== undefined) {
+            params.attendsFellowship = state.attendsFellowship;
+        }
+
+        // Handle sorting - only include one sorting parameter
+        if (state.orderByDesc) {
+            params.orderByDesc = state.orderByDesc;
+        } else if (state.orderBy) {
+            params.orderBy = state.orderBy;
+        }
+
+        return params;
+    },
+}));
+
+/**
+ * Retrieves the current filter parameters
+ * Non-hook version for use outside React components
+ */
+export const getFilterParams = (): MemberQueryParams => {
+    return memberFilterStore.getState().getQueryParams();
 };

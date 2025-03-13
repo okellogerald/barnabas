@@ -3,8 +3,9 @@ import React from "react";
 import { Button, Dropdown, Space, Tooltip } from "antd";
 import { DownOutlined, SortAscendingOutlined, SortDescendingOutlined } from "@ant-design/icons";
 import { MenuProps } from "antd";
-import { memberFilterStore } from "@/interactors/member-list";
-import { refreshMembers } from "@/interactors/member-list/service";
+import { memberFilterStore, useMemberList } from "@/interactors/member-list";
+import { useStore } from "zustand";
+import { isSuccessState } from "@/interactors/_state";
 
 // Define available sorting fields
 export interface SortOption {
@@ -24,7 +25,9 @@ const sortOptions: SortOption[] = [
  * Component for controlling the sorting of member list
  */
 export const MemberSorting: React.FC = () => {
-    const filterState = memberFilterStore.getState();
+    const state = useMemberList();
+    if (!isSuccessState(state)) return
+    const filterState = useStore(memberFilterStore);
 
     // Determine current sort field and direction
     const currentSortField = filterState.orderBy || filterState.orderByDesc || "firstName";
@@ -42,7 +45,7 @@ export const MemberSorting: React.FC = () => {
         }
 
         // Refresh data with new sort
-        refreshMembers();
+        state.actions.table.refresh();
     };
 
     const toggleSortDirection = () => {
@@ -51,7 +54,7 @@ export const MemberSorting: React.FC = () => {
         filterState.setSorting(currentSortField, newDirection);
 
         // Refresh data with new sort
-        refreshMembers();
+        state.actions.table.refresh();
     };
 
     // Create menu items for dropdown

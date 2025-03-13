@@ -1,34 +1,23 @@
-import { ActionPermission } from "./constants";
+import { ActionPermission } from "@/managers/auth/permission";
 
 /**
- * Custom error class representing an error caused by missing required permissions.
- * Extends the built-in {@link Error} class to include the `requiredPermissions` property.
- *
- * @example
- * ```typescript
- * // Throw a permission error when user lacks required permissions
- * throw new PermissionError({
- *   requiredPermissions: [Actions.USER_CREATE, Actions.USER_UPDATE],
- *   message: "You cannot manage users without proper permissions"
- * });
- *
- * // Or use the factory method for a simpler approach
- * throw PermissionError.fromAction(Actions.MEMBER_CREATE);
- * ```
+ * Represents an error thrown when a user lacks the necessary permissions.
+ * This class extends the built-in Error class and includes information about
+ * the required permissions.
  */
 export class PermissionError extends Error {
     /**
-     * The permissions that are required but were not present, causing the error.
-     * @type {ActionPermission[]}
+     * An array of ActionPermission strings representing the permissions
+     * required to perform the action that caused the error.
      */
     readonly requiredPermissions: ActionPermission[];
 
     /**
-     * Creates a new `PermissionError` instance.
+     * Constructs a new PermissionError instance.
      *
-     * @param {Object} args - The constructor arguments.
-     * @param {ActionPermission[]} args.requiredPermissions - An array of permissions required for the operation.
-     * @param {string} [args.message] - An optional custom error message. Defaults to listing the missing permissions.
+     * @param args An object containing the required permissions and an optional message.
+     * @param args.requiredPermissions An array of ActionPermission strings.
+     * @param args.message An optional custom error message.
      */
     constructor(args: {
         requiredPermissions: ActionPermission[];
@@ -47,11 +36,10 @@ export class PermissionError extends Error {
     }
 
     /**
-     * Validates if an unknown value is a valid PermissionError instance.
-     * Performs structural validation of the error object and its properties.
+     * Type guard to determine if an error is a PermissionError instance.
      *
-     * @param {unknown} error - The value to validate.
-     * @returns {error is PermissionError} Type predicate indicating if the value is a valid PermissionError.
+     * @param error Any error value.
+     * @returns True if the error is a PermissionError, false otherwise.
      */
     static is(error: unknown): error is PermissionError {
         // Basic type check
@@ -84,10 +72,10 @@ export class PermissionError extends Error {
     }
 
     /**
-     * Returns a formatted string representation of this error, including the list
-     * of required permissions that were missing.
+     * Returns a string representation of the PermissionError, including
+     * the error name, message, and required permissions.
      *
-     * @returns {string} A formatted error message
+     * @returns A string representation of the error.
      */
     toString(): string {
         return `${this.name}: ${this.message} [Required: ${
@@ -96,16 +84,12 @@ export class PermissionError extends Error {
     }
 
     /**
-     * Creates a PermissionError for a specific action permission.
+     * Creates a PermissionError from a single ActionPermission.
+     * This method generates a user-friendly error message based on the action.
      *
-     * @param {ActionPermission} action - The action permission that is required
-     * @param {string} [customMessage] - Optional custom error message
-     * @returns {PermissionError} A configured permission error
-     *
-     * @example
-     * ```typescript
-     * throw PermissionError.fromAction(Actions.MEMBER_CREATE);
-     * ```
+     * @param action The required ActionPermission.
+     * @param customMessage An optional custom error message.
+     * @returns A new PermissionError instance.
      */
     static fromAction(
         action: ActionPermission,
@@ -127,19 +111,11 @@ export class PermissionError extends Error {
     }
 
     /**
-     * Creates a PermissionError for multiple action permissions.
+     * Creates a PermissionError from an array of ActionPermissions.
      *
-     * @param {ActionPermission[]} actions - The action permissions that are required
-     * @param {string} [customMessage] - Optional custom error message
-     * @returns {PermissionError} A configured permission error
-     *
-     * @example
-     * ```typescript
-     * throw PermissionError.fromActions([
-     *   Actions.MEMBER_CREATE,
-     *   Actions.MEMBER_UPDATE
-     * ]);
-     * ```
+     * @param actions An array of required ActionPermissions.
+     * @param customMessage An optional custom error message.
+     * @returns A new PermissionError instance.
      */
     static fromActions(
         actions: ActionPermission[],

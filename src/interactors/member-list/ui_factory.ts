@@ -4,11 +4,11 @@ import {
     MembersQueryResult,
 } from "./types";
 import { UI_STATE_TYPE } from "../_state";
-import { handlePagination, refreshMembers } from "./service";
 import { MembersTableActions, MembersTableState } from "./store.table";
 import { renderMemberTable } from "./table_renderer";
 import { Member } from "@/models";
 import { MemberFilterActions, MemberFilterState } from "./store.filters";
+import { memberService } from "./service";
 
 /**
  * Creates the success state for the member list UI
@@ -33,8 +33,8 @@ export const createSuccessState = (params: {
         table: {
             ...tableStore,
             ...filterStore,
-            refresh: () => refreshMembers(),
-            fetchMore: handlePagination,
+            refresh: () => memberService.refresh(),
+            fetchMore: memberService.handlePagination,
         },
 
         member: {

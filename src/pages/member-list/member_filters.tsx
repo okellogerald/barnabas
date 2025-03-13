@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { QueryKeys } from "@/interactors/_queries";
 import { FellowshipManager } from "@/managers/fellowship";
 import { canApplyFilters, useMemberList } from "@/interactors/member-list";
-import { UI_STATE_TYPE } from "@/interactors/_state";
+import { isSuccessState, UI_STATE_TYPE } from "@/interactors/_state";
 
 /**
  * Member list filter component
@@ -14,7 +14,7 @@ export const MemberFilters: React.FC<{
     onApplyFilters: () => void;
 }> = ({ onApplyFilters }) => {
     const state = useMemberList();
-    if (state.type !== UI_STATE_TYPE.success) return
+    if(!isSuccessState(state)) return
 
     const filters = state.table.filters
 

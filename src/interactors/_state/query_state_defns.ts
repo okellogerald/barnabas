@@ -1,4 +1,4 @@
-import { PermissionError } from "@/managers/auth/permission";
+import { PermissionError } from "@/utilities/errors";
 import { UseQueryResult } from "@tanstack/react-query";
 
 /**

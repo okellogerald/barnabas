@@ -11,7 +11,8 @@
  * - Generic state determination function
  */
 
-import { ActionPermission, PermissionError } from "@/managers/auth/permission";
+import { ActionPermission } from "@/managers/auth/permission";
+import { PermissionError } from "@/utilities/errors";
 
 /**
  * Enumeration of possible UI state types
@@ -98,3 +99,15 @@ export type IPermissionErrorState = UIStateBase<UI_STATE_TYPE.unauthorized> & {
         retry?: () => void;
     };
 };
+
+/**
+ * Type guard to check if a UI state is a success state, regardless of its specific type.
+ *
+ * @param state The UI state to check.
+ * @returns True if the state is a success state, false otherwise.
+ */
+export function isSuccessState<T extends UIStateBase<UI_STATE_TYPE>>(
+    state: T,
+): state is T & { type: UI_STATE_TYPE.success } {
+    return state.type === UI_STATE_TYPE.success;
+}

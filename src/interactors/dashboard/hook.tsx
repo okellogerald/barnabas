@@ -16,7 +16,7 @@ export const useDashboard = (): DashboardPageState => {
             type: UI_STATE_TYPE.success,
             church: data.church,
             totalFellowships: data.fellowships?.length ?? null,
-            totalMembers: data.members?.length ?? null,
+            totalMembers: data.members?.members?.length ?? null,
         }
     }
 

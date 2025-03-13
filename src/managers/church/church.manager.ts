@@ -1,5 +1,4 @@
 import { Church } from "@/models";
-import { PermissionsManager } from "@/managers/auth/permission";
 import { ChurchRepository } from "@/data/church";
 
 /**
@@ -11,14 +10,12 @@ import { ChurchRepository } from "@/data/church";
 export class ChurchManager {
     private static _instance: ChurchManager;
     private _repo: ChurchRepository;
-    private _permissionsManager: PermissionsManager;
 
     /**
      * Private constructor to enforce singleton pattern
      */
     private constructor() {
         this._repo = new ChurchRepository();
-        this._permissionsManager = PermissionsManager.instance;
     }
 
     /**

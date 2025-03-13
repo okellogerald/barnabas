@@ -1,10 +1,7 @@
 import { MemberQueryParams, MemberRepository } from "@/data/member";
-import {
-    Actions,
-    PermissionError,
-    PermissionsManager,
-} from "@/managers/auth/permission";
+import { Actions, PermissionsManager } from "@/managers/auth/permission";
 import { Member } from "@/models";
+import { PermissionError } from "@/utilities/errors";
 
 type GetMembersResponse = {
     members: Member[];

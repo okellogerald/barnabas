@@ -1,4 +1,4 @@
-import { FormFieldBuilder } from "@/components";
+import { FormFieldBuilder } from "@/components/form";
 import { FormInstance } from "antd";
 
 /**

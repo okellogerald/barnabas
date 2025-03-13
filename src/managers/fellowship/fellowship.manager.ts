@@ -1,7 +1,7 @@
 import { Actions, PermissionsManager } from "@/managers/auth/permission";
 import { FellowshipRepository } from "@/data/fellowship";
 import { Fellowship } from "@/models/fellowship/fellowship.model";
-import { PermissionError } from "../auth/permission/permission_error";
+import { PermissionError } from "@/utilities/errors";
 
 /**
  * Church Manager

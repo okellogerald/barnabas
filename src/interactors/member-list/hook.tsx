@@ -3,10 +3,10 @@ import { MemberListPageUIState } from "./types";
 import { QueryKeys } from "../_queries/queries";
 import { determineUIState, UIStateFactory } from "../_state";
 import { useStore } from "zustand";
-import { fetchInitialMembers } from "./service";
 import { createSuccessState } from "./ui_factory";
 import { memberFilterStore } from "./store.filters";
 import { memberTableStore } from "./store.table";
+import { memberService } from "./service";
 
 /**
  * Hook for managing the member list page with filters
@@ -20,7 +20,7 @@ export const useMemberList = (): MemberListPageUIState => {
     // Fetch members data with the current filters
     const query = useQuery({
         queryKey: [QueryKeys.members.all, filters_store.getQueryParams()],
-        queryFn: () => fetchInitialMembers(filters_store.getQueryParams()),
+        queryFn: () => memberService.fetchInitial(filters_store.getQueryParams()),
         // Prevent auto-refetching on window focus for large datasets
         refetchOnWindowFocus: false,
     });
