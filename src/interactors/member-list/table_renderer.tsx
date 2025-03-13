@@ -48,6 +48,7 @@ export const renderMemberTable = (params: TableRenderParams): JSX.Element => {
                 onChange: (page) => actions.table.fetchMore(page),
             }}
             columns={[
+                MemberColumns.avatar,
                 MemberColumns.firstName,
                 MemberColumns.lastName,
                 MemberColumns.age,

@@ -1,5 +1,5 @@
 import { ColumnType } from "antd/es/table";
-import { Badge, Space, Typography } from "antd";
+import { Avatar, Badge, Space, Typography } from "antd";
 import { Member } from "../../models";
 import { NULL_DISPLAY, renderWithNull } from "../null_display";
 
@@ -255,6 +255,22 @@ const MemberRegistrationDateColumn: ColumnType<Member> = {
     }
 };
 
+const MemberAvatarColumn: ColumnType<Member> = {
+    title: '',
+    dataIndex: 'profilePhoto',
+    key: 'avatar',
+    width: 60,
+    fixed: 'left',
+    render: (_, record) => (
+        <Avatar 
+            src={record.profilePhoto} 
+            size="default"
+        >
+            {record.firstName?.[0]}{record.lastName?.[0]}
+        </Avatar>
+    )
+};
+
 type Column =
     | "name"
     | "contact"
@@ -274,9 +290,11 @@ type Column =
     | "age"
     | "envelopeNumber"
     | "registrationDate"
+    | "avatar"
     ;
 
 export const MemberColumns: Record<Column, ColumnType<Member>> = {
+    avatar: MemberAvatarColumn,
     name: MemberNameColumn,
     contact: MemberContactColumn,
     gender: MemberGenderColumn,
