@@ -4,10 +4,11 @@ import {
     MembersQueryResult,
 } from "./types";
 import { UI_STATE_TYPE } from "../_state";
-import { handlePagination } from "./service";
-import { MembersTableActions, MembersTableState } from "./store";
+import { handlePagination, refreshMembers } from "./service";
+import { MembersTableActions, MembersTableState } from "./store.table";
 import { renderMemberTable } from "./table_renderer";
 import { Member } from "@/models";
+import { MemberFilterActions, MemberFilterState } from "./store.filters";
 
 /**
  * Creates the success state for the member list UI
@@ -16,14 +17,10 @@ import { Member } from "@/models";
  */
 export const createSuccessState = (params: {
     initialFetchResult: MembersQueryResult;
-    store: MembersTableState & MembersTableActions;
+    tableStore: MembersTableState & MembersTableActions;
+    filterStore: MemberFilterState & MemberFilterActions;
 }): MemberListSuccessState => {
-    const { store } = params;
-
-    // Initialize the store if it's empty
-    if (store.members.all.length === 0) {
-        //store.init(initialFetchResult.members, initialFetchResult.total);
-    }
+    const { tableStore, filterStore } = params;
 
     // Create actions object
     const actions: MemberListActions = {
@@ -34,15 +31,16 @@ export const createSuccessState = (params: {
         },
 
         table: {
-            ...store,
-            refresh: () => {},
-            fetchMore: (page: number) => handlePagination(page),
+            ...tableStore,
+            ...filterStore,
+            refresh: () => refreshMembers(),
+            fetchMore: handlePagination,
         },
 
         member: {
             view: (member: Member) => {
                 // Implementation for viewing a member
-                store.expandMember(member);
+                tableStore.expandMember(member);
             },
 
             edit: (member: Member) => {
@@ -61,12 +59,13 @@ export const createSuccessState = (params: {
     return {
         type: UI_STATE_TYPE.success,
         table: {
-            memberCount: store.pagination.totalResults,
+            memberCount: tableStore.pagination.totalResults,
+            filters: filterStore,
             render: () =>
                 renderMemberTable({
-                    members: store.members.all,
+                    members: tableStore.members.all,
                     actions,
-                    tableState: store,
+                    tableState: tableStore,
                 }),
         },
         actions,

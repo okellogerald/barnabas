@@ -8,7 +8,7 @@ import ProtectedRoute from './protected_route';
 // Lazy-loaded components
 const LoginPage = lazy(() => import('@/pages/auth/login.page'));
 const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard.page'));
-const MembersPage = lazy(() => import('@/pages/member/member_list.page'));
+const MembersPage = lazy(() => import('@/pages/member-list/member_list.page'));
 // const MemberDetailsPage = lazy(() => import('@/pages/members/member-details.page'));
 // const MemberCreatePage = lazy(() => import('@/pages/members/member-create.page'));
 // const MemberEditPage = lazy(() => import('@/pages/members/member-edit.page'));

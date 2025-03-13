@@ -174,6 +174,87 @@ const MemberDOBColumn: ColumnType<Member> = {
     render: (date) => date ? new Date(date).toLocaleDateString() : NULL_DISPLAY
 };
 
+/**
+ * First Name Column
+ */
+const MemberFirstNameColumn: ColumnType<Member> = {
+    title: 'First Name',
+    dataIndex: 'firstName',
+    key: 'firstName',
+    width: 120,
+    render: renderWithNull
+};
+
+/**
+ * Last Name Column
+ */
+const MemberLastNameColumn: ColumnType<Member> = {
+    title: 'Last Name',
+    dataIndex: 'lastName',
+    key: 'lastName',
+    width: 120,
+    render: renderWithNull
+};
+
+/**
+ * Age Column - calculated from dateOfBirth
+ */
+const MemberAgeColumn: ColumnType<Member> = {
+    title: 'Age',
+    dataIndex: 'dateOfBirth',
+    key: 'age',
+    width: 80,
+    render: (dateOfBirth) => {
+        if (!dateOfBirth) return <Text type="secondary">{NULL_DISPLAY}</Text>;
+
+        const birthDate = new Date(dateOfBirth);
+        const today = new Date();
+
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+
+        // Adjust age if birthday hasn't occurred yet this year
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+
+        return <Text>{age}</Text>;
+    }
+};
+
+/**
+ * Envelope Number Column
+ */
+const MemberEnvelopeNumberColumn: ColumnType<Member> = {
+    title: 'Envelope #',
+    dataIndex: 'envelopeNumber',
+    key: 'envelopeNumber',
+    width: 110,
+    sorter: true,
+    render: renderWithNull
+};
+
+/**
+ * Registration Date Column - uses createdAt
+ */
+const MemberRegistrationDateColumn: ColumnType<Member> = {
+    title: 'Registration Date',
+    dataIndex: 'createdAt',
+    key: 'registrationDate',
+    width: 140,
+    render: (date) => {
+        if (!date) return <Text type="secondary">{NULL_DISPLAY}</Text>;
+
+        const formattedDate = new Date(date).toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+
+        return <Text>{formattedDate}</Text>;
+    }
+};
+
 type Column =
     | "name"
     | "contact"
@@ -187,7 +268,13 @@ type Column =
     | "attendance"
     | "envelope"
     | "occupation"
-    | "dob";
+    | "dob"
+    | "firstName"
+    | "lastName"
+    | "age"
+    | "envelopeNumber"
+    | "registrationDate"
+    ;
 
 export const MemberColumns: Record<Column, ColumnType<Member>> = {
     name: MemberNameColumn,
@@ -203,4 +290,9 @@ export const MemberColumns: Record<Column, ColumnType<Member>> = {
     envelope: MemberEnvelopeColumn,
     occupation: MemberOccupationColumn,
     dob: MemberDOBColumn,
+    firstName: MemberFirstNameColumn,
+    lastName: MemberLastNameColumn,
+    age: MemberAgeColumn,
+    envelopeNumber: MemberEnvelopeNumberColumn,
+    registrationDate: MemberRegistrationDateColumn
 };

@@ -22,7 +22,7 @@ export interface MembersTableState {
     };
     /** Pagination state */
     pagination: {
-        /** Current page (0-indexed) */
+        /** Current page (1-indexed) */
         currPage: number;
         /** Total number of results */
         totalResults: number;
@@ -68,7 +68,7 @@ const initialState: MembersTableState = {
         active: null,
     },
     pagination: {
-        currPage: 0,
+        currPage: 1,
         totalResults: 0,
         resultsPerPage: AppConfig.DEFAULT_PAGE_SIZE,
     },
@@ -77,7 +77,7 @@ const initialState: MembersTableState = {
 /**
  * Creates a Zustand store for managing member table state
  */
-export const createMemberTableStore = () =>
+const createMemberTableStore = () =>
     create<MembersTableState & MembersTableActions>((set, get) => ({
         ...initialState,
 
@@ -158,3 +158,5 @@ export const createMemberTableStore = () =>
 
         reset: () => set(initialState),
     }));
+
+export const memberTableStore = createMemberTableStore();

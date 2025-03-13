@@ -7,7 +7,8 @@ import {
     UIStateBase,
 } from "../_state";
 import { Member } from "@/models";
-import { MembersTableActions } from "./store";
+import { MembersTableActions } from "./store.table";
+import { MemberFilterActions, MemberFilterState } from "./store.filters";
 
 /**
  * Success state for the member list page
@@ -18,6 +19,7 @@ export interface MemberListSuccessState
     table: {
         render: () => JSX.Element;
         memberCount: number;
+        filters: MemberFilterState;
     };
     actions: MemberListActions;
 }
@@ -29,7 +31,7 @@ export interface MemberListActions {
     /** Create a new member */
     addNew: () => void;
     /** Table-related actions */
-    table: Omit<MembersTableActions, "reset"> & {
+    table: Omit<MembersTableActions, "reset"> & MemberFilterActions & {
         /** Fetch more members when paginating */
         fetchMore: (page: number) => Promise<void>;
 
@@ -61,24 +63,5 @@ export type MemberListPageUIState =
  */
 export interface MembersQueryResult {
     members: Member[];
-    total: number;
-}
-
-/**
- * Parameters for fetching members
- */
-export interface MemberListQueryParams {
-    fellowshipId?: string;
-    baptized?: boolean;
-    attendsFellowship?: boolean;
-    search?: string;
-}
-
-/**
- * Parameters for fetching more members during pagination
- */
-export interface FetchMoreParams extends MemberListQueryParams {
-    currPage: number;
-    nextPage: number;
     total: number;
 }

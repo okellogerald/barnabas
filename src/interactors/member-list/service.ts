@@ -1,44 +1,38 @@
-import { MemberQueryParams } from "@/data/member";
+// service.ts
 import { Member } from "@/models/member";
 import { MemberManager } from "@/managers/member";
 import { AppConfig } from "@/app";
-import {
-    FetchMoreParams,
-    MemberListQueryParams,
-    MembersQueryResult,
-} from "./types";
 import { notifyUtils } from "@/utilities/notification_utils";
-import { createMemberTableStore } from "./store";
+import { memberTableStore } from "./store.table";
+import { getFilterParams, memberFilterStore } from "./store.filters";
 
 /**
  * Default number of results per page
  */
 const MEMBERS_RESULTS_PER_PAGE = AppConfig.DEFAULT_PAGE_SIZE;
 
-export const memberTableStore = createMemberTableStore();
-
 /**
  * Fetches the initial set of members based on query parameters
- * @param params Query parameters for filtering members
+ * @param params Query parameters that match the backend model properties
  * @returns Promise resolving to members and total count
  */
 export const fetchInitialMembers = async (
-    params: MemberListQueryParams,
-): Promise<MembersQueryResult> => {
-    const queryParams: MemberQueryParams = {
+    params = getFilterParams(),
+): Promise<{ members: Member[]; total: number }> => {
+    // Build query params for objection-find format
+    const queryParams: any = {
+        ...params,
+        eager: "fellowship",
+        // Pagination using range
         rangeStart: 0,
         rangeEnd: MEMBERS_RESULTS_PER_PAGE - 1,
-        fellowshipId: params.fellowshipId,
-        baptized: params.baptized,
-        attendsFellowship: params.attendsFellowship,
-        search: params.search,
-        eager: "fellowship",
     };
 
     try {
         const { members, total } = await MemberManager.instance.getMembers(
             queryParams,
         );
+        // Initialize store with fetched data
         memberTableStore.getState().init(members, total);
         return { members, total };
     } catch (error) {
@@ -48,16 +42,34 @@ export const fetchInitialMembers = async (
 };
 
 /**
+ * Refreshes the member list with current filters
+ */
+export const refreshMembers = async (): Promise<void> => {
+    const filters = memberFilterStore.getState().getQueryParams();
+    memberTableStore.getState().reset();
+
+    try {
+        const toastId = notifyUtils.showLoading("Refreshing members...");
+        await fetchInitialMembers(filters);
+        notifyUtils.dismiss(toastId);
+    } catch (error) {
+        notifyUtils.error("Failed to refresh members");
+    }
+};
+
+/**
  * Fetches additional members for pagination
- * @param params Parameters including current page, next page, and filters
+ * @param params Additional parameters for pagination
  * @returns Promise resolving to additional members
  */
 export const fetchMoreMembers = async (
-    params: FetchMoreParams,
+    params: {
+        currPage: number;
+        nextPage: number;
+        total: number;
+    },
 ): Promise<Member[]> => {
-    await new Promise<void>((resolve) => {
-        setTimeout(resolve, 3000);
-    });
+    // Calculate range parameters for objection-find
     let rangeStart = params.currPage * MEMBERS_RESULTS_PER_PAGE;
     let rangeEnd = (params.nextPage * MEMBERS_RESULTS_PER_PAGE) - 1;
 
@@ -66,13 +78,14 @@ export const fetchMoreMembers = async (
         return [];
     }
 
-    const queryParams: MemberQueryParams = {
+    // Get current filters
+    const filterParams = getFilterParams();
+
+    // Build query params
+    const queryParams: any = {
+        ...filterParams,
         rangeStart,
         rangeEnd,
-        fellowshipId: params.fellowshipId,
-        baptized: params.baptized,
-        attendsFellowship: params.attendsFellowship,
-        search: params.search,
         eager: "fellowship",
     };
 
@@ -80,11 +93,9 @@ export const fetchMoreMembers = async (
         const { members } = await MemberManager.instance.getMembers(
             queryParams,
         );
-        memberTableStore.getState().addToMembers(members, params.nextPage);
         return members;
     } catch (error) {
         console.error("Error fetching more members:", error);
-        notifyUtils.error("Failed to load more members");
         throw error;
     }
 };
@@ -92,11 +103,9 @@ export const fetchMoreMembers = async (
 /**
  * Handles pagination and fetching more data as needed
  * @param page The requested page number
- * @param queryParams Current query parameters
  */
 export const handlePagination = async (
     page: number,
-    queryParams: MemberListQueryParams = {},
 ): Promise<void> => {
     const store = memberTableStore.getState();
     const pagination = store.pagination;
@@ -112,22 +121,20 @@ export const handlePagination = async (
         return;
     }
 
-    const toast_id = notifyUtils.showLoading("Loading more data...");
+    const toastId = notifyUtils.showLoading("Loading more data...");
 
     try {
         const results = await fetchMoreMembers({
-            ...queryParams,
             currPage: pagination.currPage,
             nextPage: page,
             total: pagination.totalResults,
         });
 
         store.addToMembers(results, page);
-        notifyUtils.dismiss(toast_id);
-        notifyUtils.success("Loaded more data!");
+        notifyUtils.dismiss(toastId);
     } catch (error) {
         console.error("Error in pagination:", error);
-        notifyUtils.dismiss(toast_id);
+        notifyUtils.dismiss(toastId);
         notifyUtils.error("Failed to load more data");
     }
 };
