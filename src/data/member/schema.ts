@@ -127,8 +127,8 @@ export const memberQueryParamsSchema = z.object({
     baptized: z.coerce.boolean().optional(),
     confirmed: z.coerce.boolean().optional(),
     attendsFellowship: z.coerce.boolean().optional(),
-    sortBy: z.string().optional().default("firstName"),
-    sortOrder: z.enum(["asc", "desc"]).optional().default("asc"),
+    // sortBy: z.string().optional().default("firstName"),
+    // sortOrder: z.enum(["asc", "desc"]).optional().default("asc"),
 });
 
 export type MemberQueryParams = z.infer<typeof memberQueryParamsSchema>;

@@ -3,7 +3,7 @@ import { Button, Input, Space, Typography, Card, Flex, Dropdown, Tag } from "ant
 import { PlusOutlined, FilterOutlined, SearchOutlined, DownOutlined, RedoOutlined } from "@ant-design/icons";
 import { UI_STATE_TYPE } from "../../interactors/_state";
 import { AsyncListLayout } from "@/components/layout";
-import { MemberListPageUIState, MemberListPageUISuccessState } from "@/interactors/members/types";
+import { MemberListPageUIState, MemberListSuccessState } from "@/interactors/members/types";
 import { useMemberList } from "@/interactors/members/hook";
 
 const { Title, Text } = Typography;
@@ -37,10 +37,10 @@ const MembersHeader: React.FC<{ state: MemberListPageUIState }> = ({ state }) =>
     return (
         <Flex vertical gap="middle" style={{ width: '100%' }}>
             <Flex justify="space-between" align="middle">
-                <Title level={4}>Church Members <Tag color="blue">{130} total</Tag></Title>
+                <Title level={4}>Church Members <Tag color="blue">{state.table.memberCount} total</Tag></Title>
                 <Space>
                     <Button
-                        onClick={actions.refresh}
+                        onClick={actions.table.refresh}
                         icon={<RedoOutlined />}
                     >
                         Refresh
@@ -89,10 +89,10 @@ const MembersHeader: React.FC<{ state: MemberListPageUIState }> = ({ state }) =>
     );
 };
 
-const SuccessView: React.FC<{ state: MemberListPageUISuccessState }> = ({ state }) => {
+const SuccessView: React.FC<{ state: MemberListSuccessState }> = ({ state }) => {
     return (
         <Card>
-            {state.renderTable()}
+            {state.table.render()}
         </Card>
     );
 };

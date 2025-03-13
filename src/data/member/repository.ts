@@ -18,11 +18,9 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
     }
 
     private static defaultQueryParams: MemberQueryParams = {
-        eager: "fellowship,interests",
+        eager: "fellowship",
         rangeStart: 0,
         rangeEnd: 9,
-        sortBy: "firstName",
-        sortOrder: "asc",
     };
 
     /**

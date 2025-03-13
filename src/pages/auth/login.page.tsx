@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Typography, Alert, Button, Space } from 'antd';
-import { FormFieldBuilder } from '@/components';
+import { FormFieldBuilder } from '@/components/form';
 import { LoginRequest } from '@/data/auth';
 import { AuthLayout } from '@/components/layout';
 import { UseLogin } from '@/interactors/login';

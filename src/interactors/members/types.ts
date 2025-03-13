@@ -7,29 +7,78 @@ import {
     UIStateBase,
 } from "../_state";
 import { Member } from "@/models";
+import { MembersTableActions } from "./store";
 
-export interface MemberListPageUISuccessState
+/**
+ * Success state for the member list page
+ * Contains UI rendering functions and action handlers
+ */
+export interface MemberListSuccessState
     extends UIStateBase<UI_STATE_TYPE.success> {
-    renderTable: () => JSX.Element;
-    pagination: {
-        currentPage: number;
-        pageSize: number;
-        total: number;
-        onChange: (page: number) => void;
+    table: {
+        render: () => JSX.Element;
+        memberCount: number;
     };
-    actions: {
-        addNew: () => void;
+    actions: MemberListActions;
+}
+
+/**
+ * Actions available in the member list UI
+ */
+export interface MemberListActions {
+    /** Create a new member */
+    addNew: () => void;
+    /** Table-related actions */
+    table: Omit<MembersTableActions, "reset"> & {
+        /** Fetch more members when paginating */
+        fetchMore: (page: number) => Promise<void>;
+
+        /** Refresh the member list */
         refresh: () => void;
-        member: {
-            edit: (member: Member) => void;
-            view: (member: Member) => void;
-            delete: (member: Member) => void;
-        };
+    };
+    /** Member-specific actions */
+    member: {
+        /** Open member edit form */
+        edit: (member: Member) => void;
+        /** View member details */
+        view: (member: Member) => void;
+        /** Delete a member */
+        delete: (member: Member) => void;
     };
 }
 
+/**
+ * Represents all possible states of the member list page
+ */
 export type MemberListPageUIState =
-    | MemberListPageUISuccessState
+    | MemberListSuccessState
     | IErrorState
     | IPermissionErrorState
     | ILoadingState;
+
+/**
+ * Query result from fetching members
+ */
+export interface MembersQueryResult {
+    members: Member[];
+    total: number;
+}
+
+/**
+ * Parameters for fetching members
+ */
+export interface MemberListQueryParams {
+    fellowshipId?: string;
+    baptized?: boolean;
+    attendsFellowship?: boolean;
+    search?: string;
+}
+
+/**
+ * Parameters for fetching more members during pagination
+ */
+export interface FetchMoreParams extends MemberListQueryParams {
+    currPage: number;
+    nextPage: number;
+    total: number;
+}

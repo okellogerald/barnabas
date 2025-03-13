@@ -4,6 +4,7 @@ import { App as AntApp } from 'antd';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AppRoutes from './navigation/routes';
 import ThemeProvider from './theme/provider';
+import { ToastContainer } from 'react-toastify';
 
 // Create a client for React Query
 export const queryClient = new QueryClient({
@@ -28,6 +29,7 @@ const App: React.FC = () => {
           <BrowserRouter >
             <AppRoutes />
           </BrowserRouter>
+          <ToastContainer /> 
         </QueryClientProvider>
       </AntApp>
     </ThemeProvider>
