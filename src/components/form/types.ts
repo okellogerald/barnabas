@@ -22,9 +22,9 @@ export interface FormField {
 /**
  * Defines the layout structure of a form.
  * Keys represent row identifiers and values are arrays of field names.
- * @interface TemboFormLayout
+ * @interface DMPFormLayout
  */
-export interface TemboFormLayout<T> {
+export interface DMPFormLayout<T> {
     /**
      * Keys are row identifiers, values are arrays of field names.
      */
@@ -78,7 +78,7 @@ export interface TemboFormProps<T = any> extends Omit<FormProps, "onFinish"> {
      * Form structure defined in rows.
      * Keys are row identifiers and values are arrays of field names.
      */
-    formStructure?: TemboFormLayout<T>;
+    formStructure?: DMPFormLayout<T>;
 
     /**
      * Form Antd Instance.

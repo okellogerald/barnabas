@@ -80,7 +80,7 @@ interface PageLayoutProps<T extends UIStateBase<UI_STATE_TYPE>> {
     header?: React.ReactNode;
 }
 
-export const AsyncListLayout = <T extends UIStateBase<UI_STATE_TYPE>>({ state, SuccessView, header }: PageLayoutProps<T>) => {
+export const AsyncPageContentLayout = <T extends UIStateBase<UI_STATE_TYPE>>({ state, SuccessView, header }: PageLayoutProps<T>) => {
     const view = createUIStateMatcher(state, {
         FailureView,
         SuccessView,

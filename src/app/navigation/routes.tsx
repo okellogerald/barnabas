@@ -9,8 +9,8 @@ import ProtectedRoute from './protected_route';
 const LoginPage = lazy(() => import('@/pages/auth/login.page'));
 const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard.page'));
 const MembersPage = lazy(() => import('@/pages/member-list/member_list.page'));
+const MemberCreatePage = lazy(() => import('@/pages/member-create/member_create.page'));
 // const MemberDetailsPage = lazy(() => import('@/pages/members/member-details.page'));
-// const MemberCreatePage = lazy(() => import('@/pages/members/member-create.page'));
 // const MemberEditPage = lazy(() => import('@/pages/members/member-edit.page'));
 // const FellowshipsPage = lazy(() => import('@/pages/fellowships/fellowships.page'));
 // const FellowshipDetailsPage = lazy(() => import('@/pages/fellowships/fellowship-details.page'));
@@ -66,9 +66,10 @@ const AppRoutes: React.FC = () => {
           {/* Dashboard */}
           <Route index element={<Navigate to={ROUTES.DASHBOARD} replace />} />
           <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
-          
+
           {/* Members routes */}
           <Route path={ROUTES.MEMBERS.LIST} element={<MembersPage />} />
+          <Route path={ROUTES.MEMBERS.CREATE} element={<MemberCreatePage />} />
 
           {/* 404 catch-all */}
           <Route path="*" element={<NotFoundPage />} />

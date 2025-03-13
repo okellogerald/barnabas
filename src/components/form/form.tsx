@@ -1,5 +1,5 @@
 import { Button, Flex, Form, Typography } from "antd";
-import { FormField, SubmitButtonPosition, TemboFormLayout, TemboFormProps } from "./types";
+import { FormField, SubmitButtonPosition, DMPFormLayout, TemboFormProps } from "./types";
 import { FormRow } from "./row";
 import React, { CSSProperties } from "react";
 import { Header } from "antd/es/layout/layout";
@@ -18,7 +18,7 @@ const titleStyle: CSSProperties = {
     marginBottom: 20,
 }
 
-export const TemboForm = <T extends object>({
+export const DMPForm = <T extends object>({
     title,
     description,
     formFields,
@@ -165,7 +165,7 @@ const SubmitButton: React.FC<React.PropsWithChildren<SubmitButtonProps>> = ({ fo
  * @param layout - The layout definition, which contains row identifiers and their corresponding field names.
  * @returns The generated class name in the format "col-[span]-[maxItems]".
  */
-function getClassNameFromLayout<T>(layout: TemboFormLayout<T>): string {
+function getClassNameFromLayout<T>(layout: DMPFormLayout<T>): string {
     if (!layout.rows || Object.keys(layout.rows).length === 0) {
         throw new Error("Layout must contain at least one row.");
     }
@@ -186,7 +186,7 @@ function getClassNameFromLayout<T>(layout: TemboFormLayout<T>): string {
  * @param formFields - The form fields to convert.
  * @returns The converted TemboFormLayout.
  */
-function convertToTemboFormLayout<T>(formFields: Record<keyof T, FormField>): TemboFormLayout<T> {
+function convertToTemboFormLayout<T>(formFields: Record<keyof T, FormField>): DMPFormLayout<T> {
     const rows: Record<string, Array<keyof T>> = {};
     Object.keys(formFields).forEach((key, index) => {
         rows[`row${index + 1}`] = [key as keyof T];

@@ -88,7 +88,7 @@ import React from "react";
 import { Button, Typography, Flex, Tag, Space, Divider } from "antd";
 import { PlusOutlined, RedoOutlined } from "@ant-design/icons";
 import { UI_STATE_TYPE } from "../../interactors/_state";
-import { AsyncListLayout } from "@/components/layout";
+import { AsyncPageContentLayout } from "@/components/layout";
 import { MemberListPageUIState, MemberListSuccessState } from "@/interactors/member-list/types";
 import { useMemberList } from "@/interactors/member-list/hook";
 import {
@@ -171,7 +171,7 @@ export const MemberListPage: React.FC = () => {
     const state = useMemberList();
 
     return (
-        <AsyncListLayout
+        <AsyncPageContentLayout
             state={state}
             SuccessView={SuccessView}
             header={<MembersHeader state={state} />}
