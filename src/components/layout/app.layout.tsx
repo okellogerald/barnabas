@@ -15,6 +15,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AuthManager } from '@/managers/auth/auth.manager';
 import { User } from '@/models';
 import { ItemType, MenuItemType } from 'antd/es/menu/interface';
+import { DesignTokens } from '@/app';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -293,7 +294,8 @@ const styles: StylesType = {
         margin: '24px 16px',
         padding: 24,
         background: '#fff',
-        minHeight: 280
+        minHeight: 280,
+        borderRadius: DesignTokens.Radius.LARGE,
     }
 };
 

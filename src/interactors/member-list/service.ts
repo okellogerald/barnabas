@@ -1,6 +1,6 @@
 import { Member } from "@/models/member";
 import { MemberManager } from "@/managers/member";
-import { notifyUtils } from "@/utilities/notification_utils";
+import { notifyUtils } from "@/utilities/notification.utils";
 import { memberTableStore } from "./store.table";
 import { getFilterParams, memberFilterStore } from "./store.filters";
 import { ErrorCategory, handleApiError } from "@/utilities/errors";

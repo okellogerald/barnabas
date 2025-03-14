@@ -29,7 +29,7 @@ export const DependantForm: React.FC<DependantFormProps> = ({ value = [], onChan
 
   // Generate temporary ID for new dependants
   const generateTempId = (): string => {
-    return `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    return `temp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
   };
 
   // Handle adding a new dependant

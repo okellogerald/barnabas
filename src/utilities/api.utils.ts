@@ -1,4 +1,4 @@
-import { notifyUtils } from "./notification_utils";
+import { notifyUtils } from "./notification.utils";
 
 /**
  * Utility for handling API errors

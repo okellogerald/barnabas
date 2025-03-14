@@ -1,4 +1,4 @@
-import { notifyUtils } from "../notification_utils";
+import { notifyUtils } from "../notification.utils";
 import { ApiError } from "./error.api";
 import { PermissionError } from "./error.permission";
 import { ErrorCategory, ErrorContext } from "./types";
