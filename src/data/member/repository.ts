@@ -50,7 +50,8 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
      */
     async getById(
         id: string,
-        eager: string = "fellowship,interests,dependants",
+        //eager: string = "fellowship,interests,dependants",
+        eager: string = "fellowship",
     ): Promise<MemberDTO> {
         try {
             const result = await this.client.getById({

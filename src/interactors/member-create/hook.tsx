@@ -1,5 +1,4 @@
-import { Form, message } from "antd";
-import dayjs from "dayjs";
+import { Form } from "antd";
 import { StepDefinition } from "./types";
 import { usePersonalInfoStore } from "./stores/store.personal";
 import { useMaritalInfoStore } from "./stores/store.marital";
@@ -30,16 +29,26 @@ import {
     professionalFields,
 } from "./fields";
 import { SchemaFormBuilder } from "@/components/form/schema_based";
-import { validateSection, MemberFormSubmission, MemberFormValues } from "./schemas/schemas.member";
+import { validateSection, GeneralMemberFormValues, validateDependantSection } from "./schemas/schemas.member";
 
 import { personalFields } from "./fields/fields.personal"
+import { useStore } from "zustand";
+import { DependantInfo } from "./schemas/schemas.dependants";
+import { InterestInfo } from "./schemas/schemas.interests";
+import { notifyUtils } from "@/utilities/notification.utils";
+import { memnberCreateService } from "./service";
+import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { sampleMember } from "@/_dev/sample_member";
 
 /**
  * Result of the member create hook
  */
 export interface UseMemberCreateResult {
     // Form instance
-    form: ReturnType<typeof Form.useForm<MemberFormValues>>[0];
+    general_form: ReturnType<typeof Form.useForm<GeneralMemberFormValues>>[0];
+    dependant_form: ReturnType<typeof Form.useForm<DependantInfo>>[0];
+    interest_form: ReturnType<typeof Form.useForm<InterestInfo>>[0];
 
     // UI state and actions
     ui: {
@@ -102,7 +111,7 @@ export interface UseMemberCreateResult {
         submit: () => Promise<void>;
 
         // Get combined form values
-        getFormValues: () => MemberFormValues;
+        getFormValues: () => GeneralMemberFormValues;
     };
 }
 
@@ -111,18 +120,29 @@ export interface UseMemberCreateResult {
  * Updated to use SchemaFormBuilder
  */
 export const useMemberCreate = (): UseMemberCreateResult => {
+    const mutation = useMutation({
+        mutationKey: ["member-create"],
+        mutationFn: memnberCreateService.submitForm,
+    })
+
     // Create the form instance
-    const [form] = Form.useForm<MemberFormValues>();
+    const [general_form] = Form.useForm<GeneralMemberFormValues>();
+    const [dependant_form] = Form.useForm<DependantInfo>();
+    const [interest_form] = Form.useForm<InterestInfo>();
 
     // Get all stores
-    const personalStore = usePersonalInfoStore();
-    const maritalStore = useMaritalInfoStore();
-    const contactStore = useContactInfoStore();
-    const churchStore = useChurchInfoStore();
-    const professionalStore = useProfessionalInfoStore();
-    const dependantsStore = useDependantsStore();
-    const interestsStore = useInterestsStore();
-    const uiStore = useMemberCreateUIStore();
+    const personalStore = useStore(usePersonalInfoStore);
+    const maritalStore = useStore(useMaritalInfoStore);
+    const contactStore = useStore(useContactInfoStore);
+    const churchStore = useStore(useChurchInfoStore);
+    const professionalStore = useStore(useProfessionalInfoStore);
+    const dependantsStore = useStore(useDependantsStore);
+    const interestsStore = useStore(useInterestsStore);
+    const uiStore = useStore(useMemberCreateUIStore);
+
+    useEffect(() => {
+        general_form.setFieldsValue(sampleMember)
+    }, [])
 
     // Create schema builders
     const schemaBuilders = {
@@ -134,7 +154,7 @@ export const useMemberCreate = (): UseMemberCreateResult => {
     };
 
     // Create a function to get the combined form values
-    const getFormValues = (): MemberFormValues => {
+    const getGeneralFormValues = (): GeneralMemberFormValues => {
         return {
             // Personal information
             ...personalStore.getPersonalInfo(),
@@ -150,13 +170,7 @@ export const useMemberCreate = (): UseMemberCreateResult => {
 
             // Professional information
             ...professionalStore.getProfessionalInfo(),
-
-            // Dependants
-            dependants: dependantsStore.getDependants(),
-
-            // Interests
-            interests: interestsStore.getInterests(),
-        } as MemberFormValues;
+        } as GeneralMemberFormValues;
     };
 
     // Navigate to next step with validation
@@ -166,13 +180,23 @@ export const useMemberCreate = (): UseMemberCreateResult => {
             const currentStepKey = uiStore.getCurrentStepKey();
 
             // Validate the current step's fields in the form
-            await form.validateFields(
-                // Get the fields for the current step from the section
-                // This depends on which step we're on
-            );
+            if (currentStepKey === "dependants") {
+                const valid = validateDependantSection(dependant_form.getFieldsValue())
+                if (!valid) {
+                    await dependant_form.validateFields()
+                    notifyUtils.error("Please complete all required fields in Dependants section")
+                    return
+                }
+            }
+            else if (currentStepKey === "interests") {
+                //
+            }
+            else {
+                await general_form.validateFields();
+            }
 
             // Update the store with the form values for the current step
-            const formValues = form.getFieldsValue();
+            const formValues = general_form.getFieldsValue();
 
             // Based on the current step, update the appropriate store
             switch (currentStepKey) {
@@ -194,11 +218,11 @@ export const useMemberCreate = (): UseMemberCreateResult => {
             }
 
             // Check if the current step is valid using the combined form values
-            const combinedValues = getFormValues();
+            const combinedValues = getGeneralFormValues();
             const isValid = validateSection(combinedValues, currentStepKey);
 
             if (!isValid) {
-                message.error(`Please complete all required fields in ${currentStepKey} section`);
+                notifyUtils.error(`Please complete all required fields in ${currentStepKey} section`);
                 return;
             }
 
@@ -223,7 +247,10 @@ export const useMemberCreate = (): UseMemberCreateResult => {
     // Reset all form data
     const reset = (): void => {
         // Reset the form
-        form.resetFields();
+        general_form.resetFields();
+        dependant_form.resetFields();
+        interest_form.resetFields();
+
 
         // Reset all stores
         personalStore.reset();
@@ -240,57 +267,21 @@ export const useMemberCreate = (): UseMemberCreateResult => {
 
     // Submit the form
     const submit = async (): Promise<void> => {
-        try {
-            // Validate the form
-            await form.validateFields();
-
-            // Set loading state
-            uiStore.setLoading(true);
-
-            // Get combined form values
-            const formValues = getFormValues();
-
-            // Prepare data for submission by transforming dates to strings
-            const submissionData: MemberFormSubmission = { ...formValues } as any;
-
-            if (formValues.dateOfBirth) {
-                submissionData.dateOfBirth = dayjs(formValues.dateOfBirth).format("YYYY-MM-DD");
-            }
-
-            if (formValues.dateOfMarriage) {
-                submissionData.dateOfMarriage = dayjs(formValues.dateOfMarriage).format("YYYY-MM-DD");
-            }
-
-            // TODO: Send the data to the API
-            // This would be handled by a service function
-            console.log('Form values for submission:', submissionData);
-
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Show success message
-            message.success('Member created successfully!');
-
-            // Update UI state
-            uiStore.setSuccess(true);
-            uiStore.setLoading(false);
-
-            // Reset the form
-            reset();
-        } catch (error) {
-            console.error('Form submission failed:', error);
-
-            // Show error message
-            message.error('Failed to create member. Please check the form and try again.');
-
-            // Update UI state
-            uiStore.setError('Failed to create member');
-            uiStore.setLoading(false);
+        // Validate the form
+        await general_form.validateFields();
+        console.log(general_form.getFieldsError())
+        if (general_form.getFieldsError()) {
+            notifyUtils.error("Please check you data and try again")
+            return;
         }
+
+        await mutation.mutateAsync(getGeneralFormValues());
     };
 
     return {
-        form,
+        general_form: general_form,
+        dependant_form: dependant_form,
+        interest_form: interest_form,
 
         ui: {
             currentStep: uiStore.currentStep,
@@ -304,11 +295,11 @@ export const useMemberCreate = (): UseMemberCreateResult => {
         schemaBuilders,
 
         fields: {
-          personal: personalFields,
-          marital: maritalFields,
-          contact: contactFields,
-          church: churchFields,
-          professional: professionalFields,
+            personal: personalFields,
+            marital: maritalFields,
+            contact: contactFields,
+            church: churchFields,
+            professional: professionalFields,
         },
 
         layouts: {
@@ -338,7 +329,8 @@ export const useMemberCreate = (): UseMemberCreateResult => {
             goToStep,
             reset,
             submit,
-            getFormValues,
+            getFormValues: getGeneralFormValues,
         },
     };
 };
+

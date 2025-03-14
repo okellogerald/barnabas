@@ -12,11 +12,12 @@ import { SchemaFormSection } from '@/components/form/schema_based';
 const MemberCreatePage: React.FC = () => {
     // Get all the state and actions from the interactor
     const {
-        form,
+        general_form: form,
+        interest_form,
+        dependant_form,
         ui,
         layouts,
         fields,
-        dependants,
         interests,
         actions
     } = useMemberCreate();
@@ -87,8 +88,7 @@ const MemberCreatePage: React.FC = () => {
                         </Typography.Text>
                         <Divider />
                         <DependantForm
-                            value={dependants.items}
-                            onChange={dependants.set}
+                            form={dependant_form}
                         />
                     </Card>
                 );
@@ -100,7 +100,7 @@ const MemberCreatePage: React.FC = () => {
                             Select volunteer opportunities the member is interested in
                         </Typography.Text>
                         <Divider />
-                        <Form form={form} layout="vertical">
+                        <Form form={interest_form} layout="vertical">
                             <Form.Item
                                 label="Volunteer Interests"
                                 name="interests"
@@ -120,91 +120,89 @@ const MemberCreatePage: React.FC = () => {
 
     return (
         <Card title="Create New Member" style={{ margin: '20px' }} loading={ui.loading}>
-            <Form form={form} layout="vertical" onFinish={actions.submit}>
-                {/* Stepper navigation */}
-                <Row>
-                    <Col span={24}>
-                        <Steps
-                            current={ui.currentStep}
-                            onChange={actions.goToStep}
-                            style={{ marginBottom: 32 }}
-                            responsive={false}
-                            size="small"
-                            items={ui.steps.map((step, index) => {
-                                // Show only the current step, one step before, one step after, 
-                                // first and last steps, and represent others with ellipsis
-                                if (
-                                    index === ui.currentStep ||
-                                    index === 0 ||
-                                    index === ui.steps.length - 1 ||
-                                    index === ui.currentStep - 1 ||
-                                    index === ui.currentStep + 1
-                                ) {
-                                    return {
-                                        title: step.title,
-                                        icon: step.icon,
-                                    };
-                                } else if (
-                                    (index === ui.currentStep - 2 && ui.currentStep > 1) ||
-                                    (index === ui.currentStep + 2 && ui.currentStep < ui.steps.length - 2)
-                                ) {
-                                    // Return ellipsis for steps that should be hidden
-                                    return {
-                                        title: '...',
-                                        disabled: true,
-                                    };
-                                }
-                                return {};
-                            }).filter(Boolean)}
-                        />
-                    </Col>
-                </Row>
+            {/* Stepper navigation */}
+            <Row>
+                <Col span={24}>
+                    <Steps
+                        current={ui.currentStep}
+                        onChange={actions.goToStep}
+                        style={{ marginBottom: 32 }}
+                        responsive={false}
+                        size="small"
+                        items={ui.steps.map((step, index) => {
+                            // Show only the current step, one step before, one step after, 
+                            // first and last steps, and represent others with ellipsis
+                            if (
+                                index === ui.currentStep ||
+                                index === 0 ||
+                                index === ui.steps.length - 1 ||
+                                index === ui.currentStep - 1 ||
+                                index === ui.currentStep + 1
+                            ) {
+                                return {
+                                    title: step.title,
+                                    icon: step.icon,
+                                };
+                            } else if (
+                                (index === ui.currentStep - 2 && ui.currentStep > 1) ||
+                                (index === ui.currentStep + 2 && ui.currentStep < ui.steps.length - 2)
+                            ) {
+                                // Return ellipsis for steps that should be hidden
+                                return {
+                                    title: '...',
+                                    disabled: true,
+                                };
+                            }
+                            return {};
+                        }).filter(Boolean)}
+                    />
+                </Col>
+            </Row>
 
-                {/* Current step content */}
-                <div style={{ marginBottom: 32 }}>
-                    {renderStepContent()}
-                </div>
+            {/* Current step content */}
+            <div style={{ marginBottom: 32 }}>
+                {renderStepContent()}
+            </div>
 
-                <Divider />
+            <Divider />
 
-                {/* Navigation and submission buttons */}
-                <Row justify="space-between">
-                    <Col>
+            {/* Navigation and submission buttons */}
+            <Row justify="space-between">
+                <Col>
+                    <Button
+                        disabled={ui.currentStep === 0}
+                        onClick={actions.previousStep}
+                    >
+                        Previous
+                    </Button>
+                </Col>
+                <Col>
+                    <Space>
                         <Button
-                            disabled={ui.currentStep === 0}
-                            onClick={actions.previousStep}
+                            onClick={actions.reset}
                         >
-                            Previous
+                            Reset
                         </Button>
-                    </Col>
-                    <Col>
-                        <Space>
+                        {ui.currentStep < ui.steps.length - 1 ? (
                             <Button
-                                onClick={actions.reset}
+                                type="primary"
+                                onClick={actions.nextStep}
                             >
-                                Reset
+                                Next
                             </Button>
-                            {ui.currentStep < ui.steps.length - 1 ? (
-                                <Button
-                                    type="primary"
-                                    onClick={actions.nextStep}
-                                >
-                                    Next
-                                </Button>
-                            ) : (
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-                                    icon={<SaveOutlined />}
-                                    loading={ui.loading}
-                                >
-                                    Save Member
-                                </Button>
-                            )}
-                        </Space>
-                    </Col>
-                </Row>
-            </Form>
+                        ) : (
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                icon={<SaveOutlined />}
+                                loading={ui.loading}
+                            >
+                                Save Member
+                            </Button>
+                        )}
+                    </Space>
+                </Col>
+            </Row>
         </Card>
     );
 };

@@ -23,7 +23,8 @@ export const churchFields: SchemaFormFieldsMap<ChurchInfo, ChurchInfoKeys> = {
     fellowshipId: builder.createCustomField('fellowshipId',
         () => <FellowshipSelect />,
         {
-            label: "Fellowship"
+            label: "Fellowship",
+            rules: [{ required: true, message: "Please select the fellowship this member belong to" }]
         }
     ),
     nearestMemberName: builder.createTextField('nearestMemberName'),
@@ -37,11 +38,12 @@ export const churchFields: SchemaFormFieldsMap<ChurchInfo, ChurchInfoKeys> = {
  */
 export const churchLayout = {
     rows: {
-        row1: ['formerChurch', 'memberRole'] as ChurchInfoKeys[],
-        row2: ['isBaptized', 'isConfirmed', 'partakesLordSupper'] as ChurchInfoKeys[],
-        row3: ['fellowshipId', 'attendsFellowship'] as ChurchInfoKeys[],
-        row4: ['nearestMemberName', 'nearestMemberPhone'] as ChurchInfoKeys[],
-        row5: ['fellowshipAbsenceReason'] as ChurchInfoKeys[],
+        row1: ['fellowshipId', 'memberRole'] as ChurchInfoKeys[],
+        row2: ['attendsFellowship', 'fellowshipAbsenceReason'] as ChurchInfoKeys[],
+        row3: ['nearestMemberName', 'nearestMemberPhone'] as ChurchInfoKeys[],
+        row4: ['isBaptized', 'isConfirmed'] as ChurchInfoKeys[],
+        row5: ['partakesLordSupper'] as ChurchInfoKeys[],
+        row6: ['formerChurch'] as ChurchInfoKeys[],
     },
     span: 8, // 3 fields per row (24/3=8)
 };

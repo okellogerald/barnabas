@@ -5,9 +5,6 @@ import { DependantRelationship } from "@/constants";
  * Schema for a single dependant
  */
 export const DependantSchema = z.object({
-    id: z.string().optional()
-        .describe("Unique identifier for the dependant"),
-
     firstName: z.string()
         .min(2, "First name must be at least 2 characters")
         .describe("Dependant's first name"),
@@ -52,13 +49,6 @@ export const DEFAULT_DEPENDANTS_INFO: DependantsInfo = {
  * List of fields required for each dependant
  */
 export const REQUIRED_DEPENDANT_FIELDS: (keyof DependantInfo)[] = [
-    "firstName",
-    "lastName",
-    "dateOfBirth",
-    "relationship",
-];
-
-export const DEPENDANTS_FIELDS: (keyof DependantInfo)[] = [
     "firstName",
     "lastName",
     "dateOfBirth",

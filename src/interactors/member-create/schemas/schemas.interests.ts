@@ -15,6 +15,8 @@ export const InterestsSchema = z.object({
  */
 export type InterestsInfo = z.infer<typeof InterestsSchema>;
 
+export type InterestInfo = string;
+
 /**
  * Default values for the interests section
  */

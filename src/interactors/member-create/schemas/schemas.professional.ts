@@ -11,7 +11,7 @@ export const ProfessionalInfoSchema = z.object({
     placeOfWork: z.string().optional()
         .describe("Name of the company or organization where the member works"),
 
-    educationLevel: z.nativeEnum(EducationLevel).optional()
+    educationLevel: z.nativeEnum(EducationLevel)
         .describe("Highest level of education completed by the member"),
 
     profession: z.string().optional()
@@ -26,7 +26,9 @@ export type ProfessionalInfo = z.infer<typeof ProfessionalInfoSchema>;
 /**
  * Default values for professional information
  */
-export const DEFAULT_PROFESSIONAL_INFO: Partial<ProfessionalInfo> = {};
+export const DEFAULT_PROFESSIONAL_INFO: ProfessionalInfo = {
+    educationLevel: EducationLevel.Primary
+};
 
 /**
  * List of fields required on the professional information form

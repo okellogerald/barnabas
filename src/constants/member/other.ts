@@ -9,6 +9,7 @@ export const MEMBER_NOTIFICATIONS = {
     },
     CREATE: {
         SUCCESS: "Member created successfully",
+        LOADING: "Creating a new member",
         ERROR: "Failed to create member",
         VALIDATION: "Please fix the validation errors",
     },

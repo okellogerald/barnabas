@@ -1,4 +1,8 @@
-import { MemberQueryParams, MemberRepository } from "@/data/member";
+import {
+    CreateMemberDTO,
+    MemberQueryParams,
+    MemberRepository,
+} from "@/data/member";
 import { Actions, PermissionsManager } from "@/managers/auth/permission";
 import { Member } from "@/models";
 import { PermissionError } from "@/utilities/errors";
@@ -66,5 +70,14 @@ export class MemberManager {
             console.error("Error retrieving members:", error);
             throw new Error("Failed to retrieve members.");
         }
+    }
+
+    public async createMember(member: CreateMemberDTO): Promise<Member> {
+        if (!this._permissionsManager.hasPermission(Actions.MEMBER_CREATE)) {
+            throw PermissionError.fromAction(Actions.MEMBER_CREATE);
+        }
+        const response = await this._repo.create(member);
+        const dto = await this._repo.getById(response.id);
+        return Member.fromDTO(dto);
     }
 }
