@@ -2,6 +2,7 @@ import { MemberRole } from '@/constants';
 import { ChurchInfoKeys } from '../types';
 import { ChurchInfoSchema, ChurchInfo } from '../schemas/schemas.church';
 import { SchemaFormBuilder, SchemaFormFieldsMap } from '@/components/form/schema_based';
+import { FellowshipSelect } from '@/components/form';
 
 /**
  * Create a SchemaFormBuilder for church information
@@ -19,11 +20,12 @@ export const churchFields: SchemaFormFieldsMap<ChurchInfo, ChurchInfoKeys> = {
     isBaptized: builder.createSwitchField('isBaptized'),
     isConfirmed: builder.createSwitchField('isConfirmed'),
     partakesLordSupper: builder.createSwitchField('partakesLordSupper'),
-    fellowshipId: builder.createTextField('fellowshipId', {
-        label: "Fellowship"
-        // Note: In a real implementation, this would use a FellowshipSelect component
-        // We'd use customRenderers in the form section to provide the custom component
-    }),
+    fellowshipId: builder.createCustomField('fellowshipId',
+        () => <FellowshipSelect />,
+        {
+            label: "Fellowship"
+        }
+    ),
     nearestMemberName: builder.createTextField('nearestMemberName'),
     nearestMemberPhone: builder.createPhoneField('nearestMemberPhone'),
     attendsFellowship: builder.createSwitchField('attendsFellowship'),

@@ -477,4 +477,26 @@ export class SchemaFormBuilder<T extends z.ZodObject<any>> {
 
         return this.convertToFormFieldDefinition(formItemProps, renderFn);
     }
+
+    /**
+     * Create a custom field based on provided render function.
+     */
+    createCustomField<K extends keyof z.infer<T>>(
+        fieldName: K,
+        render: () => React.ReactNode,
+        config: {
+            label?: string;
+            rules?: FormItemProps['rules'];
+        } = {}
+    ): SchemaFormFieldDefinition<z.infer<T>, K> {
+        const name = fieldName as string;
+
+        const formItemProps: FormItemProps<any> = {
+            label: config.label || this.toTitleCase(name),
+            name: fieldName,
+            rules: config.rules,
+        };
+
+        return this.convertToFormFieldDefinition(formItemProps, render);
+    }
 }
