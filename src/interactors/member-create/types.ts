@@ -41,12 +41,12 @@ export type MaritalInfoKeys =
     | "marriageType"
     | "dateOfMarriage"
     | "spouseName"
+    | "spousePhoneNumber"
     | "placeOfMarriage";
 
 export type ContactInfoKeys =
     | "phoneNumber"
     | "email"
-    | "spousePhoneNumber"
     | "residenceNumber"
     | "residenceBlock"
     | "postalBox"

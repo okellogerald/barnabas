@@ -9,6 +9,7 @@ import { renderMemberTable } from "./table_renderer";
 import { Member } from "@/models";
 import { MemberFilterActions, MemberFilterState } from "./store.filters";
 import { memberService } from "./service";
+import { Navigation } from "@/app";
 
 /**
  * Creates the success state for the member list UI
@@ -25,9 +26,7 @@ export const createSuccessState = (params: {
     // Create actions object
     const actions: MemberListActions = {
         addNew: () => {
-            // Navigate to member creation form or open modal
-            // Implementation depends on your routing/modal system
-            console.log("Add new member action");
+            Navigation.Members.toCreate();
         },
 
         table: {
@@ -39,7 +38,6 @@ export const createSuccessState = (params: {
 
         member: {
             view: (member: Member) => {
-                // Implementation for viewing a member
                 tableStore.expandMember(member);
             },
 

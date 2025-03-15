@@ -13,7 +13,6 @@ const builder = new SchemaFormBuilder(ContactInfoSchema);
 export const contactFields: SchemaFormFieldsMap<ContactInfo, ContactInfoKeys> = {
   phoneNumber: builder.createPhoneField('phoneNumber'),
   email: builder.createEmailField('email'),
-  spousePhoneNumber: builder.createPhoneField('spousePhoneNumber'),
   residenceNumber: builder.createTextField('residenceNumber'),
   residenceBlock: builder.createTextField('residenceBlock'),
   postalBox: builder.createTextField('postalBox'),
@@ -26,7 +25,6 @@ export const contactFields: SchemaFormFieldsMap<ContactInfo, ContactInfoKeys> = 
 export const contactLayout = {
   rows: {
     row1: ['phoneNumber', 'email'] as ContactInfoKeys[],
-    row2: ['spousePhoneNumber'] as ContactInfoKeys[],
     row3: ['residenceNumber', 'residenceBlock'] as ContactInfoKeys[],
     row4: ['postalBox', 'residenceArea'] as ContactInfoKeys[],
   },

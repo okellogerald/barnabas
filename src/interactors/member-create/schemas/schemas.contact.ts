@@ -11,9 +11,6 @@ export const ContactInfoSchema = z.object({
     email: z.string().email().optional()
         .describe("Member's email address"),
 
-    spousePhoneNumber: z.string().optional()
-        .describe("Phone number of the member's spouse"),
-
     residenceNumber: z.string().optional()
         .describe(
             "Unique identifier for member's place of residence (e.g., house number)",
@@ -64,17 +61,11 @@ export const ContactInfoSchemaEnhanced = ContactInfoSchema.extend({
         .min(10, "Phone number must be at least 10 digits")
         .regex(PHONE_REGEX, "Invalid phone number format")
         .describe("Member's primary phone number"),
-
-    spousePhoneNumber: z.string()
-        .regex(PHONE_REGEX, "Invalid phone number format")
-        .optional()
-        .describe("Phone number of the member's spouse"),
 });
 
 export const CONTACT_INFO_FIELDS: (keyof ContactInfo)[] = [
     "phoneNumber",
     "email",
-    "spousePhoneNumber",
     "residenceNumber",
     "residenceBlock",
     "postalBox",

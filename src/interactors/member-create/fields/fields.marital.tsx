@@ -16,11 +16,37 @@ export const maritalFields: SchemaFormFieldsMap<MaritalInfo, MaritalInfoKeys> = 
         placeholder: "Select marital status"
     }),
     marriageType: builder.createEnumSelectField('marriageType', MarriageType, {
-        placeholder: "Select marriage type"
+        placeholder: "Select marriage type",
     }),
     dateOfMarriage: builder.createDateField('dateOfMarriage'),
     spouseName: builder.createTextField('spouseName'),
     placeOfMarriage: builder.createTextField('placeOfMarriage'),
+    spousePhoneNumber: builder.createPhoneField('spousePhoneNumber'),
+};
+
+/**
+ * Form field definitions for marital information
+ */
+export const marriedMaritalFields: SchemaFormFieldsMap<MaritalInfo, MaritalInfoKeys> = {
+    maritalStatus: builder.createEnumSelectField('maritalStatus', MaritalStatus, {
+        placeholder: "Select marital status",
+    }),
+    marriageType: builder.createEnumSelectField('marriageType', MarriageType, {
+        placeholder: "Select marriage type",
+        disabled: true,
+    }),
+    dateOfMarriage: builder.createDateField('dateOfMarriage', {
+        disabled: true,
+    }),
+    spouseName: builder.createTextField('spouseName', {
+        disabled: true,
+    }),
+    placeOfMarriage: builder.createTextField('placeOfMarriage', {
+        disabled: true,
+    }),
+    spousePhoneNumber: builder.createPhoneField('spousePhoneNumber', {
+        disabled: true,
+    }),
 };
 
 /**
@@ -29,7 +55,8 @@ export const maritalFields: SchemaFormFieldsMap<MaritalInfo, MaritalInfoKeys> = 
 export const maritalLayout = {
     rows: {
         row1: ['maritalStatus', 'marriageType'] as MaritalInfoKeys[],
-        row2: ['dateOfMarriage', 'spouseName', 'placeOfMarriage'] as MaritalInfoKeys[],
+        row2: ['spouseName', 'spousePhoneNumber'] as MaritalInfoKeys[],
+        row3: ['dateOfMarriage', 'placeOfMarriage'] as MaritalInfoKeys[],
     },
     span: 8, // 3 fields per row (24/3=8)
 };

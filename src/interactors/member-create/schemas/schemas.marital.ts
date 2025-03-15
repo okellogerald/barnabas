@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { MaritalStatus, MarriageType } from "@/constants";
+import { PHONE_REGEX } from "./schemas.contact";
 
 /**
  * Schema for marital information
@@ -23,6 +24,11 @@ export const MaritalInfoSchema = z.object({
 
     placeOfMarriage: z.string().optional()
         .describe("Location where the marriage ceremony took place"),
+
+    spousePhoneNumber: z.string()
+        .regex(PHONE_REGEX, "Invalid phone number format")
+        .optional()
+        .describe("Phone number of the member's spouse"),
 });
 
 /**
@@ -51,6 +57,7 @@ export const CONDITIONAL_MARRIED_FIELDS: (keyof MaritalInfo)[] = [
     "marriageType",
     "dateOfMarriage",
     "spouseName",
+    "spousePhoneNumber",
 ];
 
 /**
@@ -62,14 +69,19 @@ export const MaritalInfoSchemaWithRefinements = MaritalInfoSchema.refine(
         if (data.maritalStatus === MaritalStatus.Married) {
             return !!data.marriageType &&
                 !!data.dateOfMarriage &&
-                !!data.spouseName;
+                !!data.spouseName && !!data.spousePhoneNumber;
         }
         return true;
     },
     {
         message:
-            "Marriage type, date, and spouse name are required for married members",
-        path: ["marriageType", "dateOfMarriage", "spouseName"],
+            "Marriage type, date, spouse name and spouse phone number are required for married members",
+        path: [
+            "marriageType",
+            "dateOfMarriage",
+            "spouseName",
+            "spousePhoneNumber",
+        ],
     },
 );
 
@@ -79,4 +91,5 @@ export const MARITAL_INFO_FIELDS: (keyof MaritalInfo)[] = [
     "dateOfMarriage",
     "spouseName",
     "placeOfMarriage",
+    "spousePhoneNumber",
 ];

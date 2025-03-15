@@ -9,13 +9,6 @@ import { DependantsActions, DependantsState, useDependantsStore } from "./stores
 import { InterestsActions, InterestsState, useInterestsStore } from "./stores/store.interests";
 import { useMemberCreateUIStore, STEPS } from "./stores/store.ui";
 
-// Import schemas
-import { PersonalInfoSchema } from "./schemas/schemas.personal";
-import { MaritalInfoSchema } from "./schemas/schemas.marital";
-import { ContactInfoSchema } from "./schemas/schemas.contact";
-import { ChurchInfoSchema } from "./schemas/schemas.church";
-import { ProfessionalInfoSchema } from "./schemas/schemas.professional";
-
 // Import layouts
 import {
     personalLayout,
@@ -27,8 +20,8 @@ import {
     contactFields,
     churchFields,
     professionalFields,
+    marriedMaritalFields,
 } from "./fields";
-import { SchemaFormBuilder } from "@/components/form/schema_based";
 import { validateSection, GeneralMemberFormValues, validateDependantSection } from "./schemas/schemas.member";
 
 import { personalFields } from "./fields/fields.personal"
@@ -40,6 +33,7 @@ import { memnberCreateService } from "./service";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { sampleMember } from "@/_dev/sample_member";
+import { MaritalStatus } from "@/constants";
 
 /**
  * Result of the member create hook
@@ -57,15 +51,6 @@ export interface UseMemberCreateResult {
         error?: string;
         success: boolean;
         steps: StepDefinition[];
-    };
-
-    // Schema builders
-    schemaBuilders: {
-        personal: SchemaFormBuilder<typeof PersonalInfoSchema>;
-        marital: SchemaFormBuilder<typeof MaritalInfoSchema>;
-        contact: SchemaFormBuilder<typeof ContactInfoSchema>;
-        church: SchemaFormBuilder<typeof ChurchInfoSchema>;
-        professional: SchemaFormBuilder<typeof ProfessionalInfoSchema>;
     };
 
     fields: {
@@ -144,14 +129,13 @@ export const useMemberCreate = (): UseMemberCreateResult => {
         general_form.setFieldsValue(sampleMember)
     }, [])
 
-    // Create schema builders
-    const schemaBuilders = {
-        personal: new SchemaFormBuilder(PersonalInfoSchema),
-        marital: new SchemaFormBuilder(MaritalInfoSchema),
-        contact: new SchemaFormBuilder(ContactInfoSchema),
-        church: new SchemaFormBuilder(ChurchInfoSchema),
-        professional: new SchemaFormBuilder(ProfessionalInfoSchema),
-    };
+    useEffect(() => {
+        if (maritalStore.maritalStatus !== MaritalStatus.Married) {
+            general_form.resetFields(["dateOfMarriage", "marriageType", "marriageType", "spouseName", "spousePhoneNumber"])
+        }
+    }, [maritalStore.maritalStatus])
+
+    console.log("status: ", maritalStore.maritalStatus)
 
     // Create a function to get the combined form values
     const getGeneralFormValues = (): GeneralMemberFormValues => {
@@ -291,12 +275,9 @@ export const useMemberCreate = (): UseMemberCreateResult => {
             steps: STEPS,
         },
 
-        // Provide schema builders
-        schemaBuilders,
-
         fields: {
             personal: personalFields,
-            marital: maritalFields,
+            marital: maritalStore.maritalStatus === MaritalStatus.Married ? marriedMaritalFields : maritalFields,
             contact: contactFields,
             church: churchFields,
             professional: professionalFields,

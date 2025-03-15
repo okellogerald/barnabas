@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
-import { Button, Card, DatePicker, Divider, Form, FormInstance, Input, Space, Table, Typography } from 'antd';
+import { Button, Card, DatePicker, Divider, Flex, Form, FormInstance, Input, Space, Table, Typography } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { DependantRelationship } from '@/constants';
 import { EnumSelect } from '@/components/form';
 import { useMemberCreate } from '@/interactors/member-create/hook';
 import dayjs, { Dayjs } from 'dayjs';
-
-interface Dependant {
-  id?: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  relationship: DependantRelationship;
-}
+import { DependantInfo } from '@/interactors/member-create/schemas/schemas.dependants';
 
 interface DependantFormProps {
   form: FormInstance<any>;
@@ -27,43 +20,6 @@ const generateTempId = (): string => {
 const formatDate = (date: Dayjs): string => {
   return date.format('YYYY-MM-DD');
 };
-
-// Form fields component
-const DependantFormFields: React.FC<{ form: FormInstance<any> }> = () => (
-  <Space style={{ display: 'flex', marginBottom: 16 }} align="baseline">
-    <Form.Item
-      name="firstName"
-      rules={[{ required: true, message: 'First name is required' }]}
-    >
-      <Input placeholder="First Name" style={{ width: 150 }} />
-    </Form.Item>
-
-    <Form.Item
-      name="lastName"
-      rules={[{ required: true, message: 'Last name is required' }]}
-    >
-      <Input placeholder="Last Name" style={{ width: 150 }} />
-    </Form.Item>
-
-    <Form.Item
-      name="dateOfBirth"
-      rules={[{ required: true, message: 'Date of birth is required' }]}
-    >
-      <DatePicker placeholder="Date of Birth" style={{ width: 150 }} />
-    </Form.Item>
-
-    <Form.Item
-      name="relationship"
-      rules={[{ required: true, message: 'Relationship is required' }]}
-    >
-      <EnumSelect
-        enumType={DependantRelationship}
-        placeholder="Relationship"
-        style={{ width: 150 }}
-      />
-    </Form.Item>
-  </Space>
-);
 
 export const DependantForm: React.FC<DependantFormProps> = ({ form }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -80,7 +36,7 @@ export const DependantForm: React.FC<DependantFormProps> = ({ form }) => {
 
   const handleAddDependant = () => {
     form.validateFields().then(values => {
-      const newDependant: Dependant = {
+      const newDependant: DependantInfo = {
         id: generateTempId(),
         firstName: values.firstName,
         lastName: values.lastName,
@@ -96,7 +52,7 @@ export const DependantForm: React.FC<DependantFormProps> = ({ form }) => {
     state.dependants.remove(id);
   };
 
-  const handleEditDependant = (record: Dependant) => {
+  const handleEditDependant = (record: DependantInfo) => {
     setEditingId(record.id || null);
     form.setFieldsValue({
       firstName: record.firstName,
@@ -108,7 +64,7 @@ export const DependantForm: React.FC<DependantFormProps> = ({ form }) => {
 
   const handleSaveEdit = () => {
     form.validateFields().then(values => {
-      const updatedDependant: Dependant = {
+      const updatedDependant: DependantInfo = {
         id: editingId!,
         firstName: values.firstName,
         lastName: values.lastName,
@@ -134,7 +90,7 @@ export const DependantForm: React.FC<DependantFormProps> = ({ form }) => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (_: any, record: Dependant) => (
+      render: (_: any, record: DependantInfo) => (
         <Space>
           <Button type="link" onClick={() => handleEditDependant(record)}>Edit</Button>
           <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleDeleteDependant(record.id || '')} />
@@ -149,17 +105,55 @@ export const DependantForm: React.FC<DependantFormProps> = ({ form }) => {
       <Divider />
 
       <Form form={form} layout="horizontal">
-        <DependantFormFields form={form} />
-        <Form.Item>
-          {editingId ? (
-            <Space>
-              <Button type="primary" onClick={handleSaveEdit}>Save</Button>
-              <Button onClick={handleCancelEdit}>Cancel</Button>
-            </Space>
-          ) : (
-            <Button type="primary" icon={<PlusOutlined />} onClick={handleAddDependant}>Add Dependant</Button>
-          )}
-        </Form.Item>
+        <Flex gap={"large"}>
+          <Form.Item
+            name="firstName"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: 'First name is required' }]}
+          >
+            <Input placeholder="First Name" />
+          </Form.Item>
+
+          <Form.Item
+            name="lastName"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: 'Last name is required' }]}
+          >
+            <Input placeholder="Last Name" />
+          </Form.Item>
+
+          <Form.Item
+            name="dateOfBirth"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: 'Date of birth is required' }]}
+          >
+            <DatePicker
+              placeholder="Date of Birth"
+              style={{ width: "100%" }}
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="relationship"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: 'Relationship is required' }]}
+          >
+            <EnumSelect
+              enumType={DependantRelationship}
+              placeholder="Relationship"
+            />
+          </Form.Item>
+          <Form.Item style={{ width: 150 }}>
+            {editingId ? (
+              <Space>
+                <Button type="primary" onClick={handleSaveEdit}>Save</Button>
+                <Button onClick={handleCancelEdit}>Cancel</Button>
+              </Space>
+            ) : (
+              <Button type="primary" icon={<PlusOutlined />} onClick={handleAddDependant}>Add Dependant</Button>
+            )}
+          </Form.Item>
+        </Flex>
       </Form>
 
       <Table dataSource={state.dependants.items} columns={columns} rowKey="id" pagination={false} />

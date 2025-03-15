@@ -1,6 +1,5 @@
 import { create } from "zustand";
-import { Dependant as DependantInfo } from "../types";
-import { DEFAULT_DEPENDANTS_INFO } from "../schemas/schemas.dependants";
+import { DEFAULT_DEPENDANTS_INFO, DependantInfo } from "../schemas/schemas.dependants";
 
 /**
  * Dependants state

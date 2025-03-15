@@ -5,6 +5,8 @@ import { DependantRelationship } from "@/constants";
  * Schema for a single dependant
  */
 export const DependantSchema = z.object({
+    id: z.string(),
+    
     firstName: z.string()
         .min(2, "First name must be at least 2 characters")
         .describe("Dependant's first name"),
