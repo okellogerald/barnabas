@@ -42,9 +42,9 @@ export const useMaritalFields = () => {
         form.setFields([
           { name: 'marriageType', value: undefined },
           { name: 'dateOfMarriage', value: undefined },
-          { name: 'spouseName', value: '' },
-          { name: 'placeOfMarriage', value: '' },
-          { name: 'spousePhoneNumber', value: '' },
+          { name: 'spouseName', value: undefined },
+          { name: 'placeOfMarriage', value: undefined },
+          { name: 'spousePhoneNumber', value: undefined },
         ]);
 
         // Disable fields

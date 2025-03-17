@@ -217,8 +217,6 @@ export const useMemberCreate = (): UseMemberCreateResult => {
       interests: interest.interests.items
     };
 
-    console.log(formData)
-
     // Submit data
     await mutation.mutateAsync(formData);
 

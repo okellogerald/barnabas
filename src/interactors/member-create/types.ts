@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { GeneralMemberFormValues } from "./schemas/schemas.member";
+import { MemberFormValues } from "./schemas/schemas.member";
 
 /**
  * Step definition
@@ -75,5 +75,5 @@ export type ProfessionalInfoKeys =
  */
 export type StepValidationMap = Record<
     FormSectionKey,
-    (keyof GeneralMemberFormValues)[]
+    (keyof MemberFormValues)[]
 >;

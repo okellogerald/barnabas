@@ -23,16 +23,16 @@ export const useChurchFields = () => {
 
     // Create initial values object
     const initialValues: Partial<ChurchInfo> = {
-        formerChurch: sampleMember.formerChurch || '',
+        formerChurch: sampleMember.formerChurch,
         memberRole: sampleMember.memberRole || MemberRole.Regular,
         isBaptized: sampleMember.isBaptized ?? false,
         isConfirmed: sampleMember.isConfirmed ?? false,
         partakesLordSupper: sampleMember.partakesLordSupper ?? false,
-        fellowshipId: sampleMember.fellowshipId || '',
-        nearestMemberName: sampleMember.nearestMemberName || '',
-        nearestMemberPhone: sampleMember.nearestMemberPhone || '',
+        fellowshipId: sampleMember.fellowshipId,
+        nearestMemberName: sampleMember.nearestMemberName,
+        nearestMemberPhone: sampleMember.nearestMemberPhone,
         attendsFellowship: sampleMember.attendsFellowship ?? false,
-        fellowshipAbsenceReason: sampleMember.fellowshipAbsenceReason || '',
+        fellowshipAbsenceReason: sampleMember.fellowshipAbsenceReason,
     };
 
     // Handle field changes - specifically for attendsFellowship changes
@@ -53,7 +53,7 @@ export const useChurchFields = () => {
             // If switching to attends=true, clear the absence reason
             if (attends) {
                 form.setFields([
-                    { name: 'fellowshipAbsenceReason', value: '' }
+                    { name: 'fellowshipAbsenceReason', value: undefined }
                 ]);
             }
         }

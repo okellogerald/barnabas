@@ -16,14 +16,14 @@ export const usePersonalFields = () => {
 
     // Create initial values object
     const initialValues: Partial<PersonalInfo> = {
-        envelopeNumber: sampleMember.envelopeNumber || '',
-        firstName: sampleMember.firstName || '',
-        middleName: sampleMember.middleName || '',
-        lastName: sampleMember.lastName || '',
+        envelopeNumber: sampleMember.envelopeNumber,
+        firstName: sampleMember.firstName,
+        middleName: sampleMember.middleName,
+        lastName: sampleMember.lastName,
         gender: sampleMember.gender || Gender.Male,
         dateOfBirth: sampleMember.dateOfBirth || undefined,
-        placeOfBirth: sampleMember.placeOfBirth || '',
-        profilePhoto: sampleMember.profilePhoto || '',
+        placeOfBirth: sampleMember.placeOfBirth,
+        profilePhoto: sampleMember.profilePhoto,
     };
 
     // Handle field changes

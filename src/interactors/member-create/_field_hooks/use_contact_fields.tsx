@@ -15,12 +15,12 @@ export const useContactFields = () => {
 
     // Create initial values object
     const initialValues: Partial<ContactInfo> = {
-        phoneNumber: sampleMember.phoneNumber || '',
-        email: sampleMember.email || '',
-        residenceNumber: sampleMember.residenceNumber || '',
-        residenceBlock: sampleMember.residenceBlock || '',
-        postalBox: sampleMember.postalBox || '',
-        residenceArea: sampleMember.residenceArea || '',
+        phoneNumber: sampleMember.phoneNumber,
+        email: sampleMember.email,
+        residenceNumber: sampleMember.residenceNumber,
+        residenceBlock: sampleMember.residenceBlock,
+        postalBox: sampleMember.postalBox,
+        residenceArea: sampleMember.residenceArea,
     };
 
     // Handle field changes

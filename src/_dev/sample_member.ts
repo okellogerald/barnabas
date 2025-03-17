@@ -1,17 +1,17 @@
 import { EducationLevel, Gender, MaritalStatus, MemberRole } from "@/constants";
-import { GeneralMemberFormValues } from "../interactors/member-create/schemas/schemas.member";
+import { MemberFormValues } from "../interactors/member-create/schemas/schemas.member";
 
-export const sampleMember: Partial<GeneralMemberFormValues> = {
+export const sampleMember: Partial<MemberFormValues> = {
     "envelopeNumber": "1234",
     "firstName": "Aisha",
     "middleName": "Fatma",
     "lastName": "Kassim",
     "gender": Gender.Male,
-   // "dateOfBirth": new Date(),
+    "dateOfBirth": new Date(),
     "placeOfBirth": "Dar es Salaam",
     "profilePhoto":
         "https://img.freepik.com/free-vector/hand-drawn-ethnic-beauty-illustration_23-2150216615.jpg?ga=GA1.1.81028063.1741691766&semt=ais_authors_boost",
-    "phoneNumber": "255621987654",
+    "phoneNumber": "+255621987654",
     "email": "aisha.kassim@example.co.tz",
     "maritalStatus": MaritalStatus.Single,
     "marriageType": undefined,
@@ -34,7 +34,7 @@ export const sampleMember: Partial<GeneralMemberFormValues> = {
     "partakesLordSupper": false,
     "fellowshipId": "b8976543210fedcba987654321012345",
     "nearestMemberName": "Salim Juma",
-    "nearestMemberPhone": "255754321987",
+    "nearestMemberPhone": "+255754321987",
     "attendsFellowship": true,
     "fellowshipAbsenceReason": undefined,
 };

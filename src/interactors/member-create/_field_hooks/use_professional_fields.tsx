@@ -17,10 +17,10 @@ export const useProfessionalFields = () => {
 
     // Create initial values object
     const initialValues: Partial<ProfessionalInfo> = {
-        occupation: sampleMember.occupation || '',
-        placeOfWork: sampleMember.placeOfWork || '',
+        occupation: sampleMember.occupation,
+        placeOfWork: sampleMember.placeOfWork,
         educationLevel: sampleMember.educationLevel || EducationLevel.Primary,
-        profession: sampleMember.profession || '',
+        profession: sampleMember.profession,
     };
 
     // Handle field changes
