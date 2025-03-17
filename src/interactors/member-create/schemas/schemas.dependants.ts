@@ -1,12 +1,12 @@
 import { z } from "zod";
 import { DependantRelationship } from "@/constants";
+import dayjs from "dayjs";
+import { dayjsSchema } from "@/data/_common";
 
 /**
  * Schema for a single dependant
  */
 export const DependantSchema = z.object({
-    id: z.string(),
-    
     firstName: z.string()
         .min(2, "First name must be at least 2 characters")
         .describe("Dependant's first name"),
@@ -15,8 +15,12 @@ export const DependantSchema = z.object({
         .min(2, "Last name must be at least 2 characters")
         .describe("Dependant's last name"),
 
-    dateOfBirth: z.string()
-        .describe("Dependant's date of birth in ISO format (YYYY-MM-DD)"),
+    dateOfBirth: dayjsSchema
+        .refine(
+            (date) => date.isBefore(dayjs()) || date.isSame(dayjs(), "day"),
+            "Date of birth cannot be in the future",
+        )
+        .describe("Dependant's date of birth"),
 
     relationship: z.nativeEnum(DependantRelationship)
         .describe("Relationship of the dependant to the church member"),
@@ -33,7 +37,11 @@ export const DependantsSchema = z.object({
 /**
  * TypeScript type for a single dependant
  */
-export type DependantInfo = z.infer<typeof DependantSchema>;
+export type DependantInfo = z.infer<typeof DependantSchema> & { id?: string };
+
+export interface SubmitDependantInfo extends Omit<DependantInfo, "dateOfBirth"> {
+    dateOfBirth: string;
+}
 
 /**
  * TypeScript type for the dependants section

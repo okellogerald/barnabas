@@ -4,14 +4,14 @@ import { MaritalInfoSchema } from "./schemas.marital";
 import { ContactInfoSchema } from "./schemas.contact";
 import { ChurchInfoSchema } from "./schemas.church";
 import { ProfessionalInfoSchema } from "./schemas.professional";
-import { DependantInfo } from "./schemas.dependants";
+import {
+    DependantInfo,
+    DependantsSchema,
+    SubmitDependantInfo,
+} from "./schemas.dependants";
 import { FormSectionKey, StepValidationMap } from "../types";
-import dayjs from "dayjs";
-
-/**
- * Transforms a date field to an ISO string
- */
-const dateTransformer = (date: Date) => dayjs(date).format("YYYY-MM-DD");
+import { MaritalStatus } from "@/constants";
+import { dateTransformer } from "@/data/_common";
 
 /**
  * Schema without transform for type inference
@@ -31,6 +31,10 @@ export const GeneralMemberFormSchemaBase = z.object({
 
     // Professional Information
     ...ProfessionalInfoSchema.shape,
+
+    dependants: DependantsSchema,
+
+    interests: z.array(z.string()).default([]),
 });
 
 /**
@@ -43,19 +47,14 @@ export type GeneralMemberFormValues = z.infer<
 /**
  * API submission type with string dates
  */
-export interface MemberFormSubmissionValues
-    extends GeneralMemberFormSubmissionValues {
-    // Dependants - array of dependants
-    dependants: DependantInfo[];
-
-    // Interests - array of volunteer opportunity IDs
-    interests: string[];
-}
-
-export interface GeneralMemberFormSubmissionValues
-    extends Omit<GeneralMemberFormValues, "dateOfBirth" | "dateOfMarriage"> {
+export interface MemberFormSubmissionValues extends
+    Omit<
+        GeneralMemberFormValues,
+        "dateOfBirth" | "dateOfMarriage" | "dependants"
+    > {
     dateOfBirth: string;
     dateOfMarriage: string;
+    dependants: SubmitDependantInfo[];
 }
 
 /**
@@ -63,9 +62,9 @@ export interface GeneralMemberFormSubmissionValues
  */
 export const GeneralMemberFormSubmissionSchema = GeneralMemberFormSchemaBase
     .transform(
-        (data): GeneralMemberFormSubmissionValues => {
+        (data): MemberFormSubmissionValues => {
             // Transform date fields to ISO strings for API submission
-            const transformed: GeneralMemberFormSubmissionValues = {
+            const transformed: GeneralMemberFormValues = {
                 ...data,
             } as any;
 
@@ -79,17 +78,12 @@ export const GeneralMemberFormSubmissionSchema = GeneralMemberFormSchemaBase
                 );
             }
 
-            // Return transformed data - ready for API submission
-            return transformed;
+            if (data.des) {
+                // Return transformed data - ready for API submission
+                return transformed;
+            }
         },
     );
-
-// /**
-//  * TypeScript type for the entire member form
-//  */
-// export type MemberFormSubmissionValues = z.infer<
-//     typeof MemberFormSubmissionSchema
-// >;
 
 /**
  * Step validation map - fields to validate for each step
@@ -117,11 +111,27 @@ export function validateSection(
 ): boolean {
     const fieldsToValidate = STEP_VALIDATION_MAP[section];
 
-    // Check if all required fields for this section have values
-    return fieldsToValidate.every((field) => {
-        const value = values[field];
+    const checkValue = (value: any) => {
         return value !== undefined && value !== null && value !== "";
+    };
+
+    // Check if all required fields for this section have values
+    const cond1 = fieldsToValidate.every((field) => {
+        return checkValue(values[field]);
     });
+
+    if (section === "marital") {
+        if (values.maritalStatus === MaritalStatus.Married) {
+            const cond2 = checkValue(values.dateOfMarriage) &&
+                checkValue(values.placeOfMarriage) &&
+                checkValue(values.spouseName) &&
+                checkValue(values.spousePhoneNumber) &&
+                checkValue(values.marriageType);
+            return cond1 && cond2;
+        }
+    }
+
+    return cond1;
 }
 
 export function validateDependantSection(

@@ -4,6 +4,7 @@ import { Rule, RuleObject } from 'antd/es/form';
 import dayjs from 'dayjs';
 import { EnumSelect } from '@/components/form';
 import { SchemaFormFieldDefinition } from './types';
+import { useRef } from 'react';
 
 /**
  * Type guard to check if a rule is a RuleObject (not a RuleRender function)
@@ -499,4 +500,23 @@ export class SchemaFormBuilder<T extends z.ZodObject<any>> {
 
         return this.convertToFormFieldDefinition(formItemProps, render);
     }
+}
+
+/**
+ * Custom hook to create and initialize a SchemaFormBuilder instance
+ * 
+ * @param schema Zod schema to use for the form builder
+ * @param initialValues Optional initial values to set on the builder
+ * @returns A reference to the SchemaFormBuilder instance
+ */
+export function useSchemaFormBuilder<T extends z.ZodObject<any>>(
+    schema: T
+) {
+    // Create a ref to hold the builder instance
+    const builderRef = useRef<SchemaFormBuilder<T>>(
+        new SchemaFormBuilder(schema)
+    );
+
+    // Return the builder instance
+    return builderRef.current;
 }

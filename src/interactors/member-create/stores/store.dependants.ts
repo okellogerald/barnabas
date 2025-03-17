@@ -1,5 +1,8 @@
 import { create } from "zustand";
-import { DEFAULT_DEPENDANTS_INFO, DependantInfo } from "../schemas/schemas.dependants";
+import {
+    DEFAULT_DEPENDANTS_INFO,
+    DependantInfo,
+} from "../schemas/schemas.dependants";
 
 /**
  * Dependants state
@@ -13,10 +16,10 @@ export interface DependantsState {
  */
 export interface DependantsActions {
     // Add a dependant
-    addDependant: (dependant: DependantInfo) => void;
+    addDependant: (dependant: Omit<DependantInfo, "id">) => void;
 
     // Update a dependant
-    updateDependant: (dependant: DependantInfo) => void;
+    updateDependant: (id: string, dependant: DependantInfo) => void;
 
     // Remove a dependant
     removeDependant: (id: string) => void;
@@ -46,19 +49,21 @@ export const useDependantsStore = create<DependantsState & DependantsActions>(
     (set, get) => ({
         ...initialState,
 
-        addDependant: (dependant: DependantInfo) => {
+        addDependant: (dependant) => {
             // Ensure the dependant has an ID
-            const dependantWithId = dependant.id
-                ? dependant
-                : { ...dependant, id: get().generateTempId() };
+            const dependantWithId = {
+                ...dependant,
+                id: get().generateTempId(),
+            };
 
             set((state) => ({
                 dependants: [...state.dependants, dependantWithId],
             }));
         },
 
-        updateDependant: (updatedDependant: DependantInfo) => {
-            if (!updatedDependant.id) return;
+        updateDependant: (id, info: DependantInfo) => {
+            if (!id) return;
+            const updatedDependant = { ...info, id };
 
             set((state) => ({
                 dependants: state.dependants.map((dependant) =>

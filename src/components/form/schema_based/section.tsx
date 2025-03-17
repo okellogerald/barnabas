@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { Form, Card, Typography, Divider, Row, Col } from 'antd';
 import { FormInstance, FormItemProps } from 'antd/es/form';
 import { SchemaFormFieldDefinition } from './types';
+import { Callbacks } from 'rc-field-form/lib/interface';
 
 const { Title, Text } = Typography;
 
@@ -29,6 +30,13 @@ interface SchemaFormSectionProps<T, K extends keyof T = keyof T> {
 
     // Footer content (optional)
     footer?: ReactNode;
+
+    // Form event handlers
+    onValuesChange?: Callbacks<T>['onValuesChange'];
+    onFieldsChange?: Callbacks<T>['onFieldsChange'];
+
+    // Initial values for the form
+    initialValues?: Partial<T>;
 }
 
 /**
@@ -68,6 +76,9 @@ export function SchemaFormSection<
     fields,
     layout,
     footer,
+    onValuesChange,
+    onFieldsChange,
+    initialValues,
 }: SchemaFormSectionProps<T, K>) {
     // Convert fields to array if it's an object
     const fieldsArray = Array.isArray(fields) ? fields : Object.values(fields);
@@ -91,7 +102,13 @@ export function SchemaFormSection<
                 {description && <Text type="secondary">{description}</Text>}
                 <Divider />
 
-                <Form form={form} layout="vertical">
+                <Form
+                    form={form}
+                    layout="vertical"
+                    onValuesChange={onValuesChange}
+                    onFieldsChange={onFieldsChange}
+                    initialValues={initialValues}
+                >
                     {Object.entries(layout.rows).map(([rowKey, rowFields]) => (
                         <Row key={rowKey} gutter={16}>
                             {rowFields.map((fieldName) => {
@@ -109,6 +126,7 @@ export function SchemaFormSection<
                                     label: fieldData.label,
                                     rules: fieldData.rules,
                                     valuePropName: fieldData.valuePropName,
+                                    getValueProps: fieldData.getValueProps,
                                 });
 
                                 return (
@@ -140,13 +158,20 @@ export function SchemaFormSection<
             {description && <Text type="secondary">{description}</Text>}
             <Divider />
 
-            <Form form={form} layout="vertical">
+            <Form
+                form={form}
+                layout="vertical"
+                onValuesChange={onValuesChange}
+                onFieldsChange={onFieldsChange}
+                initialValues={initialValues}
+            >
                 {fieldsArray.map((fieldData) => {
                     const formItemProps = extractFormItemProps({
                         name: fieldData.name,
                         label: fieldData.label,
                         rules: fieldData.rules,
                         valuePropName: fieldData.valuePropName,
+                        getValueProps: fieldData.getValueProps,
                     });
 
                     return (

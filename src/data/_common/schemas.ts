@@ -1,4 +1,21 @@
 import { z } from "zod";
+import dayjs from "dayjs";
+
+/**
+ * Transforms a date field to an ISO string
+ */
+export const dateTransformer = (date: Date | dayjs.Dayjs) =>
+    dayjs(date).format("YYYY-MM-DD");
+
+// Create a custom Zod type for Dayjs
+export const dayjsSchema = z.custom<dayjs.Dayjs>(
+    (val) => {
+        return dayjs.isDayjs(val);
+    },
+    {
+        message: "Must be a valid dayjs object",
+    },
+);
 
 /**
  * Common error response schema for 400 Bad Request errors

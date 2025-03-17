@@ -1,317 +1,266 @@
-import { Form } from "antd";
-import { StepDefinition } from "./types";
-import { usePersonalInfoStore } from "./stores/store.personal";
-import { useMaritalInfoStore } from "./stores/store.marital";
-import { useContactInfoStore } from "./stores/store.contact";
-import { useChurchInfoStore } from "./stores/store.church";
-import { useProfessionalInfoStore } from "./stores/store.professional";
-import { DependantsActions, DependantsState, useDependantsStore } from "./stores/store.dependants";
-import { InterestsActions, InterestsState, useInterestsStore } from "./stores/store.interests";
-import { useMemberCreateUIStore, STEPS } from "./stores/store.ui";
-
-// Import layouts
-import {
-    personalLayout,
-    maritalLayout,
-    contactLayout,
-    churchLayout,
-    professionalLayout,
-    maritalFields,
-    contactFields,
-    churchFields,
-    professionalFields,
-    marriedMaritalFields,
-} from "./fields";
-import { validateSection, GeneralMemberFormValues, validateDependantSection } from "./schemas/schemas.member";
-
-import { personalFields } from "./fields/fields.personal"
-import { useStore } from "zustand";
-import { DependantInfo } from "./schemas/schemas.dependants";
-import { InterestInfo } from "./schemas/schemas.interests";
+import { useMutation } from "@tanstack/react-query";
+import { useCallback } from "react";
 import { notifyUtils } from "@/utilities/notification.utils";
 import { memnberCreateService } from "./service";
-import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { sampleMember } from "@/_dev/sample_member";
-import { MaritalStatus } from "@/constants";
+import { validateSection, validateDependantSection } from "./schemas/schemas.member";
+
+// Import custom form hooks
+import { usePersonalFields } from "./_field_hooks/use_personal_fields";
+import { useMaritalFields } from "./_field_hooks/use_marital_fields";
+import { useContactFields } from "./_field_hooks/use_contact_fields";
+import { useChurchFields } from "./_field_hooks/use_church_fields";
+import { useProfessionalFields } from "./_field_hooks/use_professional_fields";
+import { useDependantFields } from "./_field_hooks/use_dependants_fields";
+import { useInterestFields } from "./_field_hooks/use_interests_fields";
+import { STEPS } from "./stores/store.ui";
+import { useMemberCreateUIStore } from "./stores/store.ui";
+import { useStore } from "zustand";
 
 /**
  * Result of the member create hook
  */
 export interface UseMemberCreateResult {
-    // Form instance
-    general_form: ReturnType<typeof Form.useForm<GeneralMemberFormValues>>[0];
-    dependant_form: ReturnType<typeof Form.useForm<DependantInfo>>[0];
-    interest_form: ReturnType<typeof Form.useForm<InterestInfo>>[0];
+  // UI state from store
+  ui: {
+    currentStep: number;
+    loading: boolean;
+    error?: string;
+    success: boolean;
+    steps: typeof STEPS;
+  };
 
-    // UI state and actions
-    ui: {
-        currentStep: number;
-        loading: boolean;
-        error?: string;
-        success: boolean;
-        steps: StepDefinition[];
-    };
+  // Form instances and fields for each section
+  personal: ReturnType<typeof usePersonalFields>;
+  marital: ReturnType<typeof useMaritalFields>;
+  contact: ReturnType<typeof useContactFields>;
+  church: ReturnType<typeof useChurchFields>;
+  professional: ReturnType<typeof useProfessionalFields>;
+  dependant: ReturnType<typeof useDependantFields>;
+  interest: ReturnType<typeof useInterestFields>;
 
-    fields: {
-        personal: typeof personalFields,
-        marital: typeof maritalFields,
-        contact: typeof contactFields,
-        church: typeof churchFields,
-        professional: typeof professionalFields,
-    }
+  // Actions
+  actions: {
+    // Navigation
+    nextStep: () => Promise<void>;
+    previousStep: () => void;
+    goToStep: (step: number) => void;
 
-    layouts: {
-        personal: typeof personalLayout;
-        marital: typeof maritalLayout;
-        contact: typeof contactLayout;
-        church: typeof churchLayout;
-        professional: typeof professionalLayout;
-    };
-
-    // Dependants handling
-    dependants: {
-        items: DependantsState["dependants"];
-        add: DependantsActions["addDependant"];
-        update: DependantsActions["updateDependant"];
-        remove: DependantsActions["removeDependant"];
-        set: DependantsActions["setDependants"];
-    };
-
-    // Interests handling
-    interests: {
-        items: InterestsState["interests"];
-        set: InterestsActions["setInterests"];
-    };
-
-    // Actions
-    actions: {
-        // Navigation
-        nextStep: () => Promise<void>;
-        previousStep: () => void;
-        goToStep: (step: number) => void;
-
-        // Form actions
-        reset: () => void;
-        submit: () => Promise<void>;
-
-        // Get combined form values
-        getFormValues: () => GeneralMemberFormValues;
-    };
+    // Form actions
+    reset: () => void;
+    submit: () => Promise<void>;
+  };
 }
 
 /**
  * Hook for managing the member creation process
- * Updated to use SchemaFormBuilder
+ * Integrates all section-specific hooks and uses the UI store for step management
  */
 export const useMemberCreate = (): UseMemberCreateResult => {
-    const mutation = useMutation({
-        mutationKey: ["member-create"],
-        mutationFn: memnberCreateService.submitForm,
-    })
+  // Get UI state from store
+  const uiStore = useStore(useMemberCreateUIStore);
 
-    // Create the form instance
-    const [general_form] = Form.useForm<GeneralMemberFormValues>();
-    const [dependant_form] = Form.useForm<DependantInfo>();
-    const [interest_form] = Form.useForm<InterestInfo>();
+  // Create mutation for form submission
+  const mutation = useMutation({
+    mutationKey: ["member-create"],
+    mutationFn: memnberCreateService.submitForm,
+    onSuccess: () => {
+      uiStore.setSuccess(true);
+      uiStore.setError(undefined);
+    },
+    onError: (error: any) => {
+      uiStore.setSuccess(false);
+      uiStore.setError(error.message || "An error occurred while submitting the form");
+    }
+  });
 
-    // Get all stores
-    const personalStore = useStore(usePersonalInfoStore);
-    const maritalStore = useStore(useMaritalInfoStore);
-    const contactStore = useStore(useContactInfoStore);
-    const churchStore = useStore(useChurchInfoStore);
-    const professionalStore = useStore(useProfessionalInfoStore);
-    const dependantsStore = useStore(useDependantsStore);
-    const interestsStore = useStore(useInterestsStore);
-    const uiStore = useStore(useMemberCreateUIStore);
+  // Initialize section hooks
+  const personal = usePersonalFields();
+  const marital = useMaritalFields();
+  const contact = useContactFields();
+  const church = useChurchFields();
+  const professional = useProfessionalFields();
+  const dependant = useDependantFields();
+  const interest = useInterestFields();
 
-    useEffect(() => {
-        general_form.setFieldsValue(sampleMember)
-    }, [])
-
-    useEffect(() => {
-        if (maritalStore.maritalStatus !== MaritalStatus.Married) {
-            general_form.resetFields(["dateOfMarriage", "marriageType", "marriageType", "spouseName", "spousePhoneNumber"])
-        }
-    }, [maritalStore.maritalStatus])
-
-    console.log("status: ", maritalStore.maritalStatus)
-
-    // Create a function to get the combined form values
-    const getGeneralFormValues = (): GeneralMemberFormValues => {
-        return {
-            // Personal information
-            ...personalStore.getPersonalInfo(),
-
-            // Marital information
-            ...maritalStore.getMaritalInfo(),
-
-            // Contact information
-            ...contactStore.getContactInfo(),
-
-            // Church information
-            ...churchStore.getChurchInfo(),
-
-            // Professional information
-            ...professionalStore.getProfessionalInfo(),
-        } as GeneralMemberFormValues;
-    };
-
-    // Navigate to next step with validation
-    const nextStep = async (): Promise<void> => {
-        try {
-            // Get the current step
-            const currentStepKey = uiStore.getCurrentStepKey();
-
-            // Validate the current step's fields in the form
-            if (currentStepKey === "dependants") {
-                const valid = validateDependantSection(dependant_form.getFieldsValue())
-                if (!valid) {
-                    await dependant_form.validateFields()
-                    notifyUtils.error("Please complete all required fields in Dependants section")
-                    return
-                }
-            }
-            else if (currentStepKey === "interests") {
-                //
-            }
-            else {
-                await general_form.validateFields();
-            }
-
-            // Update the store with the form values for the current step
-            const formValues = general_form.getFieldsValue();
-
-            // Based on the current step, update the appropriate store
-            switch (currentStepKey) {
-                case 'personal':
-                    personalStore.setFields(formValues);
-                    break;
-                case 'marital':
-                    maritalStore.setFields(formValues);
-                    break;
-                case 'contact':
-                    contactStore.setFields(formValues);
-                    break;
-                case 'church':
-                    churchStore.setFields(formValues);
-                    break;
-                case 'professional':
-                    professionalStore.setFields(formValues);
-                    break;
-            }
-
-            // Check if the current step is valid using the combined form values
-            const combinedValues = getGeneralFormValues();
-            const isValid = validateSection(combinedValues, currentStepKey);
-
-            if (!isValid) {
-                notifyUtils.error(`Please complete all required fields in ${currentStepKey} section`);
-                return;
-            }
-
-            // If validation passes, go to the next step
-            uiStore.nextStep();
-        } catch (error) {
-            console.error('Validation failed:', error);
-            // Validation errors are handled by the form itself
-        }
-    };
-
-    // Navigate to previous step
-    const previousStep = (): void => {
-        uiStore.previousStep();
-    };
-
-    // Go to a specific step
-    const goToStep = (step: number): void => {
-        uiStore.setCurrentStep(step);
-    };
-
-    // Reset all form data
-    const reset = (): void => {
-        // Reset the form
-        general_form.resetFields();
-        dependant_form.resetFields();
-        interest_form.resetFields();
-
-
-        // Reset all stores
-        personalStore.reset();
-        maritalStore.reset();
-        contactStore.reset();
-        churchStore.reset();
-        professionalStore.reset();
-        dependantsStore.reset();
-        interestsStore.reset();
-
-        // Reset UI state
-        uiStore.reset();
-    };
-
-    // Submit the form
-    const submit = async (): Promise<void> => {
-        // Validate the form
-        await general_form.validateFields();
-        console.log(general_form.getFieldsError())
-        if (general_form.getFieldsError()) {
-            notifyUtils.error("Please check you data and try again")
-            return;
-        }
-
-        await mutation.mutateAsync(getGeneralFormValues());
-    };
-
+  // Create a function to get combined form values
+  const getFormValues = useCallback(() => {
     return {
-        general_form: general_form,
-        dependant_form: dependant_form,
-        interest_form: interest_form,
+      // Personal information
+      ...personal.form.getFieldsValue(),
 
-        ui: {
-            currentStep: uiStore.currentStep,
-            loading: uiStore.loading,
-            error: uiStore.error,
-            success: uiStore.success,
-            steps: STEPS,
-        },
+      // Marital information
+      ...marital.form.getFieldsValue(),
 
-        fields: {
-            personal: personalFields,
-            marital: maritalStore.maritalStatus === MaritalStatus.Married ? marriedMaritalFields : maritalFields,
-            contact: contactFields,
-            church: churchFields,
-            professional: professionalFields,
-        },
+      // Contact information
+      ...contact.form.getFieldsValue(),
 
-        layouts: {
-            personal: personalLayout,
-            marital: maritalLayout,
-            contact: contactLayout,
-            church: churchLayout,
-            professional: professionalLayout,
-        },
+      // Church information
+      ...church.form.getFieldsValue(),
 
-        dependants: {
-            items: dependantsStore.dependants,
-            add: dependantsStore.addDependant,
-            update: dependantsStore.updateDependant,
-            remove: dependantsStore.removeDependant,
-            set: dependantsStore.setDependants,
-        },
-
-        interests: {
-            items: interestsStore.interests,
-            set: interestsStore.setInterests,
-        },
-
-        actions: {
-            nextStep,
-            previousStep,
-            goToStep,
-            reset,
-            submit,
-            getFormValues: getGeneralFormValues,
-        },
+      // Professional information
+      ...professional.form.getFieldsValue(),
     };
-};
+  }, [personal.form, marital.form, contact.form, church.form, professional.form]);
 
+  // Navigate to next step with validation
+  const nextStep = useCallback(async (): Promise<void> => {
+    try {
+      // Get the current step key
+      const currentStepKey = uiStore.getCurrentStepKey();
+
+      // Validate the current step's fields in the appropriate form
+      if (currentStepKey === "dependants") {
+        const dependantValues = dependant.form.getFieldsValue();
+        const valid = validateDependantSection(dependantValues);
+        if (!valid) {
+          await dependant.form.validateFields();
+          notifyUtils.error("Please complete all required fields in Dependants section");
+          return;
+        }
+      }
+      else if (currentStepKey === "interests") {
+        // No validation needed for interests
+      }
+      else {
+        // Validate form for current step
+        let currentForm;
+        switch (currentStepKey) {
+          case 'personal':
+            currentForm = personal.form;
+            break;
+          case 'marital':
+            currentForm = marital.form;
+            break;
+          case 'contact':
+            currentForm = contact.form;
+            break;
+          case 'church':
+            currentForm = church.form;
+            break;
+          case 'professional':
+            currentForm = professional.form;
+            break;
+          default:
+            currentForm = null;
+        }
+
+        if (currentForm) {
+          await currentForm.validateFields();
+        }
+      }
+
+      // Check if the current step is valid using the combined form values
+      const combinedValues = getFormValues();
+      const isValid = validateSection(combinedValues, currentStepKey);
+
+      if (!isValid) {
+        notifyUtils.error(`Please complete all required fields in ${currentStepKey} section`);
+        return;
+      }
+
+      // If validation passes, go to the next step
+      uiStore.nextStep();
+    } catch (error) {
+      console.error('Validation failed:', error);
+      // Error is handled by form validation itself
+    }
+  }, [
+    uiStore,
+    personal.form,
+    marital.form,
+    contact.form,
+    church.form,
+    professional.form,
+    dependant.form,
+    getFormValues
+  ]);
+
+  // Reset all forms
+  const reset = useCallback((): void => {
+    // Reset form instances
+    personal.form.resetFields();
+    marital.form.resetFields();
+    contact.form.resetFields();
+    church.form.resetFields();
+    professional.form.resetFields();
+    dependant.form.resetFields();
+    interest.form.resetFields();
+
+    // Reset UI state
+    uiStore.reset();
+  }, [
+    uiStore,
+    personal.form,
+    marital.form,
+    contact.form,
+    church.form,
+    professional.form,
+    dependant.form,
+    interest.form
+  ]);
+
+  // Submit the form
+  const submit = useCallback(async (): Promise<void> => {
+    // Validate all forms
+    await Promise.all([
+      personal.form.validateFields(),
+      marital.form.validateFields(),
+      contact.form.validateFields(),
+      church.form.validateFields(),
+      professional.form.validateFields()
+    ]);
+
+    // Get combined form values
+    const formData = {
+      ...getFormValues(),
+      dependants: dependant.dependants.items,
+      interests: interest.interests.items
+    };
+
+    console.log(formData)
+
+    // Submit data
+    await mutation.mutateAsync(formData);
+
+  }, [
+    uiStore,
+    personal.form,
+    marital.form,
+    contact.form,
+    church.form,
+    professional.form,
+    dependant.dependants,
+    interest.interests,
+    getFormValues,
+    mutation
+  ]);
+
+  return {
+    // UI state from store
+    ui: {
+      currentStep: uiStore.currentStep,
+      loading: uiStore.loading,
+      error: uiStore.error,
+      success: uiStore.success,
+      steps: STEPS,
+    },
+
+    // Section hooks
+    personal,
+    marital,
+    contact,
+    church,
+    professional,
+    dependant,
+    interest,
+
+    // Actions
+    actions: {
+      nextStep,
+      previousStep: uiStore.previousStep,
+      goToStep: uiStore.setCurrentStep,
+      reset,
+      submit
+    }
+  };
+};

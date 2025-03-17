@@ -4,88 +4,58 @@ import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { DependantRelationship } from '@/constants';
 import { EnumSelect } from '@/components/form';
 import { useMemberCreate } from '@/interactors/member-create/hook';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { DependantInfo } from '@/interactors/member-create/schemas/schemas.dependants';
+import { DateView } from '@/components';
 
 interface DependantFormProps {
   form: FormInstance<any>;
 }
 
-// Helper function to generate temporary IDs
-const generateTempId = (): string => {
-  return `temp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-};
-
-// Helper function to format DatePicker value
-const formatDate = (date: Dayjs): string => {
-  return date.format('YYYY-MM-DD');
-};
-
 export const DependantForm: React.FC<DependantFormProps> = ({ form }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const state = useMemberCreate();
 
-  const resetFormFields = () => {
-    form.resetFields([
-      'firstName',
-      'lastName',
-      'dateOfBirth',
-      'relationship',
-    ]);
-  };
-
-  const handleAddDependant = () => {
-    form.validateFields().then(values => {
-      const newDependant: DependantInfo = {
-        id: generateTempId(),
-        firstName: values.firstName,
-        lastName: values.lastName,
-        dateOfBirth: formatDate(values.dateOfBirth),
-        relationship: values.relationship,
-      };
-      state.dependants.add(newDependant);
-      resetFormFields();
-    });
+  const handleAddDependant = async () => {
+    const success = await state.dependant.dependants.add(form.getFieldsValue());
+    if (success) form.resetFields()
   };
 
   const handleDeleteDependant = (id: string) => {
-    state.dependants.remove(id);
+    state.dependant.dependants.remove(id);
   };
 
-  const handleEditDependant = (record: DependantInfo) => {
+  const handleEditDependant = async (record: DependantInfo) => {
     setEditingId(record.id || null);
     form.setFieldsValue({
       firstName: record.firstName,
       lastName: record.lastName,
-      dateOfBirth: dayjs(record.dateOfBirth),
+      dateOfBirth: record.dateOfBirth,
       relationship: record.relationship,
     });
   };
 
-  const handleSaveEdit = () => {
-    form.validateFields().then(values => {
-      const updatedDependant: DependantInfo = {
-        id: editingId!,
-        firstName: values.firstName,
-        lastName: values.lastName,
-        dateOfBirth: formatDate(values.dateOfBirth),
-        relationship: values.relationship,
-      };
-      state.dependants.update(updatedDependant);
+  const handleSaveEdit = async () => {
+    if (!editingId) return;
+
+    form.validateFields()
+    const success = await state.dependant.dependants.update(editingId, form.getFieldsValue());
+    if (success) {
+      form.resetFields()
       setEditingId(null);
-      resetFormFields();
-    });
+    }
+
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    resetFormFields();
+    form.resetFields()
   };
 
   const columns = [
     { title: 'First Name', dataIndex: 'firstName', key: 'firstName' },
     { title: 'Last Name', dataIndex: 'lastName', key: 'lastName' },
-    { title: 'Date of Birth', dataIndex: 'dateOfBirth', key: 'dateOfBirth' },
+    { title: 'Date of Birth', dataIndex: 'dateOfBirth', key: 'dateOfBirth', render: (value: any) => <DateView date={value} /> },
     { title: 'Relationship', dataIndex: 'relationship', key: 'relationship' },
     {
       title: 'Actions',
@@ -104,7 +74,7 @@ export const DependantForm: React.FC<DependantFormProps> = ({ form }) => {
       <Typography.Title level={5}>Dependants</Typography.Title>
       <Divider />
 
-      <Form form={form} layout="horizontal">
+      <Form<DependantInfo> form={form} layout="horizontal">
         <Flex gap={"large"}>
           <Form.Item
             name="firstName"
@@ -126,10 +96,13 @@ export const DependantForm: React.FC<DependantFormProps> = ({ form }) => {
             name="dateOfBirth"
             style={{ width: "100%" }}
             rules={[{ required: true, message: 'Date of birth is required' }]}
+            getValueProps={(value) => ({ value: value ? dayjs(value) : undefined })}
+            getValueFromEvent={(date) => date}
           >
             <DatePicker
               placeholder="Date of Birth"
               style={{ width: "100%" }}
+              format={"YYYY-MM-DD"}
             />
           </Form.Item>
 
@@ -156,7 +129,7 @@ export const DependantForm: React.FC<DependantFormProps> = ({ form }) => {
         </Flex>
       </Form>
 
-      <Table dataSource={state.dependants.items} columns={columns} rowKey="id" pagination={false} />
+      <Table dataSource={state.dependant.dependants.items} columns={columns} rowKey="id" pagination={false} />
     </Card>
   );
 };
