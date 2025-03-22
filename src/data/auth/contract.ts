@@ -5,7 +5,7 @@ import {
     currentUserResponseSchema,
     loginRequestSchema,
 } from "./schema";
-import { badRequestErrorSchema } from "@/data/_common";
+import { CommonSchemas } from "@/data/_common";
 
 const c = initContract();
 
@@ -15,7 +15,7 @@ export const authContract = c.router({
         path: "/login",
         responses: {
             201: authResponseSchema,
-            400: badRequestErrorSchema,
+            400: CommonSchemas.badRequestError,
         },
         body: loginRequestSchema,
         summary: "User login",

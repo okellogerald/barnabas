@@ -15,7 +15,7 @@ import { MemberCreateInterestsInfoSchema } from "./schemas.interests";
 /**
  * Schema without transform for type inference
  */
-export const MemberCreateFormSchema = z.object({
+export const MemberUpdateFormSchema = z.object({
     // Personal Information
     ...MemberCreatePersonalInfoSchema.shape,
 
@@ -41,8 +41,8 @@ export const MemberCreateFormSchema = z.object({
 /**
  * TypeScript type for form values before transformation
  */
-export type MemberCreateFormValues = z.infer<
-    typeof MemberCreateFormSchema
+export type MemberUpdateFormValues = z.infer<
+    typeof MemberUpdateFormSchema
 >;
 
 /**
@@ -66,7 +66,7 @@ export const STEP_VALIDATION_MAP: StepValidationMap = {
  * @returns True if the section is valid, false otherwise
  */
 export function validateSection(
-    values: Partial<MemberCreateFormValues>,
+    values: Partial<MemberUpdateFormValues>,
     section: FormSectionKey,
 ): boolean {
     const fieldsToValidate = STEP_VALIDATION_MAP[section];

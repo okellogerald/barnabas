@@ -31,7 +31,7 @@ const Logo: React.FC<LogoProps> = ({ collapsed }) => (
     <div style={styles.logoContainer(collapsed)}>
         <Link to="/dashboard">
             <Title level={collapsed ? 5 : 4} style={styles.title(collapsed)}>
-                {collapsed ? 'CMS' : 'Church Management'}
+                {collapsed ? 'B' : 'Barnabas'}
             </Title>
         </Link>
     </div>

@@ -1,7 +1,6 @@
 import { FormInstance } from "antd";
 import { Rule } from "antd/es/form";
 import { ReactNode } from "react";
-import { FormControlRegistry } from "../_common/registry";
 
 /**
  * Form field definition - Updated to be more compatible with Ant Design
@@ -95,7 +94,4 @@ export interface EnhancedSchemaFormSectionProps<T, K extends keyof T = keyof T> 
 
     // Footer content (optional)
     footer?: ReactNode;
-
-    // Form control registry for dynamic prop updates
-    registry?: FormControlRegistry<T>;
 }

@@ -82,8 +82,8 @@ export class VolunteerOpportunity {
             churchId: this.churchId,
             name: this.name,
             description: this.description,
-            createdAt: this.createdAt.toISOString(),
-            updatedAt: this.updatedAt.toISOString(),
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
         };
     }
 

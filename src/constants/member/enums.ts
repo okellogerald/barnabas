@@ -30,6 +30,8 @@ export enum MarriageType {
     Christian = "Christian",
     /** Marriage performed under non-Christian rites */
     NonChristian = "Non-Christian",
+    /**  */
+    None = "None",
 }
 
 /**

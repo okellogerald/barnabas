@@ -86,8 +86,8 @@ export class Church {
             registrationNumber: this.registrationNumber,
             contactPhone: this.contactPhone,
             contactEmail: this.contactEmail,
-            createdAt: this.createdAt.toISOString(),
-            updatedAt: this.updatedAt.toISOString(),
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
         };
     }
 
@@ -103,8 +103,8 @@ export class Church {
             registrationNumber: this.registrationNumber,
             contactPhone: this.contactPhone,
             contactEmail: this.contactEmail,
-            createdAt: this.createdAt.toISOString(),
-            updatedAt: this.updatedAt.toISOString(),
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
         };
     }
 

@@ -143,8 +143,8 @@ export class Fellowship {
             deputyChairmanId: this.deputyChairmanId,
             secretaryId: this.secretaryId,
             treasurerId: this.treasurerId,
-            createdAt: this.createdAt.toISOString(),
-            updatedAt: this.updatedAt.toISOString(),
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
         };
     }
 

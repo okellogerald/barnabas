@@ -8,7 +8,7 @@ export const dateTransformer = (date: Date | dayjs.Dayjs) =>
     dayjs(date).format("YYYY-MM-DD");
 
 // Create a custom Zod type for Dayjs
-export const dayjsSchema = z.custom<dayjs.Dayjs>(
+const dayjsSchema = z.custom<dayjs.Dayjs>(
     (val) => {
         return dayjs.isDayjs(val);
     },
@@ -21,7 +21,7 @@ export const dayjsSchema = z.custom<dayjs.Dayjs>(
  * Common error response schema for 400 Bad Request errors
  * This is reused across all contracts to ensure consistent error handling
  */
-export const badRequestErrorSchema = z.object({
+const badRequestErrorSchema = z.object({
     statusCode: z.number(),
     message: z.union([
         z.string(),
@@ -31,80 +31,65 @@ export const badRequestErrorSchema = z.object({
     error: z.string(),
 });
 
-export type BadRequestError = z.infer<typeof badRequestErrorSchema>;
-
-/**
- * Common pagination schema for list responses
- */
-export const paginationSchema = z.object({
-    page: z.number().int().positive(),
-    limit: z.number().int().positive(),
-    totalItems: z.number().int().nonnegative(),
-    totalPages: z.number().int().positive(),
-});
-
-export type Pagination = z.infer<typeof paginationSchema>;
-
 /**
  * Utility function to create a paginated response schema
  * @param itemSchema The schema for individual items in the response
  * @returns A schema for a paginated response containing items of the specified type
  */
-export function createPaginatedResponseSchema<T extends z.ZodTypeAny>(
+function createPaginatedResponseSchema<T extends z.ZodTypeAny>(
     itemSchema: T,
 ) {
     return z.object({
-        data: z.array(itemSchema),
-        pagination: paginationSchema,
+        results: z.array(itemSchema),
+        total: z.number().positive(),
     });
 }
 
 /**
- * Common timestamp fields that are present in most entities
- */
-export const timestampFields = {
-    createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime(),
-};
-
-/**
  * Schema for UUID id
  */
-export const idSchema = z.string().uuid();
+const idSchema = z.string().uuid();
+
+const dateSchema = z.union([
+    z.string().datetime(), // 2025-03-12T10:46:05.000Z
+    z.date(), // new Date()
+    z.string().date(), // 2025-03-12
+    dayjsSchema, // dayjs()
+]).transform((e) => {
+    const valid = dayjs(e).isValid();
+    if (valid) return dayjs(e).toDate();
+    throw "Invalid date";
+});
 
 /**
- * Enumeration values for various fields
+ * Common timestamp fields that are present in most entities
  */
-export const enums = {
-    gender: z.enum(["Male", "Female"]),
-    maritalStatus: z.enum(["Single", "Married", "Separated", "Divorced"]),
-    marriageType: z.enum(["Christian", "Non-Christian"]),
-    educationLevel: z.enum([
-        "Informal",
-        "Primary",
-        "Secondary",
-        "Certificate",
-        "Diploma",
-        "Bachelors",
-        "Masters",
-        "Doctorate",
-        "Other",
-    ]),
-    memberRole: z.enum(["Clergy", "Staff", "Regular", "Leader", "Volunteer"]),
-    dependantRelationship: z.enum([
-        "Child",
-        "House Helper",
-        "Relative",
-        "Parent",
-        "Sibling",
-        "Grandchild",
-        "Grandparent",
-        "Niece/Nephew",
-        "Guardian",
-        "Ward",
-        "Spouse",
-        "In-Law",
-        "Extended Family",
-        "Other",
-    ]),
+const timestampFields = {
+    createdAt: dateSchema,
+    updatedAt: dateSchema,
 };
+
+const phoneNumberSchema = z.string()
+    .min(10, "Phone number must be 10 digits")
+    .describe("Member's primary phone number");
+
+const nameSchema = z.string()
+    .min(2, "Name must be at least 2 characters");
+
+export const CommonSchemas = {
+    id: idSchema,
+    badRequestError: badRequestErrorSchema,
+    systemDates: timestampFields,
+    dayjs: dayjsSchema,
+    createPaginatedResponseSchema,
+    date: dateSchema,
+    previousDate: dateSchema.refine(
+        (date) => !date || date <= new Date(),
+        "Date can't be in the future",
+    ),
+    phoneNumber: phoneNumberSchema,
+    name: nameSchema,
+};
+
+export type BadRequestError = z.infer<typeof badRequestErrorSchema>;
+// export type BarnabasDate = z.infer<typeof dateSchema>;

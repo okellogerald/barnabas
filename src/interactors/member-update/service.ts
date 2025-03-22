@@ -1,15 +1,15 @@
 import { notifyUtils } from "@/utilities/notification.utils";
 import {
-    MemberCreateFormSchema,
-    MemberCreateFormValues,
+    MemberUpdateFormSchema,
+    MemberUpdateFormValues,
 } from "./schemas/schemas.member";
 import { MEMBER_NOTIFICATIONS } from "@/constants/member";
 import { MemberManager } from "@/managers/member";
 import { Navigation } from "@/app";
 
-export const memnberCreateService = {
-    submitForm: async (formValues: MemberCreateFormValues) => {
-        const result = MemberCreateFormSchema.safeParse(formValues);
+export const memnberUpdateService = {
+    submitForm: async (formValues: MemberUpdateFormValues) => {
+        const result = MemberUpdateFormSchema.safeParse(formValues);
         if (!result.success) {
             console.log(result.error);
             notifyUtils.error(

@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import { EnumSelect } from '@/components/form';
 import { SchemaFormFieldDefinition } from './types';
 import { useRef } from 'react';
+import React from 'react';
 
 /**
  * Type guard to check if a rule is a RuleObject (not a RuleRender function)
@@ -235,6 +236,7 @@ export class SchemaFormBuilder<T extends z.ZodObject<any>> {
                 disabled={config.disabled}
                 placeholder={config.placeholder || this.getPlaceholder(name)}
                 data-testid={`${name}-date-picker`}
+                minDate={dayjs(new Date(1800))}
             />
         );
 
@@ -379,6 +381,7 @@ export class SchemaFormBuilder<T extends z.ZodObject<any>> {
             label?: string;
             disabled?: boolean;
             placeholder?: string;
+            value?: string | number,
         } = {}
     ): SchemaFormFieldDefinition<z.infer<T>, K> {
         const name = fieldName as string;
@@ -390,8 +393,18 @@ export class SchemaFormBuilder<T extends z.ZodObject<any>> {
             rules
         };
 
+        const value = React.useMemo(() => {
+            if (!config.value) return undefined
+            return Object.entries(enumType)
+                // Filter out numeric keys that TypeScript adds to numeric enums
+                .find((e) => e[1] === config.value)?.[1]
+        }, [config.value]);
+
+        console.log("enum-select value: ", config.value, value)
+
         const renderFn = () => (
             <EnumSelect
+                value={value}
                 enumType={enumType}
                 disabled={config.disabled}
                 placeholder={config.placeholder || this.getPlaceholder(name)}

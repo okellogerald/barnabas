@@ -1,17 +1,17 @@
 import { z } from "zod";
-import { idSchema, timestampFields } from "@/data/_common";
+import { CommonSchemas } from "../_common";
 
 // Fellowship schema
 export const fellowshipSchema = z.object({
-    id: idSchema,
-    churchId: idSchema,
+    id: CommonSchemas.id,
+    churchId: CommonSchemas.id,
     name: z.string().min(1, "Fellowship name is required"),
     notes: z.string().nullable(),
-    chairmanId: idSchema.nullable(),
-    deputyChairmanId: idSchema.nullable(),
-    secretaryId: idSchema.nullable(),
-    treasurerId: idSchema.nullable(),
-    ...timestampFields,
+    chairmanId: CommonSchemas.id.nullable(),
+    deputyChairmanId: CommonSchemas.id.nullable(),
+    secretaryId: CommonSchemas.id.nullable(),
+    treasurerId: CommonSchemas.id.nullable(),
+    ...CommonSchemas.systemDates,
 });
 
 export type FellowshipDTO = z.infer<typeof fellowshipSchema>;

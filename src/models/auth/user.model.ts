@@ -80,8 +80,8 @@ export class User {
             roleId: this.roleId,
             isActive: Number(this.isActive),
             isDeleted: Number(this.isDeleted),
-            createdAt: this.createdAt.toISOString(),
-            updatedAt: this.updatedAt.toISOString(),
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
         };
     }
 

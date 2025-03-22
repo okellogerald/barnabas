@@ -2,21 +2,21 @@ import React from 'react';
 import { Card, Typography, Divider, Space, Button, Row, Col, Steps } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 import DependantForm from './form.dependant';
-import { useMemberCreate } from '@/interactors/member-create/hook';
+import { useMemberUpdate } from '@/interactors/member-update/hook';
 import { SchemaFormSection } from '@/components/form/schema_based';
-import { MemberCreateMaritalInfo } from '@/interactors/member-create/schemas/schemas.marital';
-import { MemberCreatePersonalInfo } from '@/interactors/member-create/schemas/schemas.personal';
-import { MemberCreateContactInfo } from '@/interactors/member-create/schemas/schemas.contact';
-import { MemberCreateChurchInfo } from '@/interactors/member-create/schemas/schemas.church';
-import { MemberCreateProfessionalInfo } from '@/interactors/member-create/schemas/schemas.professional';
+import { MemberCreateMaritalInfo } from '@/interactors/member-update/schemas/schemas.marital';
+import { MemberCreatePersonalInfo } from '@/interactors/member-update/schemas/schemas.personal';
+import { MemberCreateContactInfo } from '@/interactors/member-update/schemas/schemas.contact';
+import { MemberCreateChurchInfo } from '@/interactors/member-update/schemas/schemas.church';
+import { MemberCreateProfessionalInfo } from '@/interactors/member-update/schemas/schemas.professional';
 
 import "./member_create_page.css"
-import { MemberCreateInterestsInfo } from '@/interactors/member-create/schemas/schemas.interests';
+import { MemberCreateInterestsInfo } from '@/interactors/member-update/schemas/schemas.interests';
 
 /**
- * Component for creating a new member
+ * Component for updating an existing member
  */
-const MemberCreatePage: React.FC = () => {
+const MemberUpdatePage: React.FC = () => {
     // Get all the state and actions from the interactor
     const {
         ui,
@@ -28,7 +28,7 @@ const MemberCreatePage: React.FC = () => {
         dependant,
         interest,
         actions
-    } = useMemberCreate();
+    } = useMemberUpdate();
 
     // // Debug log
     // useEffect(() => {
@@ -45,7 +45,7 @@ const MemberCreatePage: React.FC = () => {
     const currentStepKey = ui.steps[ui.currentStep].key;
 
     return (
-        <Card title="Create New Member" style={{ margin: '20px' }} loading={ui.loading}>
+        <Card title="Update Member" style={{ margin: '20px' }} loading={ui.loading}>
             {/* Stepper navigation */}
             <Row>
                 <Col span={24}>
@@ -207,16 +207,14 @@ const MemberCreatePage: React.FC = () => {
                                 loading={ui.loading}
                                 onClick={actions.submit}
                             >
-                                Save Member
+                                Update Member
                             </Button>
                         )}
                     </Space>
                 </Col>
             </Row>
-
-
         </Card>
     );
 };
 
-export default MemberCreatePage;
+export default MemberUpdatePage;

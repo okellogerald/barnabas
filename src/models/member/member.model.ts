@@ -4,6 +4,7 @@ import { FellowshipDTO } from "@/data/fellowship";
 import { OpportunityDTO } from "@/data/volunteer";
 import { Fellowship } from "@/models/fellowship";
 import { VolunteerOpportunity } from "@/models/volunteer";
+import { EducationLevel, Gender, MaritalStatus, MarriageType, MemberRole } from "@/constants";
 
 /**
  * Member model representing a church member
@@ -11,40 +12,40 @@ import { VolunteerOpportunity } from "@/models/volunteer";
 export class Member {
   id: string;
   churchId: string;
-  envelopeNumber: string | null;
+  envelopeNumber?: string | null;
   firstName: string;
-  middleName: string | null;
+  middleName?: string | null;
   lastName: string;
-  gender: string;
-  dateOfBirth: Date | null;
-  placeOfBirth: string | null;
-  profilePhoto: string | null;
-  maritalStatus: string;
-  marriageType: string | null;
-  dateOfMarriage: Date | null;
-  spouseName: string | null;
-  placeOfMarriage: string | null;
+  gender: Gender;
+  dateOfBirth?: Date | null;
+  placeOfBirth?: string | null;
+  profilePhoto?: string | null;
+  maritalStatus: MaritalStatus;
+  marriageType: MarriageType;
+  dateOfMarriage?: Date | null;
+  spouseName?: string | null;
+  placeOfMarriage?: string | null;
   phoneNumber: string;
-  email: string | null;
-  spousePhoneNumber: string | null;
-  residenceNumber: string | null;
-  residenceBlock: string | null;
-  postalBox: string | null;
-  residenceArea: string | null;
-  formerChurch: string | null;
-  occupation: string | null;
-  placeOfWork: string | null;
-  educationLevel: string;
-  profession: string | null;
-  memberRole: string;
+  email?: string | null;
+  spousePhoneNumber?: string | null;
+  residenceNumber?: string | null;
+  residenceBlock?: string | null;
+  postalBox?: string | null;
+  residenceArea?: string | null;
+  formerChurch?: string | null;
+  occupation?: string | null;
+  placeOfWork?: string | null;
+  educationLevel: EducationLevel;
+  profession?: string | null;
+  memberRole: MemberRole;
   isBaptized: boolean;
   isConfirmed: boolean;
   partakesLordSupper: boolean;
-  fellowshipId: string | null;
-  nearestMemberName: string | null;
-  nearestMemberPhone: string | null;
+  fellowshipId: string;
+  nearestMemberName?: string | null;
+  nearestMemberPhone?: string | null;
   attendsFellowship: boolean;
-  fellowshipAbsenceReason: string | null;
+  fellowshipAbsenceReason?: string | null;
   createdAt: Date;
   updatedAt: Date;
 
@@ -115,8 +116,8 @@ export class Member {
         churchId: this.churchId,
         name: typeof i === "object" && i.name ? i.name : "Unknown",
         description: null,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
     }) || [];
   }
@@ -224,15 +225,13 @@ export class Member {
       firstName: this.firstName,
       middleName: this.middleName,
       lastName: this.lastName,
-      gender: this.gender as any,
-      dateOfBirth: this.dateOfBirth ? this.dateOfBirth.toISOString() : null,
+      gender: this.gender,
+      dateOfBirth: this.dateOfBirth,
       placeOfBirth: this.placeOfBirth,
       profilePhoto: this.profilePhoto,
-      maritalStatus: this.maritalStatus as any,
-      marriageType: this.marriageType as any,
-      dateOfMarriage: this.dateOfMarriage
-        ? this.dateOfMarriage.toISOString()
-        : null,
+      maritalStatus: this.maritalStatus,
+      marriageType: this.marriageType,
+      dateOfMarriage: this.dateOfMarriage,
       spouseName: this.spouseName,
       placeOfMarriage: this.placeOfMarriage,
       phoneNumber: this.phoneNumber,
@@ -245,9 +244,9 @@ export class Member {
       formerChurch: this.formerChurch,
       occupation: this.occupation,
       placeOfWork: this.placeOfWork,
-      educationLevel: this.educationLevel as any,
+      educationLevel: this.educationLevel,
       profession: this.profession,
-      memberRole: this.memberRole as any,
+      memberRole: this.memberRole,
       isBaptized: this.isBaptized,
       isConfirmed: this.isConfirmed,
       partakesLordSupper: this.partakesLordSupper,
@@ -256,8 +255,8 @@ export class Member {
       nearestMemberPhone: this.nearestMemberPhone,
       attendsFellowship: this.attendsFellowship,
       fellowshipAbsenceReason: this.fellowshipAbsenceReason,
-      createdAt: this.createdAt.toISOString(),
-      updatedAt: this.updatedAt.toISOString(),
+      createdAt: this.createdAt,
+      updatedAt: this.updatedAt,
       dependants: this.dependants.map((d) => d.toDTO()),
       fellowship: this.fellowship ? this.fellowship.toDTO() : null,
       interests: this.interests.map((i) => i.toDTO()),
@@ -273,15 +272,13 @@ export class Member {
       firstName: this.firstName,
       middleName: this.middleName,
       lastName: this.lastName,
-      gender: this.gender as any,
-      dateOfBirth: this.dateOfBirth ? this.dateOfBirth.toISOString() : null,
+      gender: this.gender,
+      dateOfBirth: this.dateOfBirth,
       placeOfBirth: this.placeOfBirth,
       profilePhoto: this.profilePhoto,
-      maritalStatus: this.maritalStatus as any,
-      marriageType: this.marriageType as any,
-      dateOfMarriage: this.dateOfMarriage
-        ? this.dateOfMarriage.toISOString()
-        : null,
+      maritalStatus: this.maritalStatus,
+      marriageType: this.marriageType,
+      dateOfMarriage: this.dateOfMarriage,
       spouseName: this.spouseName,
       placeOfMarriage: this.placeOfMarriage,
       phoneNumber: this.phoneNumber,
@@ -294,9 +291,9 @@ export class Member {
       formerChurch: this.formerChurch,
       occupation: this.occupation,
       placeOfWork: this.placeOfWork,
-      educationLevel: this.educationLevel as any,
+      educationLevel: this.educationLevel,
       profession: this.profession,
-      memberRole: this.memberRole as any,
+      memberRole: this.memberRole,
       isBaptized: this.isBaptized,
       isConfirmed: this.isConfirmed,
       partakesLordSupper: this.partakesLordSupper,
@@ -309,8 +306,8 @@ export class Member {
         id: d.id,
         firstName: d.firstName,
         lastName: d.lastName,
-        dateOfBirth: d.dateOfBirth ? d.dateOfBirth.toISOString() : null,
-        relationship: d.relationship as any,
+        dateOfBirth: d.dateOfBirth,
+        relationship: d.relationship,
       })),
       interests: this.interests.map((i) => i.id),
     };

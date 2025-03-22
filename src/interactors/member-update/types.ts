@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { MemberCreateFormValues } from "./schemas/schemas.member";
+import { MemberUpdateFormValues } from "./schemas/schemas.member";
 
 /**
  * Step definition
@@ -77,5 +77,5 @@ export type InterestsInfoKeys = "interests";
  */
 export type StepValidationMap = Record<
     FormSectionKey,
-    (keyof MemberCreateFormValues)[]
+    (keyof MemberUpdateFormValues)[]
 >;

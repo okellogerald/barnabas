@@ -1,3 +1,4 @@
+import { DependantRelationship } from "@/constants";
 import { DependantDTO } from "@/data/member";
 
 /**
@@ -10,7 +11,7 @@ export class Dependant {
     firstName: string;
     lastName: string;
     dateOfBirth: Date | null;
-    relationship: string;
+    relationship: DependantRelationship;
     createdAt: Date;
     updatedAt: Date;
 
@@ -71,12 +72,10 @@ export class Dependant {
             memberId: this.memberId,
             firstName: this.firstName,
             lastName: this.lastName,
-            dateOfBirth: this.dateOfBirth
-                ? this.dateOfBirth.toISOString()
-                : null,
-            relationship: this.relationship as any,
-            createdAt: this.createdAt.toISOString(),
-            updatedAt: this.updatedAt.toISOString(),
+            dateOfBirth: this.dateOfBirth,
+            relationship: this.relationship,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
         };
     }
 }

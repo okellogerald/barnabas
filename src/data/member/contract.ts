@@ -1,12 +1,7 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import {
-    createMemberSchema,
-    memberQueryParamsSchema,
-    memberSchema,
-    updateMemberSchema,
-} from "./schema";
-import { badRequestErrorSchema } from "@/data/_common";
+import { MemberSchemas } from "./schema";
+import { CommonSchemas } from "@/data/_common";
 
 const c = initContract();
 
@@ -14,12 +9,9 @@ export const memberContract = c.router({
     getAll: {
         method: "GET",
         path: "",
-        query: memberQueryParamsSchema,
+        query: MemberSchemas.queryParamsSchema,
         responses: {
-            200: z.object({
-                results: z.array(memberSchema),
-                total: z.number(),
-            }),
+            200: MemberSchemas.paginatedListResult,
             401: z.null(),
             403: z.null(),
         },
@@ -35,7 +27,7 @@ export const memberContract = c.router({
             ),
         }),
         responses: {
-            200: memberSchema,
+            200: MemberSchemas.memberSchema,
             401: z.null(),
             403: z.null(),
             404: z.null(),
@@ -47,12 +39,12 @@ export const memberContract = c.router({
         method: "POST",
         path: "",
         responses: {
-            201: memberSchema,
-            400: badRequestErrorSchema,
+            201: MemberSchemas.memberSchema,
+            400: CommonSchemas.badRequestError,
             401: z.null(),
             403: z.null(),
         },
-        body: createMemberSchema,
+        body: MemberSchemas.createMemberSchema,
         summary: "Create new member",
     },
 
@@ -60,13 +52,13 @@ export const memberContract = c.router({
         method: "PATCH",
         path: "/:id",
         responses: {
-            200: memberSchema,
-            400: badRequestErrorSchema,
+            200: MemberSchemas.memberSchema,
+            400: CommonSchemas.badRequestError,
             401: z.null(),
             403: z.null(),
             404: z.null(),
         },
-        body: updateMemberSchema,
+        body: MemberSchemas.updateMemberSchema,
         summary: "Update member",
     },
 
@@ -74,7 +66,7 @@ export const memberContract = c.router({
         method: "DELETE",
         path: "/:id",
         responses: {
-            200: memberSchema,
+            200: MemberSchemas.memberSchema,
             401: z.null(),
             403: z.null(),
             404: z.null(),

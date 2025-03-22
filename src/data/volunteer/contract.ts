@@ -1,11 +1,9 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 import {
-    createOpportunitySchema,
-    opportunitySchema,
-    updateOpportunitySchema,
+    OpportunitySchemas
 } from "./schema";
-import { badRequestErrorSchema } from "@/data/_common";
+import { CommonSchemas } from "../_common";
 
 const c = initContract();
 
@@ -14,7 +12,7 @@ export const opportunityContract = c.router({
         method: "GET",
         path: "/",
         responses: {
-            200: z.array(opportunitySchema),
+            200: OpportunitySchemas.opportunityArray,
             401: z.null(),
             403: z.null(),
         },
@@ -25,7 +23,7 @@ export const opportunityContract = c.router({
         method: "GET",
         path: "/:id",
         responses: {
-            200: opportunitySchema,
+            200: OpportunitySchemas.opportunity,
             401: z.null(),
             403: z.null(),
             404: z.null(),
@@ -37,12 +35,12 @@ export const opportunityContract = c.router({
         method: "POST",
         path: "/",
         responses: {
-            201: opportunitySchema,
-            400: badRequestErrorSchema,
+            201: OpportunitySchemas.opportunity,
+            400: CommonSchemas.badRequestError,
             401: z.null(),
             403: z.null(),
         },
-        body: createOpportunitySchema,
+        body: OpportunitySchemas.createOpportunity,
         summary: "Create new volunteer opportunity",
     },
 
@@ -50,13 +48,13 @@ export const opportunityContract = c.router({
         method: "PATCH",
         path: "/:id",
         responses: {
-            200: opportunitySchema,
-            400: badRequestErrorSchema,
+            200: OpportunitySchemas.opportunity,
+            400: CommonSchemas.badRequestError,
             401: z.null(),
             403: z.null(),
             404: z.null(),
         },
-        body: updateOpportunitySchema,
+        body: OpportunitySchemas.updateOpportunity,
         summary: "Update volunteer opportunity",
     },
 
@@ -64,7 +62,7 @@ export const opportunityContract = c.router({
         method: "DELETE",
         path: "/:id",
         responses: {
-            200: opportunitySchema,
+            200: OpportunitySchemas.opportunity,
             401: z.null(),
             403: z.null(),
             404: z.null(),

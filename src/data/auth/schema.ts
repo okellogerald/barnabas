@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { idSchema, timestampFields } from "@/data/_common";
+import { CommonSchemas } from "../_common";
 
 // Login request schema
 export const loginRequestSchema = z.object({
@@ -11,15 +11,18 @@ export type LoginRequest = z.infer<typeof loginRequestSchema>;
 
 // User schema
 export const userSchema = z.object({
-  id: idSchema,
+  id: CommonSchemas.id,
+  ...CommonSchemas.systemDates,
+
+  churchId: CommonSchemas.id,
+  roleId: CommonSchemas.id,
+
   name: z.string(),
   email: z.string().email(),
   phoneNumber: z.string().nullable(),
-  churchId: idSchema,
-  roleId: idSchema,
+
   isActive: z.number(),
   isDeleted: z.number(),
-  ...timestampFields,
 });
 
 export type UserDTO = z.infer<typeof userSchema>;

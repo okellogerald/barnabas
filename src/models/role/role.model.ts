@@ -66,8 +66,8 @@ export class Role {
             name: this.name,
             churchId: this.churchId,
             description: this.description,
-            createdAt: this.createdAt.toISOString(),
-            updatedAt: this.updatedAt.toISOString(),
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
         };
     }
 }

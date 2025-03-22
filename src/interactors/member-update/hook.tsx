@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { notifyUtils } from "@/utilities/notification.utils";
-import { memnberCreateService } from "./service";
+import { memnberUpdateService } from "./service";
 import { validateSection, validateDependantSection } from "./schemas/schemas.member";
 
 // Import custom form hooks
@@ -19,7 +19,7 @@ import { useStore } from "zustand";
 /**
  * Result of the member create hook
  */
-export interface UseMemberCreateResult {
+export interface UseMemberUpdateResult {
   // UI state from store
   ui: {
     currentStep: number;
@@ -53,14 +53,14 @@ export interface UseMemberCreateResult {
  * Hook for managing the member creation process
  * Integrates all section-specific hooks and uses the UI store for step management
  */
-export const useMemberCreate = (): UseMemberCreateResult => {
+export const useMemberUpdate = (): UseMemberUpdateResult => {
   // Get UI state from store
   const uiStore = useStore(useMemberCreateUIStore);
 
   // Create mutation for form submission
   const mutation = useMutation({
-    mutationKey: ["member-create"],
-    mutationFn: memnberCreateService.submitForm,
+    mutationKey: ["member-update"],
+    mutationFn: memnberUpdateService.submitForm,
   });
 
   // Initialize section hooks

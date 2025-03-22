@@ -5,7 +5,7 @@ import {
     fellowshipSchema,
     updateFellowshipSchema,
 } from "./schema";
-import { badRequestErrorSchema } from "@/data/_common";
+import { CommonSchemas } from "../_common";
 
 const c = initContract();
 
@@ -38,7 +38,7 @@ export const fellowshipContract = c.router({
         path: "",
         responses: {
             201: fellowshipSchema,
-            400: badRequestErrorSchema,
+            400: CommonSchemas.badRequestError,
             401: z.null(),
             403: z.null(),
         },
@@ -51,7 +51,7 @@ export const fellowshipContract = c.router({
         path: "/:id",
         responses: {
             200: fellowshipSchema,
-            400: badRequestErrorSchema,
+            400: CommonSchemas.badRequestError,
             401: z.null(),
             403: z.null(),
             404: z.null(),
