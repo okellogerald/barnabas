@@ -4,6 +4,7 @@ import { DMPTable } from "@/components/table";
 import { MemberListActions } from "./types";
 import { MembersTableState } from "./store.table";
 import { JSX } from "react";
+import { Navigation } from "@/app";
 
 /**
  * Parameters for rendering the member table
@@ -34,6 +35,11 @@ export const renderMemberTable = (params: TableRenderParams): JSX.Element => {
         <DMPTable
             dataSource={members}
             rowKey="id"
+            onRow={(data) => {
+                return {
+                    onClick: () => Navigation.Members.toDetails(data.id)
+                }
+            }}
             expandable={{
                 expandedRowKeys,
                 onExpand(_, record) {

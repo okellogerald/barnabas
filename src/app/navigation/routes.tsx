@@ -4,12 +4,15 @@ import AppLayout from '@/components/layout/app.layout';
 import { ROUTES } from './constants';
 import { AuthManager } from '@/managers/auth/auth.manager';
 import ProtectedRoute from './protected_route';
+import { MemberEditRouteLoader } from '@/pages/member-edit/loader';
 
 // Lazy-loaded components
 const LoginPage = lazy(() => import('@/pages/auth/login.page'));
 const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard.page'));
 const MembersPage = lazy(() => import('@/pages/member-list/member_list.page'));
 const MemberCreatePage = lazy(() => import('@/pages/member-create/member_create.page'));
+const MemberEditPage = lazy(() => import('@/pages/member-edit/member_edit.page'));
+const MemberDetailsPage = lazy(() => import('@/pages/member-details/member_details.page'));
 // const MemberDetailsPage = lazy(() => import('@/pages/members/member-details.page'));
 // const MemberEditPage = lazy(() => import('@/pages/members/member-edit.page'));
 // const FellowshipsPage = lazy(() => import('@/pages/fellowships/fellowships.page'));
@@ -70,6 +73,8 @@ const AppRoutes: React.FC = () => {
           {/* Members routes */}
           <Route path={ROUTES.MEMBERS.LIST} element={<MembersPage />} />
           <Route path={ROUTES.MEMBERS.CREATE} element={<MemberCreatePage />} />
+          <Route path={ROUTES.MEMBERS.EDIT} loader={MemberEditRouteLoader} element={<MemberEditPage />} />
+          <Route path={ROUTES.MEMBERS.DETAILS} loader={MemberEditRouteLoader} element={<MemberDetailsPage />} />
 
           {/* 404 catch-all */}
           <Route path="*" element={<NotFoundPage />} />

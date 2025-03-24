@@ -10,7 +10,7 @@ export class Dependant {
     memberId: string;
     firstName: string;
     lastName: string;
-    dateOfBirth: Date | null;
+    dateOfBirth?: Date | null;
     relationship: DependantRelationship;
     createdAt: Date;
     updatedAt: Date;

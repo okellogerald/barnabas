@@ -21,7 +21,7 @@ const dependantSchema = z.object({
 
     firstName: CommonSchemas.name,
     lastName: CommonSchemas.name,
-    dateOfBirth: CommonSchemas.date.nullable(),
+    dateOfBirth: CommonSchemas.date.nullable().optional(),
     relationship: z.nativeEnum(DependantRelationship),
 });
 
@@ -54,7 +54,7 @@ const memberSchema = z.object({
     // required
     fellowshipId: CommonSchemas.id,
     firstName: CommonSchemas.name,
-    middleName: CommonSchemas.name.nullable().optional(),
+    dateOfBirth: CommonSchemas.date,
     lastName: CommonSchemas.name,
     phoneNumber:CommonSchemas.phoneNumber,
     gender: z.nativeEnum(Gender).default(Gender.Male),
@@ -62,6 +62,7 @@ const memberSchema = z.object({
     maritalStatus: z.nativeEnum(MaritalStatus).default(MaritalStatus.Single),
     marriageType: z.nativeEnum(MarriageType).default(MarriageType.None),
     educationLevel: z.nativeEnum(EducationLevel).default(EducationLevel.Primary),
+    middleName: CommonSchemas.name.nullable().optional(),
 
     // with default
     isBaptized: z.boolean().default(false),
@@ -71,7 +72,6 @@ const memberSchema = z.object({
 
     // optional
     envelopeNumber: z.string().nullable().optional(),
-    dateOfBirth: CommonSchemas.date.nullable().optional(),
     placeOfBirth: z.string().nullable().optional(),
     profilePhoto: z.string().nullable().optional(),
     dateOfMarriage: CommonSchemas.date.nullable().optional(),

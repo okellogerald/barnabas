@@ -2,6 +2,7 @@ import {
     CreateMemberDTO,
     MemberQueryParams,
     MemberRepository,
+    UpdateMemberDTO,
 } from "@/data/member";
 import { Actions, PermissionsManager } from "@/managers/auth/permission";
 import { Member } from "@/models";
@@ -78,6 +79,43 @@ export class MemberManager {
         }
         const response = await this._repo.create(member);
         const dto = await this._repo.getById(response.id);
+        if (!dto) throw new Error("Member not found!");
         return Member.fromDTO(dto);
+    }
+
+    public async getMemberByID(memberId: string): Promise<Member | undefined> {
+        if (
+            !this._permissionsManager.hasPermission(Actions.MEMBER_FIND_BY_ID)
+        ) {
+            throw PermissionError.fromAction(Actions.MEMBER_FIND_BY_ID);
+        }
+
+        const dto = await this._repo.getById(memberId);
+        if (!dto) return undefined;
+        return Member.fromDTO(dto);
+    }
+
+    public async updateMember(
+        memberId: string,
+        data: UpdateMemberDTO,
+    ): Promise<Member> {
+        if (
+            !this._permissionsManager.hasPermission(Actions.MEMBER_UPDATE)
+        ) {
+            throw PermissionError.fromAction(Actions.MEMBER_UPDATE);
+        }
+
+        const dto = await this._repo.update(memberId, data);
+        return Member.fromDTO(dto);
+    }
+
+    public async deleteMember(memberId: string): Promise<void> {
+        if (
+            !this._permissionsManager.hasPermission(Actions.MEMBER_DELETE_BY_ID)
+        ) {
+            throw PermissionError.fromAction(Actions.MEMBER_DELETE_BY_ID);
+        }
+
+        await this._repo.delete(memberId);
     }
 }

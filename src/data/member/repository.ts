@@ -52,12 +52,15 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
         id: string,
         //eager: string = "fellowship,interests,dependants",
         eager: string = "fellowship",
-    ): Promise<MemberDTO> {
+    ): Promise<MemberDTO | undefined> {
         try {
             const result = await this.client.getById({
                 params: { id },
                 query: { eager },
             });
+            if (result.status === 404) {
+                return undefined;
+            }
             return this.handleResponse<MemberDTO>(result, 200);
         } catch (error) {
             console.error(`Error in getById with id ${id}:`, error);

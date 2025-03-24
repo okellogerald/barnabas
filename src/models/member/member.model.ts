@@ -17,7 +17,7 @@ export class Member {
   middleName?: string | null;
   lastName: string;
   gender: Gender;
-  dateOfBirth?: Date | null;
+  dateOfBirth: Date;
   placeOfBirth?: string | null;
   profilePhoto?: string | null;
   maritalStatus: MaritalStatus;
@@ -62,7 +62,7 @@ export class Member {
     this.middleName = dto.middleName;
     this.lastName = dto.lastName;
     this.gender = dto.gender;
-    this.dateOfBirth = dto.dateOfBirth ? new Date(dto.dateOfBirth) : null;
+    this.dateOfBirth = dto.dateOfBirth;
     this.placeOfBirth = dto.placeOfBirth;
     this.profilePhoto = dto.profilePhoto;
     this.maritalStatus = dto.maritalStatus;
