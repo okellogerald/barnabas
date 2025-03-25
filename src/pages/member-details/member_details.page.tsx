@@ -2,21 +2,20 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Breadcrumb, Flex, Space, message, Divider } from 'antd';
 import { LeftOutlined, EditOutlined, DeleteOutlined, PrinterOutlined } from '@ant-design/icons';
-import { AsyncPageContentLayout } from '@/components/layout';
 import { UI_STATE_TYPE } from '@/interactors/_state';
 
-// Component imports
 import { MemberHeader } from './components/header';
 import { PersonalInfoCard } from './components/personal_info_card';
 import { ChurchInfoCard } from './components/church_info_card';
 import { FamilyInfoCard } from './components/family_info_card';
 import { VolunteerInfoCard } from './components/volunteer_info_card';
 import { AdditionalInfoCard } from './components/additional_info_card';
-import { MemberDetailsSuccessState, MemberDetailsUIState } from '@/interactors/member-details';
 import { useMemberDetails } from '@/interactors/member-details';
+import { AsyncPageLayout, AsyncSuccessState } from '@/interactors/_new_state';
+import { Member } from '@/models';
 
 // Header component with breadcrumb and actions
-const MemberDetailsHeader: React.FC<{ state: MemberDetailsSuccessState }> = ({ state }) => {
+const MemberDetailsHeader: React.FC<{ state: AsyncSuccessState<Member> }> = ({ state }) => {
     const navigate = useNavigate();
     const { memberId } = useParams<{ memberId: string }>();
 
@@ -74,8 +73,8 @@ const MemberDetailsHeader: React.FC<{ state: MemberDetailsSuccessState }> = ({ s
 };
 
 // Main content when data is successfully loaded
-const SuccessView: React.FC<{ state: MemberDetailsSuccessState }> = ({ state }) => {
-    const { member } = state;
+const SuccessView: React.FC<{ state: AsyncSuccessState<Member> }> = ({ state }) => {
+    const { data: member } = state;
 
     return (
         <Flex vertical gap="large">
@@ -106,14 +105,14 @@ const SuccessView: React.FC<{ state: MemberDetailsSuccessState }> = ({ state }) 
 
 // Main component
 export const MemberDetailsPage: React.FC = () => {
-    const { memberId } = useParams<{ memberId: string }>();
+    const { id: memberId } = useParams<{ id: string }>();
     const state = useMemberDetails(memberId);
 
     return (
-        <AsyncPageContentLayout
+        <AsyncPageLayout
             state={state}
             SuccessView={SuccessView}
-            header={<MemberDetailsHeader state={state} />}
+            header={MemberDetailsHeader}
         />
     );
 };

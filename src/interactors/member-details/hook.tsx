@@ -1,73 +1,80 @@
-import { useState, useEffect } from 'react';
-import { message } from 'antd';
-import { useNavigate } from 'react-router-dom';
-import { MemberManager } from '@/managers/member';
-import { MemberDetailsUIState, LoadingState, SuccessState, ErrorState } from './types';
+import { useEffect } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { QueryKeys } from '../_queries';
+import { MemberDetailsService } from './service';
+import { determineQueryState } from '../_new_state/query_matcher';
+import { AsyncState, AsyncStateFactory } from '../_new_state/types';
+import { useAppNavigation } from '@/app';
+import { Member } from '@/models';
 
 /**
  * Custom hook for managing member details
  */
-export const useMemberDetails = (memberId?: string): MemberDetailsUIState => {
-    const [state, setState] = useState<MemberDetailsUIState>(new LoadingState());
-    const navigate = useNavigate();
+export const useMemberDetails = (memberId?: string): AsyncState => {
+    const loadMemberQuery = useQuery({
+        queryKey: [QueryKeys.members.detail, memberId],
+        queryFn: () => MemberDetailsService.loadMember(memberId),
+    })
 
-    // Load member data
-    const loadMember = async (id?: string) => {
-        console.log("member id: ", memberId)
-        try {
-            setState(new LoadingState());
-            const targetId = id || memberId;
-
-            if (!targetId) {
-                throw new Error('Member ID is required');
-            }
-
-            const response = await MemberManager.instance.getMemberByID(targetId);
-
-            if (!response) {
-                throw new Error('Member not found');
-            }
-
-            setState(new SuccessState(response, {
-                loadMember,
-                deleteMember
-            }));
-        } catch (error) {
-            console.error('Error loading member:', error);
-            setState(new ErrorState((error as Error).message || 'Failed to load member details'));
-        }
-    };
-
-    // Delete member
-    const deleteMember = async () => {
-        try {
-            if (!memberId) {
-                throw new Error('Member ID is required');
-            }
-
-            await MemberManager.instance.deleteMember(memberId);
-            message.success('Member has been deleted');
-            navigate('/members');
-        } catch (error) {
-            console.error('Error deleting member:', error);
-            message.error('Failed to delete member: ' + ((error as Error).message || 'Unknown error'));
-        }
-    };
-
-    // Initialize state with actions on first render
-    useEffect(() => {
-        if (!state) {
-            setState(new LoadingState());
-        }
-    }, [loadMember, deleteMember]);
+    const deleteMemberMutation = useMutation({
+        mutationKey: ["delete-member", memberId],
+        mutationFn: () => MemberDetailsService.deleteMember(memberId)
+    })
 
     // Load member data when memberId changes or on initial render
     useEffect(() => {
-        if (memberId && state) {
-            loadMember(memberId);
-        }
-    }, [memberId, state]);
+        if (memberId) { loadMemberQuery.refetch() }
+    }, [memberId]);
 
-    // Return loading state with actions if state is not yet initialized
-    return state || new LoadingState();
+    const refetchMember = async () => {
+        await loadMemberQuery.refetch()
+    }
+
+    // Use the state determination utility
+    return determineQueryState<Member | undefined>({
+        queryResult: loadMemberQuery,
+        loadingMessage: `Loading entity ${memberId}...`,
+        onAuthorizationError: () =>
+            AsyncStateFactory.unauthorized({
+                message: 'You do not have permission to view member details',
+                actions: {
+                    goBack: () => useAppNavigation().goBack(),
+                    login: () => useAppNavigation().toLogin(),
+                    retry: () => refetchMember(),
+                }
+            }),
+        onCustomSuccess: function (data) {
+            if (!data) {
+                AsyncStateFactory.notFound({
+                    message: `Member with ID ${memberId} not found`,
+                    resourceType: "Member",
+                    actions: {
+                        goBack: () => useAppNavigation().goBack(),
+                        retry: () => refetchMember(),
+                        goToList: () => useAppNavigation().Members.toList(),
+                    }
+                });
+            }
+            return AsyncStateFactory.success(data, {
+                refetch: () => refetchMember(),
+                delete: () => deleteMemberMutation.mutateAsync()
+            });
+        }
+    });
+
+    // if (loadMemberQuery.data) {
+    //     return new MemberDetailsSuccessState(loadMemberQuery.data!, {
+    //         loadMember: () => refetchMember(),
+    //         deleteMember: () => deleteMemberMutation.mutateAsync()
+    //     })
+    // }
+
+    // if (loadMemberQuery.error) {
+    //     return new MemberDetailsErrorState(loadMemberQuery.error.message, {
+    //         retry: refetchMember,
+    //     })
+    // }
+
+    // // Return loading state with actions if state is not yet initialized
+    // return new MemberDetailsLoadingState();
 };

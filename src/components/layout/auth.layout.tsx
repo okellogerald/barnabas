@@ -8,7 +8,7 @@ export const AuthLayout: React.FC<PropsWithChildren> = (props) => {
         <Layout style={{ width: "100vw", height: "100vh" }}>
             <Header style={{ backgroundColor: "Background" }}>
                 <Flex align="center" justify="center" style={{ height: "100%" }}>
-                    <Typography.Text>DMP</Typography.Text>
+                    <Typography.Text>B</Typography.Text>
                 </Flex>
             </Header>
             <Content>

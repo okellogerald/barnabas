@@ -26,7 +26,7 @@ export const ChurchInfoCard: React.FC<ChurchInfoCardProps> = ({ member }) => {
                     <span>Church Information</span>
                 </Flex>
             }
-            bordered={false}
+            variant='outlined'
             style={{ height: '100%' }}
         >
             <Descriptions column={1} bordered size="small">

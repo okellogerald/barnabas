@@ -56,7 +56,7 @@ export const FamilyInfoCard: React.FC<FamilyInfoCardProps> = ({ member }) => {
                     <span>Family Information</span>
                 </Flex>
             }
-            bordered={false}
+            variant='outlined'
             style={{ height: '100%' }}
         >
             <Descriptions column={1} bordered size="small">

@@ -10,16 +10,6 @@ interface VolunteerInfoCardProps {
 }
 
 export const VolunteerInfoCard: React.FC<VolunteerInfoCardProps> = ({ member }) => {
-    // Check if the member holds an official position in their fellowship
-    const hasOfficialPosition = () => {
-        if (!member.fellowship) return false;
-
-        return member.fellowship.chairmanId === member.id ||
-            member.fellowship.deputyChairmanId === member.id ||
-            member.fellowship.secretaryId === member.id ||
-            member.fellowship.treasurerId === member.id;
-    };
-
     // Get the position name if the member holds one
     const getOfficialPosition = () => {
         if (!member.fellowship) return null;
@@ -47,7 +37,7 @@ export const VolunteerInfoCard: React.FC<VolunteerInfoCardProps> = ({ member }) 
                     <span>Volunteer Information</span>
                 </Flex>
             }
-            bordered={false}
+            variant='outlined'
             style={{ height: '100%' }}
         >
             {/* Official positions */}

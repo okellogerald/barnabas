@@ -2,7 +2,7 @@ import { type AppRouter, initClient } from "@ts-rest/core";
 import { AuthManager } from "@/managers/auth/auth.manager";
 import { v4 as uuidv4 } from "uuid";
 import type { InitClientArgs } from "@ts-rest/core";
-import { BadRequestError } from "@/data/_common";
+import { ApiError } from "@/data/_common";
 import { AppConfig } from "@/app";
 
 /**
@@ -96,52 +96,60 @@ export class BaseRepository<TContract extends AppRouter> {
             return result.body as T;
         }
 
-        // Handle different error status codes
-        switch (result.status) {
-            case 400:
-                throw new Error(
-                    this.formatErrorMessage(result.body as BadRequestError),
-                );
-            case 401:
-                throw new Error("Authentication failed. Please log in again.");
-            case 403:
-                throw new Error(
-                    "You don't have permission to perform this action.",
-                );
-            case 404:
-                throw new Error("The requested resource was not found.");
-            case 500:
-                throw new Error("Server error. Please try again later.");
-            default:
-                throw new Error(
-                    "An unexpected error occurred. Please try again.",
-                );
-        }
+        // Extract error message from response body
+        const errorMessage = this.extractErrorMessage(result.body);
+
+        // Throw ApiError with status code and message
+        throw new ApiError(
+            result.status,
+            errorMessage || this.getDefaultErrorMessage(result.status),
+        );
     }
 
     /**
-     * Formats error messages from a BadRequestError object
+     * Extracts error message from response body
      */
-    private formatErrorMessage(error: BadRequestError): string {
-        if (!error) return "Invalid request";
+    private extractErrorMessage(errorBody: unknown): string | undefined {
+        if (!errorBody) return undefined;
 
-        // Handle string message
-        if (typeof error.message === "string") {
-            return error.message;
+        if (typeof errorBody === "string") return errorBody;
+
+        if (typeof errorBody === "object" && errorBody !== null) {
+            const error = errorBody as any;
+
+            if (typeof error.message === "string") return error.message;
+
+            if (Array.isArray(error.message)) return error.message.join(", ");
+
+            if (typeof error.message === "object") {
+                return Object.entries(error.message)
+                    .map(([field, message]) => `${field}: ${message}`)
+                    .join(", ");
+            }
         }
 
-        // Handle array of messages
-        if (Array.isArray(error.message)) {
-            return error.message.join(", ");
-        }
+        return undefined;
+    }
 
-        // Handle record of messages
-        if (typeof error.message === "object") {
-            return Object.entries(error.message)
-                .map(([field, message]) => `${field}: ${message}`)
-                .join(", ");
+    /**
+     * Gets default error message based on status code
+     */
+    private getDefaultErrorMessage(statusCode: number): string {
+        switch (statusCode) {
+            case 400:
+                return "Invalid request data";
+            case 401:
+                return "Authentication required";
+            case 403:
+                return "You do not have permission to perform this action";
+            case 404:
+                return "The requested resource was not found";
+            case 429:
+                return "Too many requests. Please try again later";
+            case 500:
+                return "Server error. Please try again later";
+            default:
+                return `Error ${statusCode}: An unexpected error occurred`;
         }
-
-        return "Invalid request";
     }
 }

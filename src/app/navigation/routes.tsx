@@ -5,6 +5,7 @@ import { ROUTES } from './constants';
 import { AuthManager } from '@/managers/auth/auth.manager';
 import ProtectedRoute from './protected_route';
 import { MemberEditRouteLoader } from '@/pages/member-edit/loader';
+import { MemberDetailsRouteLoader } from '@/pages/member-details/loader';
 
 // Lazy-loaded components
 const LoginPage = lazy(() => import('@/pages/auth/login.page'));
@@ -74,7 +75,7 @@ const AppRoutes: React.FC = () => {
           <Route path={ROUTES.MEMBERS.LIST} element={<MembersPage />} />
           <Route path={ROUTES.MEMBERS.CREATE} element={<MemberCreatePage />} />
           <Route path={ROUTES.MEMBERS.EDIT} loader={MemberEditRouteLoader} element={<MemberEditPage />} />
-          <Route path={ROUTES.MEMBERS.DETAILS} loader={MemberEditRouteLoader} element={<MemberDetailsPage />} />
+          <Route path={ROUTES.MEMBERS.DETAILS} loader={MemberDetailsRouteLoader} element={<MemberDetailsPage />} />
 
           {/* 404 catch-all */}
           <Route path="*" element={<NotFoundPage />} />
@@ -93,6 +94,7 @@ export const useAppNavigation = () => {
   return {
     toDashboard: () => navigate(ROUTES.DASHBOARD),
     toLogin: () => navigate(ROUTES.LOGIN),
+    goBack: () => navigate(-1),
 
     Members: {
       toList: () => navigate(ROUTES.MEMBERS.LIST),

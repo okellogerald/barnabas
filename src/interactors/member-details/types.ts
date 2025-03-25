@@ -11,21 +11,29 @@ export class MemberDetailsBaseState {
 }
 
 // Loading state class
-export class LoadingState extends MemberDetailsBaseState {
-    constructor() {
+export class MemberDetailsLoadingState extends MemberDetailsBaseState {
+    message?: string;
+
+    constructor(message?: string) {
         super(UI_STATE_TYPE.loading);
+        this.message = message;
     }
 }
 
 // Error state class
-export class ErrorState extends MemberDetailsBaseState {
-    constructor(public error: string) {
+export class MemberDetailsErrorState extends MemberDetailsBaseState {
+    constructor(
+        public error: string,
+        public actions: {
+            retry: () => Promise<void>;
+        },
+    ) {
         super(UI_STATE_TYPE.error);
     }
 }
 
 // Success state class
-export class SuccessState extends MemberDetailsBaseState {
+export class MemberDetailsSuccessState extends MemberDetailsBaseState {
     constructor(
         public member: Member,
         public actions: {
@@ -37,17 +45,8 @@ export class SuccessState extends MemberDetailsBaseState {
     }
 }
 
-// Success state for member details
-export interface MemberDetailsSuccessState extends SuccessState {
-    member: Member;
-    actions: {
-        loadMember: (memberId?: string) => Promise<void>;
-        deleteMember: () => Promise<void>;
-    };
-}
-
 // Union type for all possible states
 export type MemberDetailsUIState =
-    | LoadingState
-    | ErrorState
+    | MemberDetailsLoadingState
+    | MemberDetailsErrorState
     | MemberDetailsSuccessState;

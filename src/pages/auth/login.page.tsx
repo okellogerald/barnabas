@@ -35,7 +35,7 @@ const LoginPage: React.FC = () => {
     <AuthLayout>
       <Space direction="vertical" size="large" style={{ width: '100%' }}>
         <div style={{ textAlign: 'center' }}>
-          <Title level={2}>Church Management</Title>
+          <Title level={2}>Barnabas</Title>
           <Text type="secondary">Sign in to your account</Text>
         </div>
 

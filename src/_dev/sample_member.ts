@@ -1,4 +1,5 @@
 import {
+    DependantRelationship,
     EducationLevel,
     Gender,
     MaritalStatus,
@@ -6,6 +7,7 @@ import {
     MemberRole,
 } from "@/constants";
 import { MemberCreateFormValues } from "../interactors/member-create/schemas/schemas.member";
+import { Member } from "@/models";
 
 export const sampleMember: Partial<MemberCreateFormValues> = {
     "envelopeNumber": "1000",
@@ -43,3 +45,103 @@ export const sampleMember: Partial<MemberCreateFormValues> = {
     "attendsFellowship": true,
     "fellowshipAbsenceReason": undefined,
 };
+
+// Create a sample member
+export const sampleCompleteMember = new Member({
+    id: "8f5a2d68c7e94b1a9c3d71b5e6f84a29",
+    churchId: "19d4e951c2324768b20d689e2fc1ce81",
+    envelopeNumber: "2023",
+    firstName: "Martha",
+    middleName: "Grace",
+    lastName: "Johnson",
+    gender: Gender.Female,
+    dateOfBirth: new Date("1982-03-15"),
+    placeOfBirth: "Nairobi",
+    profilePhoto: "https://img.freepik.com/free-vector/hand-drawn-ethnic-beauty-illustration_23-2150216615.jpg",
+    maritalStatus: MaritalStatus.Married,
+    marriageType: MarriageType.Christian,
+    dateOfMarriage: new Date("2010-06-12"),
+    spouseName: "David Johnson",
+    placeOfMarriage: "Arusha Community Church",
+    phoneNumber: "255789123456",
+    email: "martha.johnson@example.com",
+    spousePhoneNumber: "255789123457",
+    residenceNumber: "Block 7, House 15",
+    residenceBlock: "Upanga East",
+    postalBox: "P.O. Box 32145",
+    residenceArea: "Upanga",
+    formerChurch: "New Life Fellowship",
+    occupation: "School Teacher",
+    placeOfWork: "Upanga Primary School",
+    educationLevel: EducationLevel.Bachelors,
+    profession: "Education",
+    memberRole: MemberRole.Regular,
+    isBaptized: true,
+    isConfirmed: true,
+    partakesLordSupper: true,
+    fellowshipId: "3ebc4ece469349e294b196f69e424ef9",
+    nearestMemberName: "Sarah Mkwawa",
+    nearestMemberPhone: "255712987654",
+    attendsFellowship: true,
+    fellowshipAbsenceReason: null,
+    createdAt: new Date("2024-11-15T09:30:00.000Z"),
+    updatedAt: new Date("2025-02-20T14:15:00.000Z"),
+
+    // Related entities
+    dependants: [
+        {
+            id: "a1b2c3d4e5f64a3b2c1d8e7f6a5b4c3d",
+            churchId: "19d4e951c2324768b20d689e2fc1ce81",
+            memberId: "8f5a2d68c7e94b1a9c3d71b5e6f84a29",
+            firstName: "Samuel",
+            lastName: "Johnson",
+            dateOfBirth: new Date("2012-09-20"),
+            relationship: DependantRelationship.Child,
+            createdAt: new Date("2024-11-15T09:30:00.000Z"),
+            updatedAt: new Date("2024-11-15T09:30:00.000Z"),
+        },
+        {
+            id: "f5e4d3c2b1a04f5e6d7c8b9a0f1e2d3c",
+            churchId: "19d4e951c2324768b20d689e2fc1ce81",
+            memberId: "8f5a2d68c7e94b1a9c3d71b5e6f84a29",
+            firstName: "Rebecca",
+            lastName: "Johnson",
+            dateOfBirth: new Date("2015-04-10"),
+            relationship: DependantRelationship.Child,
+            createdAt: new Date("2024-11-15T09:30:00.000Z"),
+            updatedAt: new Date("2024-11-15T09:30:00.000Z"),
+        },
+    ],
+
+    fellowship: {
+        id: "3ebc4ece469349e294b196f69e424ef9",
+        churchId: "19d4e951c2324768b20d689e2fc1ce81",
+        name: "TUMAINI",
+        notes: "Tumaini fellowship for the Upanga area",
+        chairmanId: "1d4b928612524eaa93c3d84ecf433ef2",
+        deputyChairmanId: null,
+        secretaryId: "f2a5b97ec31b4d698a21c7dbc7e3a1f9",
+        treasurerId: null,
+        createdAt: new Date("2025-01-05T05:10:38.000Z"),
+        updatedAt: new Date("2025-02-15T05:11:45.000Z"),
+    },
+
+    interests: [
+        {
+            id: "cdd519e8cec247aca455ec05faccfad2",
+            churchId: "19d4e951c2324768b20d689e2fc1ce81",
+            name: "Main Choir",
+            description: "Church's main choir for Sunday services",
+            createdAt: new Date("2025-01-08T08:51:36.000Z"),
+            updatedAt: new Date("2025-01-08T08:51:36.000Z"),
+        },
+        {
+            id: "e7f8a9b0c1d24e3f4a5b6c7d8e9f0a1b",
+            churchId: "19d4e951c2324768b20d689e2fc1ce81",
+            name: "Sunday School Teacher",
+            description: "Volunteer to teach children during Sunday school",
+            createdAt: new Date("2025-01-08T08:52:15.000Z"),
+            updatedAt: new Date("2025-01-08T08:52:15.000Z"),
+        },
+    ],
+});

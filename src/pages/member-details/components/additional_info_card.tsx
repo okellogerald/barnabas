@@ -48,7 +48,7 @@ export const AdditionalInfoCard: React.FC<AdditionalInfoCardProps> = ({ member }
                     <span>Additional Information</span>
                 </Flex>
             }
-            bordered={false}
+            variant='outlined'
         >
             <Descriptions column={1} bordered size="small">
                 <Descriptions.Item label="Member ID">
