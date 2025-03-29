@@ -19,6 +19,7 @@ import { MemberManager } from "@/managers/member";
 import { MEMBER_NOTIFICATIONS } from "@/constants/member";
 import { FormSectionKey } from "./types";
 import { MemberEditFormValues } from "./schemas/schemas.member";
+import { useParams } from "react-router-dom";
 
 // Define the interface for section update data
 interface SectionUpdateData {
@@ -71,7 +72,9 @@ export interface UseMemberEditResult {
  * 
  * @param memberId The ID of the member to edit
  */
-export const useMemberEdit = (memberId: string): UseMemberEditResult => {
+export const useMemberEdit = (): UseMemberEditResult => {
+  const { id: memberId } = useParams<{ id: string }>();
+
   // State for data loading
   const [error] = useState<string | null>(null);
 
@@ -134,7 +137,7 @@ export const useMemberEdit = (memberId: string): UseMemberEditResult => {
   const getFormValues = useCallback(() => {
     return {
       // Member ID
-      id: memberId,
+      id: memberId!,
 
       // Personal information
       ...personal.form.getFieldsValue(),

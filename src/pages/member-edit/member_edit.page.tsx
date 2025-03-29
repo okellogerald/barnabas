@@ -10,7 +10,6 @@ import { MemberEditContactInfo } from '@/interactors/member-edit/schemas/schemas
 import { MemberEditChurchInfo } from '@/interactors/member-edit/schemas/schemas.church';
 import { MemberEditProfessionalInfo } from '@/interactors/member-edit/schemas/schemas.professional';
 import { MemberEditInterestsInfo } from '@/interactors/member-edit/schemas/schemas.interests';
-import { useParams } from 'react-router-dom';
 
 import "./member_edit_page.css";
 
@@ -18,11 +17,8 @@ import "./member_edit_page.css";
  * Component for editing an existing member
  */
 const MemberEditPage: React.FC = () => {
-    const { id: memberId } = useParams<{ id: string }>();
     const [saving, setSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
-
-    if (!memberId) return <></>
 
     // Get all the state and actions from the interactor
     const {
@@ -36,8 +32,8 @@ const MemberEditPage: React.FC = () => {
         interest,
         actions,
         loading,
-        error
-    } = useMemberEdit(memberId);
+        error,
+    } = useMemberEdit();
 
     // Get current step key
     const currentStepKey = ui.steps[ui.currentStep].key;
@@ -198,7 +194,7 @@ const MemberEditPage: React.FC = () => {
                             Manage dependants such as children, relatives, or others in the member's care
                         </Typography.Text>
                         <Divider />
-                        <DependantForm form={dependant.form} memberId={memberId} />
+                        <DependantForm form={dependant.form} />
                     </Card>
                 </div>
 

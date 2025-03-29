@@ -4,13 +4,17 @@ import { QueryKeys } from '../_queries';
 import { MemberDetailsService } from './service';
 import { determineQueryState } from '../_new_state/query_matcher';
 import { AsyncState, AsyncStateFactory } from '../_new_state/types';
-import { useAppNavigation } from '@/app';
+import { Navigation, useAppNavigation } from '@/app';
 import { Member } from '@/models';
+import { MemberDetailsSuccessState } from './types';
+import { useParams } from 'react-router-dom';
 
 /**
  * Custom hook for managing member details
  */
-export const useMemberDetails = (memberId?: string): AsyncState => {
+export const useMemberDetails = (): AsyncState => {
+    const { id: memberId } = useParams<{ id: string }>()
+
     const loadMemberQuery = useQuery({
         queryKey: [QueryKeys.members.detail, memberId],
         queryFn: () => MemberDetailsService.loadMember(memberId),
@@ -24,6 +28,7 @@ export const useMemberDetails = (memberId?: string): AsyncState => {
     // Load member data when memberId changes or on initial render
     useEffect(() => {
         if (memberId) { loadMemberQuery.refetch() }
+        if (!memberId) useAppNavigation().Members.toList()
     }, [memberId]);
 
     const refetchMember = async () => {
@@ -55,26 +60,27 @@ export const useMemberDetails = (memberId?: string): AsyncState => {
                     }
                 });
             }
-            return AsyncStateFactory.success(data, {
-                refetch: () => refetchMember(),
-                delete: () => deleteMemberMutation.mutateAsync()
-            });
+
+            const member = data!
+
+            return new MemberDetailsSuccessState(member, {
+                startDelete: () => {
+                    deleteMemberMutation.mutateAsync()
+                },
+                startRefresh: () => refetchMember(),
+                goToEdit: () => {
+                    console.log("member id: ", member.id)
+                    //useAppNavigation().Members.toEdit(member.id)
+                    Navigation.Members.toEdit(member.id)
+                },
+                goToList: () => {
+                    useAppNavigation().Members.toList()
+                }
+            })
+            // return AsyncStateFactory.success(data, {
+            //     refetch: () => refetchMember(),
+            //     delete: () => deleteMemberMutation.mutateAsync()
+            // });
         }
     });
-
-    // if (loadMemberQuery.data) {
-    //     return new MemberDetailsSuccessState(loadMemberQuery.data!, {
-    //         loadMember: () => refetchMember(),
-    //         deleteMember: () => deleteMemberMutation.mutateAsync()
-    //     })
-    // }
-
-    // if (loadMemberQuery.error) {
-    //     return new MemberDetailsErrorState(loadMemberQuery.error.message, {
-    //         retry: refetchMember,
-    //     })
-    // }
-
-    // // Return loading state with actions if state is not yet initialized
-    // return new MemberDetailsLoadingState();
 };

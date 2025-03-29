@@ -101,6 +101,7 @@ export const FamilyInfoCard: React.FC<FamilyInfoCardProps> = ({ member }) => {
                         rowKey="id"
                         pagination={false}
                         size="small"
+                        bordered
                     />
                 ) : (
                     <Empty description="No dependants" />

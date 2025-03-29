@@ -400,8 +400,6 @@ export class SchemaFormBuilder<T extends z.ZodObject<any>> {
                 .find((e) => e[1] === config.value)?.[1]
         }, [config.value]);
 
-        console.log("enum-select value: ", config.value, value)
-
         const renderFn = () => (
             <EnumSelect
                 value={value}

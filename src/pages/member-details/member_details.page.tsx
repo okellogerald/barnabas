@@ -1,8 +1,6 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { Button, Breadcrumb, Flex, Space, message, Divider } from 'antd';
 import { LeftOutlined, EditOutlined, DeleteOutlined, PrinterOutlined } from '@ant-design/icons';
-import { UI_STATE_TYPE } from '@/interactors/_state';
 
 import { MemberHeader } from './components/header';
 import { PersonalInfoCard } from './components/personal_info_card';
@@ -10,25 +8,21 @@ import { ChurchInfoCard } from './components/church_info_card';
 import { FamilyInfoCard } from './components/family_info_card';
 import { VolunteerInfoCard } from './components/volunteer_info_card';
 import { AdditionalInfoCard } from './components/additional_info_card';
-import { useMemberDetails } from '@/interactors/member-details';
+import { MemberDetailsSuccessState, useMemberDetails } from '@/interactors/member-details';
 import { AsyncPageLayout, AsyncSuccessState } from '@/interactors/_new_state';
 import { Member } from '@/models';
 
 // Header component with breadcrumb and actions
-const MemberDetailsHeader: React.FC<{ state: AsyncSuccessState<Member> }> = ({ state }) => {
-    const navigate = useNavigate();
-    const { memberId } = useParams<{ memberId: string }>();
-
-    if (state.type !== UI_STATE_TYPE.success) return null;
+const MemberDetailsHeader: React.FC<{ state: MemberDetailsSuccessState }> = ({ state }) => {
 
     const { actions } = state;
 
     const handleEdit = () => {
-        navigate(`/members/edit/${memberId}`);
+        actions.goToEdit()
     };
 
     const handleDelete = () => {
-        actions.deleteMember();
+        actions.startDelete();
     };
 
     const handlePrint = () => {
@@ -40,13 +34,13 @@ const MemberDetailsHeader: React.FC<{ state: AsyncSuccessState<Member> }> = ({ s
         <Flex vertical gap="middle" style={{ width: '100%', marginBottom: 16 }}>
             <Breadcrumb
                 items={[
-                    { title: <a onClick={() => navigate('/members')}>Members</a> },
+                    { title: <a onClick={() => actions.goToList()}>Members</a> },
                     { title: 'Member Details' },
                 ]}
             />
 
             <Flex justify="space-between" align="center">
-                <Button icon={<LeftOutlined />} onClick={() => navigate('/members')}>
+                <Button icon={<LeftOutlined />} onClick={() => actions.goToList()}>
                     Back to Members
                 </Button>
 
@@ -105,8 +99,7 @@ const SuccessView: React.FC<{ state: AsyncSuccessState<Member> }> = ({ state }) 
 
 // Main component
 export const MemberDetailsPage: React.FC = () => {
-    const { id: memberId } = useParams<{ id: string }>();
-    const state = useMemberDetails(memberId);
+    const state = useMemberDetails();
 
     return (
         <AsyncPageLayout

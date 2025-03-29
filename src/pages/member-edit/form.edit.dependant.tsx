@@ -10,12 +10,11 @@ import { DateView } from '@/components';
 
 interface DependantFormProps {
   form: FormInstance<any>;
-  memberId: string
 }
 
-export const DependantForm: React.FC<DependantFormProps> = ({ form, memberId }) => {
+export const DependantForm: React.FC<DependantFormProps> = ({ form }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const state = useMemberEdit(memberId);
+  const state = useMemberEdit();
 
   const handleAddDependant = async () => {
     const success = await state.dependant.dependants.add(form.getFieldsValue());

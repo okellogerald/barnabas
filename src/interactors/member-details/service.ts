@@ -1,17 +1,13 @@
-import { sampleCompleteMember } from "@/_dev/sample_member";
 import { MemberManager } from "@/managers/member";
 import { Member } from "@/models";
 import { notifyUtils } from "@/utilities/notification.utils";
 
 export const MemberDetailsService = {
     loadMember: async (memberId?: string): Promise<Member | undefined> => {
-        console.log("member id: ", memberId);
         try {
             if (!memberId) {
                 throw new Error("Member ID is required");
             }
-
-            //return sampleCompleteMember
 
             const member = await MemberManager.instance.getMemberByID(memberId);
 
