@@ -3,6 +3,7 @@ import {
     FellowshipDTO,
     UpdateFellowshipDTO,
 } from "@/data/fellowship";
+import { Member } from "@/models";
 
 /**
  * Fellowship model representing a church fellowship
@@ -11,19 +12,19 @@ export class Fellowship {
     id: string;
     churchId: string;
     name: string;
-    notes: string | null;
-    chairmanId: string | null;
-    deputyChairmanId: string | null;
-    secretaryId: string | null;
-    treasurerId: string | null;
+    notes: string | null | undefined;
+    chairmanId: string | null | undefined;
+    deputyChairmanId: string | null | undefined;
+    secretaryId: string | null | undefined;
+    treasurerId: string | null | undefined;
     createdAt: Date;
     updatedAt: Date;
 
     // Transient properties for related entities
-    chairman?: any;
-    deputyChairman?: any;
-    secretary?: any;
-    treasurer?: any;
+    chairman?: Member;
+    deputyChairman?: Member;
+    secretary?: Member;
+    treasurer?: Member;
     memberCount?: number;
 
     constructor(dto: FellowshipDTO) {
@@ -39,24 +40,51 @@ export class Fellowship {
         this.updatedAt = new Date(dto.updatedAt);
 
         // Handle related entities if present in the DTO
-        if ((dto as any).chairman) {
-            this.chairman = (dto as any).chairman;
+        const dtoAny = dto as FellowshipDTO & {
+            chairman?: Member | Record<string, any>;
+            deputyChairman?: Member | Record<string, any>;
+            secretary?: Member | Record<string, any>;
+            treasurer?: Member | Record<string, any>;
+            memberCount?: number;
+        };
+
+        if (dtoAny.chairman) {
+            // If it's already a Member instance, use it directly
+            if (dtoAny.chairman instanceof Member) {
+                this.chairman = dtoAny.chairman;
+            } 
+            // Otherwise if it's a raw object with member properties, convert it to a Member instance
+            else if (typeof dtoAny.chairman === 'object' && dtoAny.chairman.id) {
+                this.chairman = Member.fromDTO(dtoAny.chairman);
+            }
         }
 
-        if ((dto as any).deputyChairman) {
-            this.deputyChairman = (dto as any).deputyChairman;
+        if (dtoAny.deputyChairman) {
+            if (dtoAny.deputyChairman instanceof Member) {
+                this.deputyChairman = dtoAny.deputyChairman;
+            } else if (typeof dtoAny.deputyChairman === 'object' && dtoAny.deputyChairman.id) {
+                this.deputyChairman = Member.fromDTO(dtoAny.deputyChairman);
+            }
         }
 
-        if ((dto as any).secretary) {
-            this.secretary = (dto as any).secretary;
+        if (dtoAny.secretary) {
+            if (dtoAny.secretary instanceof Member) {
+                this.secretary = dtoAny.secretary;
+            } else if (typeof dtoAny.secretary === 'object' && dtoAny.secretary.id) {
+                this.secretary = Member.fromDTO(dtoAny.secretary);
+            }
         }
 
-        if ((dto as any).treasurer) {
-            this.treasurer = (dto as any).treasurer;
+        if (dtoAny.treasurer) {
+            if (dtoAny.treasurer instanceof Member) {
+                this.treasurer = dtoAny.treasurer;
+            } else if (typeof dtoAny.treasurer === 'object' && dtoAny.treasurer.id) {
+                this.treasurer = Member.fromDTO(dtoAny.treasurer);
+            }
         }
 
-        if ((dto as any).memberCount !== undefined) {
-            this.memberCount = (dto as any).memberCount;
+        if (dtoAny.memberCount !== undefined) {
+            this.memberCount = dtoAny.memberCount;
         }
     }
 
@@ -82,31 +110,19 @@ export class Fellowship {
         const leaders = [];
 
         if (this.chairman) {
-            const name = typeof this.chairman === "string"
-                ? this.chairman
-                : `${this.chairman.firstName} ${this.chairman.lastName}`;
-            leaders.push(`Chairman: ${name}`);
+            leaders.push(`Chairman: ${this.chairman.getFullName()}`);
         }
 
         if (this.secretary) {
-            const name = typeof this.secretary === "string"
-                ? this.secretary
-                : `${this.secretary.firstName} ${this.secretary.lastName}`;
-            leaders.push(`Secretary: ${name}`);
+            leaders.push(`Secretary: ${this.secretary.getFullName()}`);
         }
 
         if (this.treasurer) {
-            const name = typeof this.treasurer === "string"
-                ? this.treasurer
-                : `${this.treasurer.firstName} ${this.treasurer.lastName}`;
-            leaders.push(`Treasurer: ${name}`);
+            leaders.push(`Treasurer: ${this.treasurer.getFullName()}`);
         }
 
         if (this.deputyChairman) {
-            const name = typeof this.deputyChairman === "string"
-                ? this.deputyChairman
-                : `${this.deputyChairman.firstName} ${this.deputyChairman.lastName}`;
-            leaders.push(`Deputy Chairman: ${name}`);
+            leaders.push(`Deputy Chairman: ${this.deputyChairman.getFullName()}`);
         }
 
         return leaders.length > 0 ? leaders.join(", ") : "No leaders assigned";

@@ -31,6 +31,8 @@ export const Actions = {
     FELLOWSHIP_FIND_ALL: `${ResourceType.FELLOWSHIP}.${ActionType.FIND_ALL}`,
     FELLOWSHIP_FIND_BY_ID:
         `${ResourceType.FELLOWSHIP}.${ActionType.FIND_BY_ID}`,
+    FELLOWSHIP_DELETE_BY_ID:
+        `${ResourceType.FELLOWSHIP}.${ActionType.DELETE_BY_ID}`,
 
     // User actions
     USER_CREATE: `${ResourceType.USER}.${ActionType.CREATE}`,

@@ -73,6 +73,51 @@ export class AsyncSuccessState<T> extends AsyncUIState<UI_STATE_TYPE.success> {
     }
 }
 
+/**
+ * Base class for structured UI states that extends AsyncSuccessState
+ * but provides better organization of actions
+ */
+export class StructuredSuccessState<TData, TActions extends Record<string, any>>
+    extends AsyncSuccessState<TData> {
+    // Store the structured actions separately from the flattened actions
+    protected structuredActions: TActions;
+
+    constructor(data: TData, actions: TActions) {
+        // Create a flattened version for the base class
+        // We need to move this before super() to avoid the "this" access issue
+        const flattenedActions = flattenActions(actions);
+
+        // Call super with the flattened actions
+        super(data, flattenedActions);
+
+        // Store the original structured actions (safe after super() call)
+        this.structuredActions = actions;
+    }
+}
+
+/**
+ * Helper function to flatten a nested actions object into a record of functions
+ */
+function flattenActions(
+    obj: any,
+    prefix: string = "",
+): Record<string, (...args: any[]) => any> {
+    const result: Record<string, (...args: any[]) => any> = {};
+
+    for (const [key, value] of Object.entries(obj)) {
+        const newKey = prefix ? `${prefix}_${key}` : key;
+
+        if (typeof value === "function") {
+            // Use a more specific cast to the expected function type
+            result[newKey] = (...args: any[]) => (value as Function)(...args);
+        } else if (typeof value === "object" && value !== null) {
+            Object.assign(result, flattenActions(value, newKey));
+        }
+    }
+
+    return result;
+}
+
 export class AsyncNotFoundState extends AsyncUIState<UI_STATE_TYPE.notFound> {
     constructor(
         public message: string,

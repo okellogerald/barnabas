@@ -122,9 +122,9 @@ const updateMemberSchema = memberSchema.omit({
 
 // Define query parameters for getAll
 const memberQueryParamsSchema = z.object({
-    eager: z.string().optional().default("fellowship,interests"),
-    rangeStart: z.coerce.number().optional().default(0),
-    rangeEnd: z.coerce.number().optional().default(9),
+    eager: z.string().default("fellowship,interests").optional(),
+    rangeStart: z.coerce.number().default(0).optional(),
+    rangeEnd: z.coerce.number().default(9).optional(),
     search: z.string().optional(),
     fellowshipId: z.string().optional(),
     gender: z.string().optional(),
@@ -132,8 +132,6 @@ const memberQueryParamsSchema = z.object({
     baptized: z.coerce.boolean().optional(),
     confirmed: z.coerce.boolean().optional(),
     attendsFellowship: z.coerce.boolean().optional(),
-    // sortBy: z.string().optional().default("firstName"),
-    // sortOrder: z.enum(["asc", "desc"]).optional().default("asc"),
 });
 
 export const MemberSchemas = {

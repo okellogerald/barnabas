@@ -3,9 +3,9 @@ import { FellowshipManager } from "@/managers/fellowship/fellowship.manager";
 import { MemberManager } from "@/managers/member";
 import { PermissionError } from "@/utilities/errors";
 
-export const fetchMembers = async () => {
+export const fetchMembersCount = async () => {
     try {
-        return MemberManager.instance.getMembers();
+        return MemberManager.instance.getMembersCount();
     } catch (error) {
         if (PermissionError.is(error)) {
             return null;
@@ -32,7 +32,7 @@ export const fetchChurch = async () => {
 export const fetchDashboardData = async () => {
     const result = await Promise.all([
         fetchChurch(),
-        fetchMembers(),
+        fetchMembersCount(),
         fetchFellowships(),
     ]);
     return {

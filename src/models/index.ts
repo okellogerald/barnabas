@@ -3,3 +3,4 @@ export * from "./church/church.model"
 export * from "./member/member.model"
 export * from "./member/dependant.model"
 
+export * from "./fellowship"
