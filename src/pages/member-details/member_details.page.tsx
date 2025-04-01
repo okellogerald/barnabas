@@ -8,12 +8,12 @@ import { ChurchInfoCard } from './components/church_info_card';
 import { FamilyInfoCard } from './components/family_info_card';
 import { VolunteerInfoCard } from './components/volunteer_info_card';
 import { AdditionalInfoCard } from './components/additional_info_card';
-import { MemberDetailsSuccessState, useMemberDetails } from '@/interactors/member-details';
+import { useMemberDetails } from '@/interactors/member-details';
 import { AsyncPageLayout, AsyncSuccessState } from '@/interactors/_new_state';
 import { Member } from '@/models';
 
 // Header component with breadcrumb and actions
-const MemberDetailsHeader: React.FC<{ state: MemberDetailsSuccessState }> = ({ state }) => {
+const MemberDetailsHeader: React.FC<{ state: AsyncSuccessState<Member> }> = ({ state }) => {
 
     const { actions } = state;
 

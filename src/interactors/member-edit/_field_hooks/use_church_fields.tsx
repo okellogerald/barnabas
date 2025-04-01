@@ -65,7 +65,7 @@ export const useChurchFields = (member?: Member) => {
         setFieldState({
             fellowshipAbsenceReason: initialValues.attendsFellowship ? 'disabled' : 'enabled'
         });
-    }, []);
+    }, [member]);
 
     // Create the form fields
     const createFields = useCallback((): SchemaFormFieldsMap<MemberEditChurchInfo, ChurchInfoKeys> => {

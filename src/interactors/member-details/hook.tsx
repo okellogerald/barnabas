@@ -22,7 +22,10 @@ export const useMemberDetails = (): AsyncState => {
 
     const deleteMemberMutation = useMutation({
         mutationKey: ["delete-member", memberId],
-        mutationFn: () => MemberDetailsService.deleteMember(memberId)
+        mutationFn: () => MemberDetailsService.deleteMember(memberId),
+        onSuccess: () => {
+            Navigation.Members.toList()
+        }
     })
 
     // Load member data when memberId changes or on initial render
@@ -69,18 +72,12 @@ export const useMemberDetails = (): AsyncState => {
                 },
                 startRefresh: () => refetchMember(),
                 goToEdit: () => {
-                    console.log("member id: ", member.id)
-                    //useAppNavigation().Members.toEdit(member.id)
                     Navigation.Members.toEdit(member.id)
                 },
                 goToList: () => {
-                    useAppNavigation().Members.toList()
+                    Navigation.Members.toList()
                 }
             })
-            // return AsyncStateFactory.success(data, {
-            //     refetch: () => refetchMember(),
-            //     delete: () => deleteMemberMutation.mutateAsync()
-            // });
         }
     });
 };

@@ -66,7 +66,7 @@ export const useMaritalFields = (member?: Member) => {
     } else {
       setFieldState('enabled');
     }
-  }, []);
+  }, [member]);
 
   // Create the form fields
   const createFields = useCallback((): SchemaFormFieldsMap<MemberEditMaritalInfo, MaritalInfoKeys> => {

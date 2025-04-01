@@ -17,9 +17,6 @@ import { MemberEditInterestsInfoSchema } from "./schemas.interests";
  * Adds an 'id' field for the member being edited
  */
 export const MemberEditFormSchema = z.object({
-    // Member ID
-    id: z.string().uuid(),
-    
     // Personal Information
     ...MemberEditPersonalInfoSchema.shape,
 

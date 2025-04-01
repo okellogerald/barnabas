@@ -2,7 +2,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { notifyUtils } from "@/utilities/notification.utils";
 import { memberEditService } from "./service";
-import { validateSection, validateDependantSection } from "./schemas/schemas.member";
 
 // Import custom form hooks
 import { usePersonalFields } from "./_field_hooks/use_personal_fields";
@@ -55,12 +54,10 @@ export interface UseMemberEditResult {
   // Actions
   actions: {
     // Navigation
-    nextStep: () => Promise<void>;
     previousStep: () => void;
     goToStep: (step: number) => void;
 
     // Form actions
-    reset: () => void;
     submit: () => Promise<void>;
     saveCurrentSection: () => Promise<void>;
   };
@@ -84,13 +81,16 @@ export const useMemberEdit = (): UseMemberEditResult => {
   // Create mutation for form submission
   const submitMutation = useMutation<boolean, Error, MemberEditFormValues>({
     mutationKey: ["member-edit"],
-    mutationFn: (data) => memberEditService.submitForm(data),
+    mutationFn: (data) => memberEditService.submitForm(memberId ?? "", data),
   });
 
   // Create mutation for section update
   const sectionMutation = useMutation<boolean, Error, SectionUpdateData>({
     mutationKey: ["member-edit-section"],
-    mutationFn: (data) => memberEditService.updateSection(data),
+    mutationFn: (data) => memberEditService.updateSection(memberId ?? "", data),
+    onSuccess: (success) => {
+      if (success) uiStore.nextStep()
+    }
   });
 
   // Query to fetch member data
@@ -136,9 +136,6 @@ export const useMemberEdit = (): UseMemberEditResult => {
   // Create a function to get combined form values
   const getFormValues = useCallback(() => {
     return {
-      // Member ID
-      id: memberId!,
-
       // Personal information
       ...personal.form.getFieldsValue(),
 
@@ -164,9 +161,9 @@ export const useMemberEdit = (): UseMemberEditResult => {
 
   // Save the current section
   const saveCurrentSection = useCallback(async (): Promise<void> => {
-    try {
-      const currentStepKey = uiStore.getCurrentStepKey();
+    const currentStepKey = uiStore.getCurrentStepKey();
 
+    try {
       // Validate the current form based on section
       let currentForm;
       switch (currentStepKey) {
@@ -210,7 +207,7 @@ export const useMemberEdit = (): UseMemberEditResult => {
       await sectionMutation.mutateAsync(sectionData);
     } catch (error) {
       console.error('Section save failed:', error);
-      notifyUtils.error('Failed to save section changes');
+      notifyUtils.error(`Failed to save ${currentStepKey} section changes`);
       throw error;
     }
   }, [
@@ -225,115 +222,6 @@ export const useMemberEdit = (): UseMemberEditResult => {
     getCurrentSectionValues,
     sectionMutation
   ]);
-
-  // Navigate to next step with validation
-  const nextStep = useCallback(async (): Promise<void> => {
-    try {
-      // Get the current step key
-      const currentStepKey = uiStore.getCurrentStepKey();
-
-      // Validate the current step's fields in the appropriate form
-      if (currentStepKey === "dependants") {
-        const dependantValues = dependant.form.getFieldsValue();
-        const valid = validateDependantSection(dependantValues);
-        if (!valid) {
-          await dependant.form.validateFields();
-          notifyUtils.error("Please complete all required fields in Dependants section");
-          return;
-        }
-      }
-      else {
-        // Validate form for current step
-        let currentForm;
-        switch (currentStepKey) {
-          case 'personal':
-            currentForm = personal.form;
-            break;
-          case 'marital':
-            currentForm = marital.form;
-            break;
-          case 'contact':
-            currentForm = contact.form;
-            break;
-          case 'church':
-            currentForm = church.form;
-            break;
-          case 'professional':
-            currentForm = professional.form;
-            break;
-          case 'interests':
-            currentForm = interest.form;
-            break;
-          default:
-            currentForm = null;
-        }
-
-        if (currentForm) {
-          await currentForm.validateFields();
-        }
-      }
-
-      // Check if the current step is valid using the combined form values
-      const combinedValues = getFormValues();
-      const isValid = validateSection(combinedValues, currentStepKey);
-
-      if (!isValid) {
-        notifyUtils.error(`Please complete all required fields in ${currentStepKey} section`);
-        return;
-      }
-
-      // If validation passes, go to the next step
-      uiStore.nextStep();
-    } catch (error) {
-      console.error('Validation failed:', error);
-      // Error is handled by form validation itself
-    }
-  }, [
-    uiStore,
-    personal.form,
-    marital.form,
-    contact.form,
-    church.form,
-    professional.form,
-    dependant.form,
-    interest.form,
-    getFormValues
-  ]);
-
-  // Reset all forms
-  // Reset all forms
-  const reset = useCallback((): void => {
-    // Reset each form to its initial values
-    personal.form.resetFields();
-    marital.form.resetFields();
-    contact.form.resetFields();
-    church.form.resetFields();
-    professional.form.resetFields();
-    dependant.form.resetFields();
-    interest.form.resetFields();
-
-    // Reset dependants to original data if available
-    if (data?.dependants) {
-      dependant.dependants.set(data.dependants);
-    } else {
-      dependant.dependants.set([]);
-    }
-
-    // Reset UI state
-    uiStore.reset();
-  }, [
-    data,
-    uiStore,
-    personal.form,
-    marital.form,
-    contact.form,
-    church.form,
-    professional.form,
-    dependant.form,
-    interest.form,
-    dependant.dependants
-  ]);
-
 
   // Submit the form
   const submit = useCallback(async (): Promise<void> => {
@@ -402,10 +290,8 @@ export const useMemberEdit = (): UseMemberEditResult => {
 
     // Actions
     actions: {
-      nextStep,
       previousStep: uiStore.previousStep,
       goToStep: uiStore.setCurrentStep,
-      reset,
       submit,
       saveCurrentSection
     }

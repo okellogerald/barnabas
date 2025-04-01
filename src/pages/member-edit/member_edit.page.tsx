@@ -39,7 +39,7 @@ const MemberEditPage: React.FC = () => {
     const currentStepKey = ui.steps[ui.currentStep].key;
 
     // Handle section save
-    const handleSaveSection = async () => {
+    const handleSaveAndContinueSection = async () => {
         setSaving(true);
         try {
             await actions.saveCurrentSection();
@@ -72,26 +72,6 @@ const MemberEditPage: React.FC = () => {
 
     return (
         <Card title="Edit Member" style={{ margin: '20px' }} loading={ui.loading}>
-            {/* Mini TOC */}
-            <Card style={{ marginBottom: '24px' }}>
-                <Row>
-                    <Col span={24}>
-                        <Space wrap>
-                            {ui.steps.map((step, index) => (
-                                <Button
-                                    key={step.key}
-                                    type={ui.currentStep === index ? "primary" : "default"}
-                                    onClick={() => actions.goToStep(index)}
-                                    icon={step.icon}
-                                >
-                                    {step.title}
-                                </Button>
-                            ))}
-                        </Space>
-                    </Col>
-                </Row>
-            </Card>
-
             {/* Last saved indicator */}
             {lastSaved && (
                 <Row style={{ marginBottom: '16px' }}>
@@ -167,6 +147,7 @@ const MemberEditPage: React.FC = () => {
                     <SchemaFormSection<MemberEditChurchInfo>
                         form={church.form}
                         initialValues={church.initialValues}
+                        onFieldsChange={church.onFieldsChange}
                         title="Church Information"
                         description="Information about the member's role and involvement in church"
                         fields={church.fields}
@@ -225,17 +206,11 @@ const MemberEditPage: React.FC = () => {
                 </Col>
                 <Col>
                     <Space>
-                        <Button
-                            onClick={actions.reset}
-                        >
-                            Reset
-                        </Button>
                         {ui.currentStep < ui.steps.length - 1 ? (
                             <Button
                                 type="primary"
                                 onClick={async () => {
-                                    await handleSaveSection();
-                                    actions.nextStep();
+                                    await handleSaveAndContinueSection();
                                 }}
                                 loading={saving}
                             >

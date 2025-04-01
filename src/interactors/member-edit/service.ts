@@ -29,7 +29,6 @@ import {
 } from "./schemas/schemas.professional";
 
 interface SectionUpdateData {
-    id?: string;
     section: FormSectionKey;
     data:
         | MemberEditPersonalInfo
@@ -44,11 +43,43 @@ export const memberEditService = {
     /**
      * Submit the entire form to update a member
      */
-    submitForm: async (formValues: MemberEditFormValues): Promise<boolean> => {
-        // Validate form data
+    submitForm: async (
+        memberId: string,
+        formValues: MemberEditFormValues,
+    ): Promise<boolean> => {
+        // checking church info
+        const churchInfoValidationResult = MemberEditEnhancedChurchInfoSchema
+            .safeParse(formValues);
+        if (!churchInfoValidationResult.success) {
+            console.log(
+                "submit form error: ",
+                churchInfoValidationResult.error,
+            );
+            notifyUtils.error(
+                "Please make sure your church info are valid",
+            );
+            return false;
+        }
+
+        // checking church info
+        const maritalInfoValidationResult =
+            MemberEditMaritalInfoSchemaWithRefinements
+                .safeParse(formValues);
+        if (!maritalInfoValidationResult.success) {
+            console.log(
+                "submit form error: ",
+                maritalInfoValidationResult.error,
+            );
+            notifyUtils.error(
+                "Please make sure your marital info are valid",
+            );
+            return false;
+        }
+
+        // Validate (other) form data
         const result = MemberEditFormSchema.safeParse(formValues);
         if (!result.success) {
-            console.log(result.error);
+            console.log("submit form error: ", result.error);
             notifyUtils.error(
                 "Please complete all required fields with valid data",
             );
@@ -58,7 +89,7 @@ export const memberEditService = {
         try {
             // Update the member
             await MemberManager.instance.updateMember(
-                formValues.id,
+                memberId,
                 result.data,
             );
 
@@ -74,23 +105,24 @@ export const memberEditService = {
     /**
      * Update a specific section of member data
      */
-    updateSection: async (data: SectionUpdateData) => {
-        const { id, section, data: sectionData } = data;
+    updateSection: async (
+        memberId: string,
+        data: SectionUpdateData,
+    ): Promise<boolean> => {
+        const { section, data: sectionData } = data;
 
-        if (!id) {
+        if (!memberId) {
             notifyUtils.error("Member ID is required");
             return false;
         }
 
         try {
-            // Prepare section-specific data to update
-            const updateData = { id, ...sectionData };
-
             if (section === "church") {
                 const result = MemberEditEnhancedChurchInfoSchema.safeParse(
                     sectionData,
                 );
                 if (!result.success) {
+                    console.log("church info validation error: ", result.error);
                     notifyUtils.error("Please check the church information");
                     return false;
                 }
@@ -100,6 +132,10 @@ export const memberEditService = {
                     sectionData,
                 );
                 if (!result.success) {
+                    console.log(
+                        "contact info validation error: ",
+                        result.error,
+                    );
                     notifyUtils.error("Please check the contact information");
                     return false;
                 }
@@ -109,6 +145,10 @@ export const memberEditService = {
                     sectionData,
                 );
                 if (!result.success) {
+                    console.log(
+                        "personal info validation error: ",
+                        result.error,
+                    );
                     notifyUtils.error("Please check the personal information");
                     return false;
                 }
@@ -118,6 +158,10 @@ export const memberEditService = {
                     sectionData,
                 );
                 if (!result.success) {
+                    console.log(
+                        "professional info validation error: ",
+                        result.error,
+                    );
                     notifyUtils.error(
                         "Please check the professional information",
                     );
@@ -128,13 +172,19 @@ export const memberEditService = {
                 const result = MemberEditMaritalInfoSchemaWithRefinements
                     .safeParse(sectionData);
                 if (!result.success) {
+                    console.log(
+                        "marital info validation error: ",
+                        result.error,
+                    );
                     notifyUtils.error("Please check the marital information");
                     return false;
                 }
             }
 
+            console.log("submitting section info: ", sectionData);
+
             // Update the member section
-            await MemberManager.instance.updateMember(id, updateData);
+            await MemberManager.instance.updateMember(memberId, sectionData);
             return true;
         } catch (error) {
             console.error(`Error updating ${section} section:`, error);
