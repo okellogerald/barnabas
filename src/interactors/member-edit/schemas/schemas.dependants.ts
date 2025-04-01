@@ -26,16 +26,23 @@ export const MemberEditDependantSchema = z.object({
  */
 export const MemberEditDependantsSchema = z.object({
     dependants: z.array(MemberEditDependantSchema.extend({
-        id: z.string().uuid().optional(),
+        id: z.string(),
     })).default([])
         .describe("List of people who are dependants of the church member"),
+    addDependants: z.array(MemberEditDependantSchema).default([])
+        .describe("List of church member's newly added dependants"),
+    removeDependantIds: z.array(z.string()).default([]).describe(
+        "List of the ids of the church member's deleted dependants",
+    ),
 });
 
 /**
  * TypeScript type for a single dependant
  */
+export type DependantAddInfo = z.infer<typeof MemberEditDependantSchema>;
+
 export type DependantInfo = z.infer<typeof MemberEditDependantSchema> & {
-    id?: string;
+    id: string;
 };
 
 /**
@@ -48,6 +55,8 @@ export type DependantsInfo = z.infer<typeof MemberEditDependantsSchema>;
  */
 export const DEFAULT_DEPENDANTS_INFO: DependantsInfo = {
     dependants: [],
+    addDependants: [],
+    removeDependantIds: [],
 };
 
 /**

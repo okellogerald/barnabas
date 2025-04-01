@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AppRoutes from './navigation/routes';
 import ThemeProvider from './theme/provider';
 import { ToastContainer } from 'react-toastify';
+import NiceModal from '@ebay/nice-modal-react';
 
 // Create a client for React Query
 export const queryClient = new QueryClient({
@@ -24,14 +25,16 @@ export const queryClient = new QueryClient({
 const App: React.FC = () => {
   return (
     <ThemeProvider>
-      <AntApp>
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter >
-            <AppRoutes />
-          </BrowserRouter>
-          <ToastContainer /> 
-        </QueryClientProvider>
-      </AntApp>
+      <NiceModal.Provider>
+        <AntApp>
+          <QueryClientProvider client={queryClient}>
+            <BrowserRouter >
+              <AppRoutes />
+            </BrowserRouter>
+            <ToastContainer />
+          </QueryClientProvider>
+        </AntApp>
+      </NiceModal.Provider>
     </ThemeProvider>
   );
 };

@@ -4,7 +4,6 @@ import {
     MemberEditFormValues,
 } from "./schemas/schemas.member";
 import { MemberManager } from "@/managers/member";
-import { Navigation } from "@/app";
 import { FormSectionKey } from "./types";
 import {
     MemberEditPersonalInfo,
@@ -18,7 +17,10 @@ import {
     MemberEditContactInfo,
     MemberEditContactInfoSchema,
 } from "./schemas/schemas.contact";
-import { MemberEditInterestsInfo } from "./schemas/schemas.interests";
+import {
+    MemberEditInterestsInfo,
+    MemberEditInterestsInfoSchema,
+} from "./schemas/schemas.interests";
 import {
     MemberEditMaritalInfo,
     MemberEditMaritalInfoSchemaWithRefinements,
@@ -27,6 +29,8 @@ import {
     MemberEditProfessionalInfo,
     MemberEditProfessionalInfoSchema,
 } from "./schemas/schemas.professional";
+import { Member } from "@/models";
+import { MemberEditDependantsSchema } from "./schemas/schemas.dependants";
 
 interface SectionUpdateData {
     section: FormSectionKey;
@@ -39,65 +43,120 @@ interface SectionUpdateData {
         | MemberEditProfessionalInfo;
 }
 
+// Map section keys to their validation schemas and user-friendly names
+const sectionValidators: Record<
+    FormSectionKey,
+    { schema: any; label: string }
+> = {
+    church: {
+        schema: MemberEditEnhancedChurchInfoSchema,
+        label: "church information",
+    },
+    contact: {
+        schema: MemberEditContactInfoSchema,
+        label: "contact information",
+    },
+    personal: {
+        schema: MemberEditPersonalInfoSchema,
+        label: "personal information",
+    },
+    professional: {
+        schema: MemberEditProfessionalInfoSchema,
+        label: "professional information",
+    },
+    marital: {
+        schema: MemberEditMaritalInfoSchemaWithRefinements,
+        label: "marital information",
+    },
+    interests: {
+        schema: MemberEditInterestsInfoSchema,
+        label: "interests information",
+    },
+    dependants: {
+        schema: MemberEditDependantsSchema,
+        label: "dependants information",
+    },
+};
+
 export const memberEditService = {
+    /**
+     * Helper function to validate a specific section
+     */
+    validateSection: (section: FormSectionKey, data: any): boolean => {
+        const validator = sectionValidators[section];
+
+        // If no validator is defined for this section (like interests), return true
+        if (!validator?.schema) return true;
+
+        const result = validator.schema.safeParse(data);
+        if (!result.success) {
+            console.log(`${section} info validation error:`, result.error);
+            console.log(data)
+            return false;
+        }
+        return true;
+    },
+
     /**
      * Submit the entire form to update a member
      */
     submitForm: async (
         memberId: string,
         formValues: MemberEditFormValues,
-    ): Promise<boolean> => {
-        // checking church info
-        const churchInfoValidationResult = MemberEditEnhancedChurchInfoSchema
-            .safeParse(formValues);
-        if (!churchInfoValidationResult.success) {
-            console.log(
-                "submit form error: ",
-                churchInfoValidationResult.error,
-            );
-            notifyUtils.error(
-                "Please make sure your church info are valid",
-            );
-            return false;
-        }
+    ): Promise<Member | undefined> => {
+        // Validate each section individually
+        const invalidSections: FormSectionKey[] = [];
 
-        // checking church info
-        const maritalInfoValidationResult =
-            MemberEditMaritalInfoSchemaWithRefinements
-                .safeParse(formValues);
-        if (!maritalInfoValidationResult.success) {
-            console.log(
-                "submit form error: ",
-                maritalInfoValidationResult.error,
-            );
-            notifyUtils.error(
-                "Please make sure your marital info are valid",
-            );
-            return false;
-        }
+        // Check each section that has a schema defined
+        (Object.keys(sectionValidators) as FormSectionKey[]).forEach(
+            (section) => {
+                // Skip sections that don't have schemas or aren't in the form values
+                if (
+                    !sectionValidators[section].schema || !formValues
+                ) return;
 
-        // Validate (other) form data
-        const result = MemberEditFormSchema.safeParse(formValues);
-        if (!result.success) {
-            console.log("submit form error: ", result.error);
-            notifyUtils.error(
-                "Please complete all required fields with valid data",
-            );
-            return false;
+                if (
+                    !memberEditService.validateSection(
+                        section,
+                        formValues,
+                    )
+                ) {
+                    invalidSections.push(section);
+                }
+            },
+        );
+
+        // If any section validations failed, notify the user
+        if (invalidSections.length > 0) {
+            const errorMessages = invalidSections.map(
+                (section) => sectionValidators[section].label,
+            ).join(", ");
+
+            notifyUtils.error(`Please check the following: ${errorMessages}`);
+            return;
         }
 
         try {
-            // Update the member
-            await MemberManager.instance.updateMember(
+            // If all is well, validate the entire form with the main schema to make
+            // sure we send to the server the expected form values omitting all unncessary details
+            const result = MemberEditFormSchema.safeParse(formValues);
+            if (!result.success) {
+                console.log("Form validation error:", result.error);
+                notifyUtils.error(
+                    "We could not process your request. Please check your data and try again.",
+                );
+                return;
+            }
+
+            console.log("Submitting form data:", result.data);
+
+            // Update the member with fully validated data
+            return await MemberManager.instance.updateMember(
                 memberId,
                 result.data,
             );
-
-            // Navigate to member list on success
-            Navigation.Members.toList();
-            return true;
         } catch (error) {
-            // Error is handled by the calling component
+            console.error("Error submitting form:", error);
             throw error;
         }
     },
@@ -108,84 +167,30 @@ export const memberEditService = {
     updateSection: async (
         memberId: string,
         data: SectionUpdateData,
-    ): Promise<boolean> => {
+    ): Promise<Member | undefined> => {
         const { section, data: sectionData } = data;
 
         if (!memberId) {
             notifyUtils.error("Member ID is required");
-            return false;
+            return;
         }
 
         try {
-            if (section === "church") {
-                const result = MemberEditEnhancedChurchInfoSchema.safeParse(
-                    sectionData,
+            // Validate the section data
+            if (!memberEditService.validateSection(section, sectionData)) {
+                notifyUtils.error(
+                    `Please check the ${sectionValidators[section].label}`,
                 );
-                if (!result.success) {
-                    console.log("church info validation error: ", result.error);
-                    notifyUtils.error("Please check the church information");
-                    return false;
-                }
-            }
-            if (section === "contact") {
-                const result = MemberEditContactInfoSchema.safeParse(
-                    sectionData,
-                );
-                if (!result.success) {
-                    console.log(
-                        "contact info validation error: ",
-                        result.error,
-                    );
-                    notifyUtils.error("Please check the contact information");
-                    return false;
-                }
-            }
-            if (section === "personal") {
-                const result = MemberEditPersonalInfoSchema.safeParse(
-                    sectionData,
-                );
-                if (!result.success) {
-                    console.log(
-                        "personal info validation error: ",
-                        result.error,
-                    );
-                    notifyUtils.error("Please check the personal information");
-                    return false;
-                }
-            }
-            if (section === "professional") {
-                const result = MemberEditProfessionalInfoSchema.safeParse(
-                    sectionData,
-                );
-                if (!result.success) {
-                    console.log(
-                        "professional info validation error: ",
-                        result.error,
-                    );
-                    notifyUtils.error(
-                        "Please check the professional information",
-                    );
-                    return false;
-                }
-            }
-            if (section === "marital") {
-                const result = MemberEditMaritalInfoSchemaWithRefinements
-                    .safeParse(sectionData);
-                if (!result.success) {
-                    console.log(
-                        "marital info validation error: ",
-                        result.error,
-                    );
-                    notifyUtils.error("Please check the marital information");
-                    return false;
-                }
+                return;
             }
 
-            console.log("submitting section info: ", sectionData);
+            console.log("submitting section info:", sectionData);
 
             // Update the member section
-            await MemberManager.instance.updateMember(memberId, sectionData);
-            return true;
+            return await MemberManager.instance.updateMember(
+                memberId,
+                sectionData,
+            );
         } catch (error) {
             console.error(`Error updating ${section} section:`, error);
             throw error;

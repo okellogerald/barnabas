@@ -129,6 +129,7 @@ const MemberCreatePage: React.FC = () => {
                     <SchemaFormSection<MemberCreateChurchInfo>
                         form={church.form}
                         initialValues={church.initialValues}
+                        onFieldsChange={church.onFieldsChange}
                         title="Church Information"
                         description="Information about the member's role and involvement in church"
                         fields={church.fields}

@@ -1,39 +1,53 @@
-import React, { JSX } from 'react';
-import { AsyncErrorState, AsyncIdleState, AsyncLoadingState, AsyncNotFoundState, AsyncState, AsyncSuccessState, AsyncUnauthenticatedState, AsyncUnauthorizedState, UI_STATE_TYPE } from './types';
+import React from 'react';
+import { AsyncErrorState, AsyncIdleState, AsyncLoadingState, AsyncNotFoundState, AsyncState, AsyncSuccessState, AsyncUnauthenticatedState, AsyncUnauthorizedState } from './types';
 
-// Define a type for views so they receive properly typed state
-type StateViews<T> = {
-  IdleView?: React.ComponentType<{ state: AsyncIdleState }>;
-  LoadingView: React.ComponentType<{ state: AsyncLoadingState }>;
-  ErrorView: React.ComponentType<{ state: AsyncErrorState }>;
-  UnauthorizedView: React.ComponentType<{ state: AsyncUnauthorizedState }>;
-  UnauthenticatedView: React.ComponentType<{ state: AsyncUnauthenticatedState }>;
-  SuccessView: React.ComponentType<{ state: AsyncSuccessState<T> }>;
-  NotFoundView: React.ComponentType<{ state: AsyncNotFoundState }>;
-};
+export function AsyncStateMatcher<T,
+  S extends AsyncSuccessState<T>,
+  I extends AsyncIdleState,
+  L extends AsyncLoadingState,
+  E extends AsyncErrorState,
+  U extends AsyncUnauthorizedState,
+  A extends AsyncUnauthenticatedState,
+  N extends AsyncNotFoundState
+>(props: {
+  state: AsyncState<T> | S | I | L | E | U | A | N;
+  views: {
+    IdleView: React.ComponentType<{ state: I }>;
+    LoadingView: React.ComponentType<{ state: L }>;
+    ErrorView: React.ComponentType<{ state: E }>;
+    UnauthorizedView: React.ComponentType<{ state: U }>;
+    UnauthenticatedView: React.ComponentType<{ state: A }>;
+    NotFoundView: React.ComponentType<{ state: N }>;
+    SuccessView: React.ComponentType<{ state: S }>;
+  };
+}) {
+  const { state, views } = props;
+  const {
+    IdleView,
+    LoadingView,
+    ErrorView,
+    UnauthorizedView,
+    UnauthenticatedView,
+    NotFoundView,
+    SuccessView
+  } = views;
 
-interface AsyncStateMatcherProps<T> {
-  state: AsyncState<T>;
-  views: StateViews<T>;
-}
-
-export function AsyncStateMatcher<T>({ state, views }: AsyncStateMatcherProps<T>): JSX.Element {
-  const { type } = state;
-
-  switch (type) {
-    case UI_STATE_TYPE.idle:
-      return views.IdleView ? <views.IdleView state={state as AsyncIdleState} /> : <></>;
-    case UI_STATE_TYPE.loading:
-      return <views.LoadingView state={state as AsyncLoadingState} />;
-    case UI_STATE_TYPE.error:
-      return <views.ErrorView state={state as AsyncErrorState} />;
-    case UI_STATE_TYPE.unauthorized:
-      return <views.UnauthorizedView state={state as AsyncUnauthorizedState} />;
-    case UI_STATE_TYPE.success:
-      return <views.SuccessView state={state as AsyncSuccessState<T>} />;
-    case UI_STATE_TYPE.notFound:
-      return <views.NotFoundView state={state as AsyncNotFoundState} />;
+  switch (state.type) {
+    case 'idle':
+      return <IdleView state={state as I} />;
+    case 'loading':
+      return <LoadingView state={state as L} />;
+    case 'error':
+      return <ErrorView state={state as E} />;
+    case 'unauthorized':
+      return <UnauthorizedView state={state as U} />;
+    case 'unauthenticated':
+      return <UnauthenticatedView state={state as A} />;
+    case 'notFound':
+      return <NotFoundView state={state as N} />;
+    case 'success':
+      return <SuccessView state={state as S} />;
     default:
-      return <></>;
+      return null;
   }
 }

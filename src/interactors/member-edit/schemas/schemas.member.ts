@@ -14,7 +14,6 @@ import { MemberEditInterestsInfoSchema } from "./schemas.interests";
 
 /**
  * Schema without transform for type inference
- * Adds an 'id' field for the member being edited
  */
 export const MemberEditFormSchema = z.object({
     // Personal Information

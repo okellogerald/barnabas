@@ -229,33 +229,49 @@ const DefaultNotFoundView: React.FC<{ state: AsyncNotFoundState }> = ({ state })
 );
 
 // Props for the layout component
-interface AsyncPageLayoutProps<T> {
-    state: AsyncState<T>;
-    SuccessView: React.ComponentType<{ state: AsyncSuccessState<T> }>;
-    IdleView?: React.ComponentType<{ state: AsyncIdleState }>;
-    LoadingView?: React.ComponentType<{ state: AsyncLoadingState }>;
-    ErrorView?: React.ComponentType<{ state: AsyncErrorState }>;
-    UnauthorizedView?: React.ComponentType<{ state: AsyncUnauthorizedState }>;
-    UnauthenticatedView?: React.ComponentType<{ state: AsyncUnauthenticatedState }>;
-    NotFoundView?: React.ComponentType<{ state: AsyncNotFoundState }>;
-    header?: React.ComponentType<{ state: AsyncSuccessState<T> }>;
+interface AsyncPageLayoutProps<T,
+    S extends AsyncSuccessState<T> = AsyncSuccessState<T>,
+    I extends AsyncIdleState = AsyncIdleState,
+    L extends AsyncLoadingState = AsyncLoadingState,
+    E extends AsyncErrorState = AsyncErrorState,
+    U extends AsyncUnauthorizedState = AsyncUnauthorizedState,
+    A extends AsyncUnauthenticatedState = AsyncUnauthenticatedState,
+    N extends AsyncNotFoundState = AsyncNotFoundState
+> {
+    state: AsyncState<T> | S | I | L | E | U | A | N;
+    SuccessView: React.ComponentType<{ state: S }>;
+    IdleView?: React.ComponentType<{ state: I }>;
+    LoadingView?: React.ComponentType<{ state: L }>;
+    ErrorView?: React.ComponentType<{ state: E }>;
+    UnauthorizedView?: React.ComponentType<{ state: U }>;
+    UnauthenticatedView?: React.ComponentType<{ state: A }>;
+    NotFoundView?: React.ComponentType<{ state: N }>;
+    header?: React.ComponentType<{ state: S }>;
     title?: string;
 }
 
-export function AsyncPageLayout<T>({
+export function AsyncPageLayout<T,
+    S extends AsyncSuccessState<T> = AsyncSuccessState<T>,
+    I extends AsyncIdleState = AsyncIdleState,
+    L extends AsyncLoadingState = AsyncLoadingState,
+    E extends AsyncErrorState = AsyncErrorState,
+    U extends AsyncUnauthorizedState = AsyncUnauthorizedState,
+    A extends AsyncUnauthenticatedState = AsyncUnauthenticatedState,
+    N extends AsyncNotFoundState = AsyncNotFoundState
+>({
     state,
     SuccessView,
     IdleView,
-    LoadingView = DefaultLoadingView,
-    ErrorView = DefaultErrorView,
-    UnauthorizedView = DefaultUnauthorizedView,
-    UnauthenticatedView = DefaultUnauthenticatedView,
-    NotFoundView = DefaultNotFoundView,
+    LoadingView = DefaultLoadingView as React.ComponentType<{ state: L }>,
+    ErrorView = DefaultErrorView as React.ComponentType<{ state: E }>,
+    UnauthorizedView = DefaultUnauthorizedView as React.ComponentType<{ state: U }>,
+    UnauthenticatedView = DefaultUnauthenticatedView as React.ComponentType<{ state: A }>,
+    NotFoundView = DefaultNotFoundView as React.ComponentType<{ state: N }>,
     header: Header,
     title
-}: AsyncPageLayoutProps<T>) {
+}: AsyncPageLayoutProps<T, S, I, L, E, U, A, N>) {
     return (
-        <Layout style={{ width: '100%', background: 'transparent', }}>
+        <Layout style={{ width: '100%', background: 'transparent' }}>
             {/* Title bar (always shown if provided) */}
             {title && (
                 <div style={{ backgroundColor: 'transparent', paddingBottom: 16 }}>
@@ -268,7 +284,7 @@ export function AsyncPageLayout<T>({
             {/* Header (only shown in success state) */}
             {isSuccessState(state) && Header && (
                 <div style={{ backgroundColor: 'transparent', paddingBottom: 24 }}>
-                    <Header state={state} />
+                    <Header state={state as S} />
                 </div>
             )}
 
@@ -277,7 +293,7 @@ export function AsyncPageLayout<T>({
                 <AsyncStateMatcher
                     state={state}
                     views={{
-                        IdleView: IdleView || DefaultIdleView,
+                        IdleView: IdleView || DefaultIdleView as React.ComponentType<{ state: I }>,
                         LoadingView,
                         ErrorView,
                         UnauthorizedView,

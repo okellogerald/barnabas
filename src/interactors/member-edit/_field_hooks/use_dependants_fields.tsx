@@ -1,4 +1,4 @@
-import { DependantInfo, MemberEditDependantSchema } from '../schemas/schemas.dependants';
+import { DependantAddInfo, DependantInfo, MemberEditDependantSchema } from '../schemas/schemas.dependants';
 import { useEffect, useCallback } from 'react';
 import { Form } from 'antd';
 import { FieldData } from "rc-field-form/lib/interface";
@@ -21,11 +21,11 @@ export const useDependantFields = (member?: Member) => {
 
   // Initialize the form
   useEffect(() => {
-    dependantsStore.setDependants(member?.dependants || [])
-  }, []);
+    dependantsStore.setInitialDependants(member?.dependants || [])
+  }, [member]);
 
   // Handle adding a new dependant
-  const handleAddDependant = useCallback(async (values: DependantInfo) => {
+  const handleAddDependant = useCallback(async (values: DependantAddInfo) => {
     try {
       const data = MemberEditDependantSchema.parse(values);
       dependantsStore.addDependant(data);
@@ -37,10 +37,10 @@ export const useDependantFields = (member?: Member) => {
   }, [form, dependantsStore]);
 
   // Handle updating an existing dependant
-  const handleUpdateDependant = useCallback(async (id: string, values: DependantInfo) => {
+  const handleUpdateDependant = useCallback(async (values: DependantInfo) => {
     try {
       const data = MemberEditDependantSchema.parse(values);
-      dependantsStore.updateDependant(id, data);
+      dependantsStore.updateDependant({ ...data, id: values.id });
       return true;
     } catch (error) {
       console.error('Validation failed:', error);
@@ -60,8 +60,11 @@ export const useDependantFields = (member?: Member) => {
       add: handleAddDependant,
       update: handleUpdateDependant,
       remove: dependantsStore.removeDependant,
-      set: dependantsStore.setDependants,
-      loadForEdit: loadDependantForEdit
+      setInitial: dependantsStore.setInitialDependants,
+      loadForEdit: loadDependantForEdit,
+      getUpdatedOldDependants: dependantsStore.getUpdatedOldDependants,
+      getNewlyAdded: dependantsStore.getNewlyAddedDependants,
+      getDeletedDepsIds: dependantsStore.getDeletedDependantsIds,
     },
     onFieldsChange: changeHandler,
   };

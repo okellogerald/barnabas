@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Breadcrumb, Flex, Space, message, Divider } from 'antd';
+import { Button, Breadcrumb, Flex, Space, Divider } from 'antd';
 import { LeftOutlined, EditOutlined, DeleteOutlined, PrinterOutlined } from '@ant-design/icons';
 
 import { MemberHeader } from './components/header';
@@ -8,12 +8,12 @@ import { ChurchInfoCard } from './components/church_info_card';
 import { FamilyInfoCard } from './components/family_info_card';
 import { VolunteerInfoCard } from './components/volunteer_info_card';
 import { AdditionalInfoCard } from './components/additional_info_card';
-import { useMemberDetails } from '@/interactors/member-details';
+import { MemberDetailsSuccessState, useMemberDetails } from '@/interactors/member-details';
 import { AsyncPageLayout, AsyncSuccessState } from '@/interactors/_new_state';
 import { Member } from '@/models';
 
 // Header component with breadcrumb and actions
-const MemberDetailsHeader: React.FC<{ state: AsyncSuccessState<Member> }> = ({ state }) => {
+const MemberDetailsHeader: React.FC<{ state: MemberDetailsSuccessState }> = ({ state }) => {
 
     const { actions } = state;
 
@@ -26,8 +26,7 @@ const MemberDetailsHeader: React.FC<{ state: AsyncSuccessState<Member> }> = ({ s
     };
 
     const handlePrint = () => {
-        // Implement print functionality
-        message.info('Printing functionality to be implemented');
+        actions.startPrint()
     };
 
     return (

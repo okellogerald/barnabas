@@ -39,7 +39,7 @@ export const DependantForm: React.FC<DependantFormProps> = ({ form }) => {
     if (!editingId) return;
 
     form.validateFields();
-    const success = await state.dependant.dependants.update(editingId, form.getFieldsValue());
+    const success = await state.dependant.dependants.update({ id: editingId, ...form.getFieldsValue() });
     if (success) {
       form.resetFields();
       setEditingId(null);

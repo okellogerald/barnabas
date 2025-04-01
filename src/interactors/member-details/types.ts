@@ -8,6 +8,7 @@ export class MemberDetailsSuccessState extends AsyncSuccessState<Member> {
         public actions: {
             startRefresh: () => void;
             startDelete: () => void;
+            startPrint: () => void;
             goToEdit: () => void;
             goToList: () => void;
         },

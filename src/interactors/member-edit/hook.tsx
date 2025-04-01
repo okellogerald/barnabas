@@ -17,8 +17,10 @@ import { useStore } from "zustand";
 import { MemberManager } from "@/managers/member";
 import { MEMBER_NOTIFICATIONS } from "@/constants/member";
 import { FormSectionKey } from "./types";
-import { MemberEditFormValues } from "./schemas/schemas.member";
+import { MemberEditFormValues, validateSection } from "./schemas/schemas.member";
 import { useParams } from "react-router-dom";
+import { Member } from "@/models";
+import { Navigation } from "@/app";
 
 // Define the interface for section update data
 interface SectionUpdateData {
@@ -78,20 +80,6 @@ export const useMemberEdit = (): UseMemberEditResult => {
   // Get UI state from store
   const uiStore = useStore(useMemberEditUIStore);
 
-  // Create mutation for form submission
-  const submitMutation = useMutation<boolean, Error, MemberEditFormValues>({
-    mutationKey: ["member-edit"],
-    mutationFn: (data) => memberEditService.submitForm(memberId ?? "", data),
-  });
-
-  // Create mutation for section update
-  const sectionMutation = useMutation<boolean, Error, SectionUpdateData>({
-    mutationKey: ["member-edit-section"],
-    mutationFn: (data) => memberEditService.updateSection(memberId ?? "", data),
-    onSuccess: (success) => {
-      if (success) uiStore.nextStep()
-    }
-  });
 
   // Query to fetch member data
   const { data, isLoading } = useQuery({
@@ -110,6 +98,31 @@ export const useMemberEdit = (): UseMemberEditResult => {
   const dependant = useDependantFields(data);
   const interest = useInterestFields(data);
 
+  // Create mutation for form submission
+  const submitMutation = useMutation<Member | undefined, Error, MemberEditFormValues>({
+    mutationKey: ["member-edit"],
+    mutationFn: (data) => memberEditService.submitForm(memberId ?? "", data),
+    onSuccess: (member) => {
+      if (member) {
+        notifyUtils.success(MEMBER_NOTIFICATIONS.EDIT.SUCCESS);
+        Navigation.Members.toList()
+      }
+    }
+  });
+
+  // Create mutation for section update
+  const sectionMutation = useMutation<Member | undefined, Error, SectionUpdateData>({
+    mutationKey: ["member-edit-section"],
+    mutationFn: (data) => memberEditService.updateSection(memberId ?? "", data),
+    onSuccess: (member) => {
+      if (member) {
+        uiStore.nextStep()
+        // if dependants are updated, save the new dependants info
+        dependant.dependants.setInitial(member.dependants)
+      }
+    }
+  });
+
   // Create a function to get form values for the current section
   const getCurrentSectionValues = useCallback(() => {
     const currentStepKey = uiStore.getCurrentStepKey();
@@ -125,7 +138,11 @@ export const useMemberEdit = (): UseMemberEditResult => {
       case 'professional':
         return professional.form.getFieldsValue();
       case 'dependants':
-        return { dependants: dependant.dependants.items };
+        return {
+          dependants: dependant.dependants.getUpdatedOldDependants(),
+          addDependants: dependant.dependants.getNewlyAdded(),
+          removeDependantIds: dependant.dependants.getDeletedDepsIds(),
+        };
       case 'interests':
         return interest.form.getFieldsValue();
       default:
@@ -152,7 +169,9 @@ export const useMemberEdit = (): UseMemberEditResult => {
       ...professional.form.getFieldsValue(),
 
       // Dependants information
-      dependants: dependant.dependants.items,
+      dependants: dependant.dependants.getUpdatedOldDependants(),
+      addDependants: dependant.dependants.getNewlyAdded(),
+      removeDependantIds: dependant.dependants.getDeletedDepsIds(),
 
       // Interests Information
       ...interest.form.getFieldsValue(),
@@ -236,6 +255,18 @@ export const useMemberEdit = (): UseMemberEditResult => {
         interest.form.validateFields(),
       ]);
 
+      const validPersonalInfo = validateSection(personal.form.getFieldsValue(), "personal")
+      const validMaritalInfo = validateSection(marital.form.getFieldsValue(), "marital")
+      const validContactInfo = validateSection(contact.form.getFieldsValue(), "contact")
+      const validChurchInfo = validateSection(church.form.getFieldsValue(), "church")
+      const validProfessionalInfo = validateSection(professional.form.getFieldsValue(), "professional")
+      const validInterestsInfo = validateSection(interest.form.getFieldsValue(), "interests")
+
+      if (!validPersonalInfo || !validMaritalInfo || !validContactInfo || !validChurchInfo || !validProfessionalInfo || !validInterestsInfo) {
+        notifyUtils.error("Please correct all errors before submitting the form");
+        return;
+      }
+
       // Get combined form values
       const formData = getFormValues();
 
@@ -246,7 +277,6 @@ export const useMemberEdit = (): UseMemberEditResult => {
         // Submit data
         await submitMutation.mutateAsync(formData);
         notifyUtils.dismiss(toastId);
-        notifyUtils.success(MEMBER_NOTIFICATIONS.EDIT.SUCCESS);
       } catch (error) {
         notifyUtils.dismiss(toastId);
         notifyUtils.apiError(error);
