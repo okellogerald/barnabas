@@ -100,6 +100,38 @@ export class FellowshipManager {
      * @throws {PermissionError} If the user does not have the FELLOWSHIP_FIND_ALL permission.
      * @throws {Error} If there is an error retrieving fellowships from the repository.
      */
+    public async getAll(
+        queryParams?: FellowshipQueryParams,
+    ): Promise<Fellowship[]> {
+        if (
+            !this._permissionsManager.hasPermission(Actions.FELLOWSHIP_FIND_ALL)
+        ) {
+            throw PermissionError.fromAction(Actions.FELLOWSHIP_FIND_ALL);
+        }
+
+        try {
+            // Delegate fetching to the repository
+            const response = await this._repo.getAll(queryParams);
+            // Convert DTOs returned by the repo into Fellowship model instances
+            const fellowships = response.results.map(Fellowship.fromDTO);
+            // Return the fellowships for the current page and the total count
+            return fellowships
+        } catch (error) {
+            console.error("Error retrieving fellowships:", error);
+            throw new Error("Failed to retrieve fellowships.");
+        }
+    }
+
+    /**
+     * Retrieves a list of fellowships, potentially filtered and paginated,
+     * enforcing the FELLOWSHIP_FIND_ALL permission.
+     *
+     * @param {FellowshipQueryParams} [queryParams] - Optional parameters for filtering, sorting, and pagination.
+     * @returns {Promise<GetFellowshipsResponse>} A promise that resolves to an object containing the list of fellowships
+     * for the requested page/filter and the total count of fellowships matching the query.
+     * @throws {PermissionError} If the user does not have the FELLOWSHIP_FIND_ALL permission.
+     * @throws {Error} If there is an error retrieving fellowships from the repository.
+     */
     public async getFellowships(
         queryParams?: FellowshipQueryParams,
     ): Promise<GetFellowshipsResponse> {

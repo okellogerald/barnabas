@@ -20,10 +20,10 @@ export const fellowshipSchema = z.object({
     treasurerId: CommonSchemas.id.nullable().optional(),
 
     // Related entities (populated via eager loading)
-    chairman: z.lazy((): z.ZodType => MemberSchemas.memberSchema.nullable().optional()),
-    deputyChairman: z.lazy((): z.ZodType => MemberSchemas.memberSchema.nullable().optional()),
-    secretary: z.lazy((): z.ZodType => MemberSchemas.memberSchema.nullable().optional()),
-    treasurer: z.lazy((): z.ZodType => MemberSchemas.memberSchema.nullable().optional()),
+    // chairman: z.lazy((): z.ZodType => MemberSchemas.memberSchema.nullable().optional()),
+    // deputyChairman: z.lazy((): z.ZodType => MemberSchemas.memberSchema.nullable().optional()),
+    // secretary: z.lazy((): z.ZodType => MemberSchemas.memberSchema.nullable().optional()),
+    // treasurer: z.lazy((): z.ZodType => MemberSchemas.memberSchema.nullable().optional()),
     memberCount: z.number().optional(),
 });
 
@@ -33,10 +33,10 @@ const createFellowshipSchema = fellowshipSchema.omit({
     churchId: true,
     createdAt: true,
     updatedAt: true,
-    chairman: true,
-    deputyChairman: true,
-    secretary: true,
-    treasurer: true,
+    // chairman: true,
+    // deputyChairman: true,
+    // secretary: true,
+    // treasurer: true,
     memberCount: true,
 });
 
@@ -46,10 +46,10 @@ const updateFellowshipSchema = fellowshipSchema.omit({
     churchId: true,
     createdAt: true,
     updatedAt: true,
-    chairman: true,
-    deputyChairman: true,
-    secretary: true,
-    treasurer: true,
+    // chairman: true,
+    // deputyChairman: true,
+    // secretary: true,
+    // treasurer: true,
     memberCount: true,
 }).partial();
 

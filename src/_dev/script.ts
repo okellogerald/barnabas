@@ -6,7 +6,7 @@ import {
     MarriageType,
     MemberRole,
 } from "@/constants";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 /**
  * Church Membership Management System - Sample Data Generator
@@ -26,6 +26,18 @@ const API_BASE_URL = "http://localhost:3045";
 let authToken =
     "0ea74e2458639515db3614fc389774e0668b2858908e4298b89f69484159b1e9";
 let churchId = "a1c01b9947d74962be25314a2981ef4d";
+
+/**
+ * Helper function to extract the error message from different error types
+ */
+function getErrorMessage(error: unknown): string {
+    if (error instanceof AxiosError) {
+        return error.response?.data?.message || error.message;
+    } else if (error instanceof Error) {
+        return error.message;
+    }
+    return String(error);
+}
 
 /**
  * Generates a random date within a range
@@ -86,10 +98,10 @@ export class ChurchApiClient {
 
             // Generate all sample data
             await this.generateSampleData();
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(
                 "Failed to authenticate:",
-                error.response?.data || error.message,
+                getErrorMessage(error),
             );
             console.log(
                 "Please ensure the API server is running and the admin user exists.",
@@ -121,10 +133,10 @@ export class ChurchApiClient {
             );
             console.log(`Fellowships created: ${this.fellowships.length}`);
             console.log(`Members created: ${this.members.length}`);
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(
                 "Error generating sample data:",
-                error.response?.data || error.message,
+                getErrorMessage(error),
             );
         }
     }
@@ -165,10 +177,10 @@ export class ChurchApiClient {
                     console.log(`Role already exists: ${role.name}`);
                 }
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(
                 "Error creating roles:",
-                error.response?.data || error.message,
+                getErrorMessage(error),
             );
         }
     }
@@ -242,10 +254,10 @@ export class ChurchApiClient {
                     console.log(`User already exists: ${user.email}`);
                 }
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(
                 "Error creating users:",
-                error.response?.data || error.message,
+                getErrorMessage(error),
             );
         }
     }
@@ -321,10 +333,10 @@ export class ChurchApiClient {
                     );
                 }
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(
                 "Error creating volunteer opportunities:",
-                error.response?.data || error.message,
+                getErrorMessage(error),
             );
         }
     }
@@ -373,10 +385,10 @@ export class ChurchApiClient {
                     console.log(`Fellowship already exists: ${name}`);
                 }
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(
                 "Error creating fellowships:",
-                error.response?.data || error.message,
+                getErrorMessage(error),
             );
         }
     }
@@ -811,10 +823,10 @@ export class ChurchApiClient {
                     fellowshipId,
                 });
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(
                 "Error creating members:",
-                error.response?.data || error.message,
+                getErrorMessage(error),
             );
         }
     }
@@ -831,7 +843,7 @@ export class ChurchApiClient {
         console.log("\nAssigning leadership roles to fellowships...");
 
         // Filter members by fellowship and leadership potential
-        const membersByFellowship = {};
+        const membersByFellowship: Record<string, any[]> = {};
 
         // Group members by fellowship
         for (const member of this.members) {
@@ -857,7 +869,7 @@ export class ChurchApiClient {
                     // Assign chairman, secretary, and treasurer (and optional deputy chairman)
                     const updateData = {
                         name: fellowship.name,
-                        notes: fellowship.notes,
+                       // notes: fellowship.notes,
                         chairmanId: shuffledMembers[0]?.id,
                         secretaryId: shuffledMembers[1]?.id,
                         treasurerId: shuffledMembers[2]?.id,
@@ -897,10 +909,10 @@ export class ChurchApiClient {
                             } ${shuffledMembers[3]?.lastName}`,
                         );
                     }
-                } catch (error) {
+                } catch (error: unknown) {
                     console.error(
                         `Error updating fellowship ${fellowship.id} with leaders:`,
-                        error.response?.data || error.message,
+                        getErrorMessage(error),
                     );
                 }
             } else {

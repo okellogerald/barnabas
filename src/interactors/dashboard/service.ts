@@ -14,9 +14,9 @@ export const fetchMembersCount = async () => {
     }
 };
 
-export const fetchFellowships = async () => {
+export const fetchFellowshipsCount = async () => {
     try {
-        return FellowshipManager.instance.getFellowships();
+        return FellowshipManager.instance.getFellowshipsCount();
     } catch (error) {
         if (PermissionError.is(error)) {
             return null;
@@ -33,7 +33,7 @@ export const fetchDashboardData = async () => {
     const result = await Promise.all([
         fetchChurch(),
         fetchMembersCount(),
-        fetchFellowships(),
+        fetchFellowshipsCount(),
     ]);
     return {
         church: result[0],

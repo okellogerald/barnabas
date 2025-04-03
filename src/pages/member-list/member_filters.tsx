@@ -30,7 +30,7 @@ export const MemberFilters: React.FC<{
     // Fetch fellowships for dropdown
     const fellowshipsQuery = useQuery({
         queryKey: [QueryKeys.fellowships.all],
-        queryFn: () => FellowshipManager.instance.getFellowships(),
+        queryFn: () => FellowshipManager.instance.getAll(),
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
 

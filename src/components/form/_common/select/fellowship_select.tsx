@@ -31,15 +31,15 @@ export const FellowshipSelect: React.FC<Omit<SelectProps<string>, 'options'>> = 
             return {
                 label: fellowship.name + (details ? ` ${details}` : ''),
                 value: fellowship.id,
-                details: fellowship.notes,
+                details: fellowship.notes ?? null,
             };
         });
     };
 
     return (
-        <AsyncSelect<Fellowship[]>
+        <AsyncSelect<Fellowship[], Error, FellowshipOption, string>
             queryKey={['fellowships']}
-            fetchFn={() => FellowshipManager.instance.getFellowships()} // Use resolved data
+            fetchFn={() => FellowshipManager.instance.getAll()} 
             placeholder="Select a fellowship"
             transformData={transformFellowships}
             {...props}

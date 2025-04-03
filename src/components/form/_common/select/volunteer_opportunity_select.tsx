@@ -24,7 +24,7 @@ export const VolunteerOpportunitySelect: React.FC<Omit<SelectProps<string | stri
     };
 
     return (
-        <AsyncSelect<VolunteerOpportunity[]>
+        <AsyncSelect<VolunteerOpportunity[], Error, OpportunityOption, string | string[]>
             queryKey={['volunteer-opportunities']}
             fetchFn={() => VolunteerOpportunityManager.instance.getOpportunities()}
             transformData={transformOpportunities}

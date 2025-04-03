@@ -10,8 +10,9 @@ interface BaseOption {
 interface AsyncSelectProps<
     TData,
     TError = Error,
-    TOption extends BaseOption = BaseOption
-> extends Omit<SelectProps<string | number>, 'options'> {
+    TOption extends BaseOption = BaseOption,
+    TValue = TOption['value']
+> extends Omit<SelectProps<TValue>, 'options'> {
     /**
      * Query key for React Query cache
      */
@@ -44,7 +45,8 @@ interface AsyncSelectProps<
 export const AsyncSelect = <
     TData,
     TError = Error,
-    TOption extends BaseOption = BaseOption
+    TOption extends BaseOption = BaseOption,
+    TValue = TOption['value']
 >({
     queryKey,
     fetchFn,
@@ -53,7 +55,7 @@ export const AsyncSelect = <
     queryOptions = {},
     placeholder = 'Search...',
     ...props
-}: AsyncSelectProps<TData, TError, TOption>): JSX.Element => {
+}: AsyncSelectProps<TData, TError, TOption, TValue>): JSX.Element => {
     const { data, isLoading } = useQuery({
         queryKey,
         queryFn: fetchFn,
@@ -63,7 +65,7 @@ export const AsyncSelect = <
     const options = data ? transformData(data) : defaultOptions;
 
     return (
-        <Select<string | number>
+        <Select<TValue>
             showSearch
             allowClear
             loading={isLoading}
