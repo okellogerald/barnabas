@@ -25,7 +25,7 @@ export const FellowshipSelect: React.FC<Omit<SelectProps<string>, 'options'>> = 
         return data.map((fellowship) => {
             let details = '';
             if (fellowship.chairman) {
-                details = `(Chairman: ${fellowship.chairman.firstName} ${fellowship.chairman.lastName})`;
+                details = `(Chairman: ${fellowship.chairman.getDisplayName()})`;
             }
 
             return {

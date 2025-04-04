@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { CommonSchemas } from "@/data/_common";
-import { MemberSchemas } from "../member";
 
 // Base fellowship schema
 export const fellowshipSchema = z.object({

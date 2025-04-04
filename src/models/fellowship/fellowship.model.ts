@@ -3,7 +3,7 @@ import {
     FellowshipDTO,
     UpdateFellowshipDTO,
 } from "@/data/fellowship";
-import { Member } from "@/models";
+import { User } from "@/models";
 
 /**
  * Fellowship model representing a church fellowship
@@ -21,10 +21,10 @@ export class Fellowship {
     updatedAt: Date;
 
     // Transient properties for related entities
-    chairman?: Member;
-    deputyChairman?: Member;
-    secretary?: Member;
-    treasurer?: Member;
+    chairman?: User;
+    deputyChairman?: User;
+    secretary?: User;
+    treasurer?: User;
     memberCount?: number;
 
     constructor(dto: FellowshipDTO) {
@@ -41,45 +41,49 @@ export class Fellowship {
 
         // Handle related entities if present in the DTO
         const dtoAny = dto as FellowshipDTO & {
-            chairman?: Member | Record<string, any>;
-            deputyChairman?: Member | Record<string, any>;
-            secretary?: Member | Record<string, any>;
-            treasurer?: Member | Record<string, any>;
+            chairman?: any;
+            deputyChairman?: any;
+            secretary?: any;
+            treasurer?: any;
             memberCount?: number;
         };
 
         if (dtoAny.chairman) {
-            // If it's already a Member instance, use it directly
-            if (dtoAny.chairman instanceof Member) {
+            // If it's already a User instance, use it directly
+            if (dtoAny.chairman instanceof User) {
                 this.chairman = dtoAny.chairman;
-            } 
-            // Otherwise if it's a raw object with member properties, convert it to a Member instance
-            else if (typeof dtoAny.chairman === 'object' && dtoAny.chairman.id) {
-                this.chairman = Member.fromDTO(dtoAny.chairman);
+            } // Otherwise if it's a raw object with user properties, convert it to a User instance
+            else if (
+                typeof dtoAny.chairman === "object" && dtoAny.chairman.id
+            ) {
+                this.chairman = User.fromDTO(dtoAny.chairman);
             }
         }
 
         if (dtoAny.deputyChairman) {
-            if (dtoAny.deputyChairman instanceof Member) {
+            if (dtoAny.deputyChairman instanceof User) {
                 this.deputyChairman = dtoAny.deputyChairman;
-            } else if (typeof dtoAny.deputyChairman === 'object' && dtoAny.deputyChairman.id) {
-                this.deputyChairman = Member.fromDTO(dtoAny.deputyChairman);
+            } else if (
+                typeof dtoAny.deputyChairman === "object" &&
+                dtoAny.deputyChairman.id
+            ) {
+                this.deputyChairman = User.fromDTO(dtoAny.deputyChairman);
             }
         }
 
         if (dtoAny.secretary) {
-            if (dtoAny.secretary instanceof Member) {
+            if (dtoAny.secretary instanceof User) {
                 this.secretary = dtoAny.secretary;
-            } else if (typeof dtoAny.secretary === 'object' && dtoAny.secretary.id) {
-                this.secretary = Member.fromDTO(dtoAny.secretary);
+            } else if (
+                typeof dtoAny.secretary === "object" && dtoAny.secretary.id
+            ) {
+                this.secretary = User.fromDTO(dtoAny.secretary);
             }
         }
 
         if (dtoAny.treasurer) {
-            if (dtoAny.treasurer instanceof Member) {
-                this.treasurer = dtoAny.treasurer;
-            } else if (typeof dtoAny.treasurer === 'object' && dtoAny.treasurer.id) {
-                this.treasurer = Member.fromDTO(dtoAny.treasurer);
+            if (typeof dtoAny.treasurer === "object" && dtoAny.treasurer.id) {
+                this.treasurer = User.fromDTO(dtoAny.treasurer);
             }
         }
 
@@ -110,22 +114,57 @@ export class Fellowship {
         const leaders = [];
 
         if (this.chairman) {
-            leaders.push(`Chairman: ${this.chairman.getFullName()}`);
+            leaders.push(`Chairman: ${this.chairman.getDisplayName()}`);
         }
 
         if (this.secretary) {
-            leaders.push(`Secretary: ${this.secretary.getFullName()}`);
+            leaders.push(`Secretary: ${this.secretary.getDisplayName()}`);
         }
 
         if (this.treasurer) {
-            leaders.push(`Treasurer: ${this.treasurer.getFullName()}`);
+            leaders.push(`Treasurer: ${this.treasurer.getDisplayName()}`);
         }
 
         if (this.deputyChairman) {
-            leaders.push(`Deputy Chairman: ${this.deputyChairman.getFullName()}`);
+            leaders.push(
+                `Deputy Chairman: ${this.deputyChairman.getDisplayName()}`,
+            );
         }
 
         return leaders.length > 0 ? leaders.join(", ") : "No leaders assigned";
+    }
+
+    /**
+     * Gets the leader's role and contact information
+     */
+    getLeaderContactInfo(): string[] {
+        const contacts = [];
+
+        if (this.chairman) {
+            contacts.push(
+                `Chairman: ${this.chairman.name} | ${this.chairman.phoneNumber}`,
+            );
+        }
+
+        if (this.secretary) {
+            contacts.push(
+                `Secretary: ${this.secretary.name} | ${this.secretary.phoneNumber}`,
+            );
+        }
+
+        if (this.treasurer) {
+            contacts.push(
+                `Treasurer: ${this.treasurer.name} | ${this.treasurer.phoneNumber}`,
+            );
+        }
+
+        if (this.deputyChairman) {
+            contacts.push(
+                `Deputy Chairman: ${this.deputyChairman.name} | ${this.deputyChairman.phoneNumber}`,
+            );
+        }
+
+        return contacts;
     }
 
     /**
