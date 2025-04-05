@@ -1,0 +1,46 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4173:4173"
+    environment:
+      - VITE_MODE=development
+      - VITE_API_BASE_URL=http://localhost:3000
+      - VITE_DEFAULT_PAGE_SIZE=10
+    networks:
+      - barnabas-network
+    depends_on:
+      - api
+
+  api:
+    build: 
+      context: /Users/mac/Downloads/Programs/other/church-manager-api
+    environment:
+      - PORT=3000
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - "3000:3000"
+    networks:
+      - barnabas-network
+    depends_on:
+      - db
+
+  db:
+    image: mysql:latest
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    volumes:
+      - /Users/mac/Downloads/Programs/other/church-manager-api/.data/mysql:/var/lib/mysql
+    networks:
+      - barnabas-network
+
+networks:
+  barnabas-network:
+    driver: bridge
