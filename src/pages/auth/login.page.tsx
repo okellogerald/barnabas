@@ -4,6 +4,7 @@ import { FormFieldBuilder } from '@/components/form';
 import { LoginRequest } from '@/data/auth';
 import { AuthLayout } from '@/components/layout';
 import { UseLogin } from '@/interactors/login';
+import { AppConfig } from '@/app';
 
 const { Title, Text } = Typography;
 
@@ -15,7 +16,7 @@ const formFields = {
     label: 'Email',
     name: 'username',
     required: true,
-    placeholder: 'Enter your email'
+    placeholder: 'Enter your email',
   }),
   password: fieldBuilder.createPasswordField({
     label: 'Password',
@@ -52,6 +53,7 @@ const LoginPage: React.FC = () => {
           form={state.form}
           layout="vertical"
           onFinish={state.onFinish}
+          initialValues={AppConfig.TEST_LOGIN_CREDENTIALS}
         >
           <Form.Item
             {...formFields.username}

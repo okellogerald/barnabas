@@ -3,7 +3,7 @@ import { DMPTable } from "@/components/table";
 import { FellowshipsTableState } from "./store.table";
 import { JSX } from "react";
 import { Navigation } from "@/app";
-import { FellowshipTableActions } from "./types";
+import { FellowshipListPageActions } from "./types";
 import { FellowshipColumns, FellowshipExpandedRowView } from "@/components/fellowship";
 
 /**
@@ -13,7 +13,7 @@ interface TableRenderParams {
     /** Fellowships to display */
     fellowships: Fellowship[];
     /** Actions available in the UI */
-    actions: FellowshipTableActions;
+    actions: FellowshipListPageActions;
     /** Current table state */
     tableState: FellowshipsTableState;
 }

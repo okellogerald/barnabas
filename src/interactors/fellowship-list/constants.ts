@@ -35,6 +35,8 @@ export const FELLOWSHIP_NOTIFICATIONS = {
         REFRESHING: "Refreshing fellowships...",
         /** When loading more fellowships during pagination */
         LOADING_MORE: "Loading more fellowships...",
+        /** When loading more fellowships during pagination */
+        ERROR: "Failed to load fellowships"
     },
     /** Fellowship detail related notifications */
     DETAIL: {

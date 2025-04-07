@@ -6,40 +6,47 @@ services:
     ports:
       - "4173:4173"
     environment:
-      - VITE_MODE=development
-      - VITE_API_BASE_URL=http://localhost:3000
-      - VITE_DEFAULT_PAGE_SIZE=10
+      VITE_MODE: ${VITE_MODE}
+      VITE_DEFAULT_PAGE_SIZE: ${VITE_DEFAULT_PAGE_SIZE}
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL}
     networks:
       - barnabas-network
     depends_on:
       - api
+    restart: unless-stopped
 
   api:
     build: 
       context: /Users/mac/Downloads/Programs/other/church-manager-api
     environment:
-      - PORT=3000
-      - MYSQL_HOST=db
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      PORT: ${API_PORT}
+      MYSQL_HOST: db
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3000:3000"
+      - "${API_PORT}:${API_PORT}"
     networks:
       - barnabas-network
     depends_on:
       - db
+    restart: unless-stopped
 
   db:
-    image: mysql:latest
+    image: mysql:8.0
     restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - /Users/mac/Downloads/Programs/other/church-manager-api/.data/mysql:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     networks:
       - barnabas-network
+
+volumes:
+  mysql_data:
 
 networks:
   barnabas-network:

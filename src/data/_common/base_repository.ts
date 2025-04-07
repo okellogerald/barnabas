@@ -58,9 +58,12 @@ export class BaseRepository<TContract extends AppRouter> {
      * Uses authentication token if available.
      */
     get client() {
+        // Ensure that both `this.root` and `AppConfig.API_BASE_URL` don't end with a '/'
         const baseUrl = this.root
-            ? `${this.root}/${this.endpoint}`
-            : `${AppConfig.API_BASE_URL}${this.endpoint}`;
+            ? `${this.root.replace(/\/$/, "")}/${this.endpoint}` // Remove trailing slash from `this.root` and append the endpoint
+            : `${AppConfig.API_BASE_URL.replace(/\/$/, "")}/${this.endpoint}`; // Remove trailing slash from `AppConfig.API_BASE_URL` and append the endpoint
+
+            console.log("Base URL: ", baseUrl)
 
         // Get token from auth manager
         const token = AuthManager.instance.getToken() || "";

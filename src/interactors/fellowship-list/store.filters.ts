@@ -32,9 +32,9 @@ export interface FellowshipFilterActions {
     /**
      * Set a specific filter value
      */
-    setFilter: <K extends keyof FellowshipQueryParams>(
+    setFilter: <K extends keyof FellowshipFilterState>(
         key: K,
-        value: FellowshipQueryParams[K],
+        value: FellowshipFilterState[K],
     ) => void;
 
     /**

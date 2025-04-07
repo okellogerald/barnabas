@@ -6,7 +6,7 @@ import { StructuredSuccessState } from "../_new_state";
 /**
  * Props for fellowship table (non-action properties)
  */
-export interface FellowshipTableProps {
+export interface FellowshipListPageTableProps {
     render: () => JSX.Element;
     fellowshipCount: number;
     filters: FellowshipFilterState;
@@ -15,7 +15,7 @@ export interface FellowshipTableProps {
 /**
  * Actions for fellowship table
  */
-export interface FellowshipTableActions {
+export interface FellowshipListPageActions {
     // Table-related actions from store
     expandFellowship: (fellowship: Fellowship) => void;
     collapseAll: () => void;
@@ -63,14 +63,14 @@ export class FellowshipListSuccessState extends StructuredSuccessState<
     Fellowship[],
     {
         page: FellowshipPageActions;
-        table: FellowshipTableActions & FellowshipTableProps;
+        table: FellowshipListPageActions & FellowshipListPageTableProps;
         fellowship: FellowshipItemActions;
     }
 > {
     constructor(
         fellowships: Fellowship[],
-        tableProps: FellowshipTableProps,
-        tableActions: FellowshipTableActions,
+        tableProps: FellowshipListPageTableProps,
+        tableActions: FellowshipListPageActions,
         fellowshipActions: FellowshipItemActions,
         pageActions: FellowshipPageActions,
     ) {
