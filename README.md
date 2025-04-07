@@ -35,8 +35,6 @@ The provided `docker-compose.yml` file uses a specific setup that might require 
 * Open the `docker-compose.yml` file located in the `barnabas` directory.
 * **Locate the `api` service:**
     * The `build.context` is set to an absolute path (`/Users/mac/Downloads/Programs/other/church-manager-api`). You **MUST** change this to the correct relative path to your cloned `church-manager-api` directory. If you followed step 1, this should be: `../church-manager-api`.
-* **Locate the `db` service:**
-    * The database data is stored in a Docker named volume called `mysql_data`. You generally don't need to change this, Docker will manage the volume.
 
 **3. Create Environment File**
 
@@ -57,15 +55,14 @@ make up
 ```
 
 **5. Database Setup**
+
 From the `barnabas` directory (containing `docker-compose.yml` and `.env`):
 
 ```bash
 make migrate
 ```
-* *(Consult the `church-manager-api` project's documentation for the exact database setup commands if they differ.)*
 
 ### Accessing the Applications
 
 * **Frontend:** [http://localhost:4173](http://localhost:4173)
 * **API:** [http://localhost:3000](http://localhost:3000) (or the port you set for `API_PORT` in `.env`)
-```
