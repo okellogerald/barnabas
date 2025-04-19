@@ -17,7 +17,7 @@ services:
 
   api:
     build: 
-      context: /Users/mac/Downloads/Programs/other/church-manager-api
+      context: /Users/mac/Downloads/Programs/barnabas/barnabas-backend
     environment:
       PORT: ${API_PORT}
       MYSQL_HOST: db
