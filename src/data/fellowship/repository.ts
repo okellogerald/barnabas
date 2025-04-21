@@ -17,8 +17,8 @@ export class FellowshipRepository extends BaseRepository<typeof fellowshipContra
         super("fellowship", fellowshipContract);
     }
 
-    private static defaultQueryParams: FellowshipQueryParams = {
-        eager: "chairman,deputyChairman,secretary,treasurer",
+    public static defaultQueryParams: FellowshipQueryParams = {
+        eager: "[chairman,deputyChairman,secretary,treasurer]",
         rangeStart: 0,
         rangeEnd: 9,
     };

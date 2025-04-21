@@ -16,7 +16,7 @@ const MemberEditPage = lazy(() => import('@/pages/member-edit/member_edit.page')
 const MemberDetailsPage = lazy(() => import('@/pages/member-details/member_details.page'));
 // const MemberDetailsPage = lazy(() => import('@/pages/members/member-details.page'));
 // const MemberEditPage = lazy(() => import('@/pages/members/member-edit.page'));
-// const FellowshipsPage = lazy(() => import('@/pages/fellowships/fellowships.page'));
+const FellowshipsPage = lazy(() => import('@/pages/fellowship-list/page'));
 // const FellowshipDetailsPage = lazy(() => import('@/pages/fellowships/fellowship-details.page'));
 // const FellowshipCreatePage = lazy(() => import('@/pages/fellowships/fellowship-create.page'));
 // const FellowshipEditPage = lazy(() => import('@/pages/fellowships/fellowship-edit.page'));
@@ -76,6 +76,8 @@ const AppRoutes: React.FC = () => {
           <Route path={ROUTES.MEMBERS.CREATE} element={<MemberCreatePage />} />
           <Route path={ROUTES.MEMBERS.EDIT} loader={MemberEditRouteLoader} element={<MemberEditPage />} />
           <Route path={ROUTES.MEMBERS.DETAILS} loader={MemberDetailsRouteLoader} element={<MemberDetailsPage />} />
+
+          <Route path={ROUTES.FELLOWSHIPS.LIST} element={<FellowshipsPage />} />
 
           {/* 404 catch-all */}
           <Route path="*" element={<NotFoundPage />} />

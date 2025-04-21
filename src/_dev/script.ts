@@ -1,3 +1,4 @@
+import { AppConfig } from "@/app";
 import {
     DependantRelationship,
     EducationLevel,
@@ -22,7 +23,7 @@ import axios, { AxiosError } from "axios";
  */
 
 // API base URL - change this to match your local API
-const API_BASE_URL = "http://localhost:3045";
+const API_BASE_URL = AppConfig.API_BASE_URL;
 let authToken =
     "0ea74e2458639515db3614fc389774e0668b2858908e4298b89f69484159b1e9";
 let churchId = "a1c01b9947d74962be25314a2981ef4d";
@@ -106,7 +107,7 @@ export class ChurchApiClient {
             console.log(
                 "Please ensure the API server is running and the admin user exists.",
             );
-            process.exit(1);
+           // process.exit(1);
         }
     }
 
