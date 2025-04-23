@@ -14,17 +14,8 @@ const MembersPage = lazy(() => import('@/pages/member-list/member_list.page'));
 const MemberCreatePage = lazy(() => import('@/pages/member-create/member_create.page'));
 const MemberEditPage = lazy(() => import('@/pages/member-edit/member_edit.page'));
 const MemberDetailsPage = lazy(() => import('@/pages/member-details/member_details.page'));
-// const MemberDetailsPage = lazy(() => import('@/pages/members/member-details.page'));
-// const MemberEditPage = lazy(() => import('@/pages/members/member-edit.page'));
-const FellowshipsPage = lazy(() => import('@/pages/fellowship-list/page'));
-// const FellowshipDetailsPage = lazy(() => import('@/pages/fellowships/fellowship-details.page'));
-// const FellowshipCreatePage = lazy(() => import('@/pages/fellowships/fellowship-create.page'));
-// const FellowshipEditPage = lazy(() => import('@/pages/fellowships/fellowship-edit.page'));
-// const OpportunitiesPage = lazy(() => import('@/pages/opportunities/opportunities.page'));
-// const OpportunityDetailsPage = lazy(() => import('@/pages/opportunities/opportunity-details.page'));
-// const OpportunityCreatePage = lazy(() => import('@/pages/opportunities/opportunity-create.page'));
-// const OpportunityEditPage = lazy(() => import('@/pages/opportunities/opportunity-edit.page'));
-// const RolesPage = lazy(() => import('@/pages/roles/roles.page'));
+const FellowshipListPage = lazy(() => import('@/pages/fellowship/list/page'));
+const FellowshipDetailsPage = lazy(() => import('@/pages/fellowship/details/page'));
 const NotFoundPage = lazy(() => import('@/pages/errors/not_found.page'));
 
 // Loading component for suspense fallback
@@ -77,7 +68,13 @@ const AppRoutes: React.FC = () => {
           <Route path={ROUTES.MEMBERS.EDIT} loader={MemberEditRouteLoader} element={<MemberEditPage />} />
           <Route path={ROUTES.MEMBERS.DETAILS} loader={MemberDetailsRouteLoader} element={<MemberDetailsPage />} />
 
-          <Route path={ROUTES.FELLOWSHIPS.LIST} element={<FellowshipsPage />} />
+          {/* Fellowships routes */}
+          <Route path={ROUTES.FELLOWSHIPS.LIST} element={<FellowshipListPage />} />
+          <Route path={ROUTES.FELLOWSHIPS.DETAILS} element={<FellowshipDetailsPage />} />
+
+          <Route path={ROUTES.OPPORTUNITIES.LIST} element={"Opportunities page not currently implemented"} />
+
+          <Route path={ROUTES.ROLES.LIST} element={"Roles page not currently implemented"} />
 
           {/* 404 catch-all */}
           <Route path="*" element={<NotFoundPage />} />
@@ -126,24 +123,3 @@ export const useAppNavigation = () => {
 };
 
 export default AppRoutes;
-
-{/* Members routes
-          <Route path={ROUTES.MEMBERS.LIST} element={<MembersPage />} />
-          <Route path={ROUTES.MEMBERS.CREATE} element={<MemberCreatePage />} />
-          <Route path={ROUTES.MEMBERS.DETAILS} element={<MemberDetailsPage />} />
-          <Route path={ROUTES.MEMBERS.EDIT} element={<MemberEditPage />} />
-
-  //  {/* Fellowships routes */}
-//  <Route path={ROUTES.FELLOWSHIPS.LIST} element={<FellowshipsPage />} />
-//  <Route path={ROUTES.FELLOWSHIPS.CREATE} element={<FellowshipCreatePage />} />
-//  <Route path={ROUTES.FELLOWSHIPS.DETAILS} element={<FellowshipDetailsPage />} />
-//  <Route path={ROUTES.FELLOWSHIPS.EDIT} element={<FellowshipEditPage />} />
-
-//  {/* Opportunities routes */}
-//  <Route path={ROUTES.OPPORTUNITIES.LIST} element={<OpportunitiesPage />} />
-//  <Route path={ROUTES.OPPORTUNITIES.CREATE} element={<OpportunityCreatePage />} />
-//  <Route path={ROUTES.OPPORTUNITIES.DETAILS} element={<OpportunityDetailsPage />} />
-//  <Route path={ROUTES.OPPORTUNITIES.EDIT} element={<OpportunityEditPage />} />
-
-//  {/* Roles routes */}
-//  <Route path={ROUTES.ROLES.LIST} element={<RolesPage />} /> 

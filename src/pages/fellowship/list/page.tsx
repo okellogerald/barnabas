@@ -1,134 +1,28 @@
-// import React from 'react';
-// import { Card, Table, Button, Typography, Divider } from 'antd';
-// import { PlusOutlined, TeamOutlined } from '@ant-design/icons';
-// import { useFellowshipsList, FellowshipsListSuccessState } from '@/features/fellowship/fellowship-list';
-// import { AsyncStateMatcher } from '@/lib/state/async_state.matcher';
-// import { Navigation } from '@/app';
-// import { AuthManager } from '@/managers/auth';
-// import { PageHeader } from '@/components/layout';
-
-// const { Title, Text } = Typography;
-
-// const FellowshipListPage: React.FC = () => {
-//   // Get the fellowship list state
-//   const fellowshipsState = useFellowshipsList();
-  
-//   // Check if user has permission to create fellowships
-//   const canCreateFellowship = AuthManager.instance.hasPermission('FELLOWSHIP_CREATE');
-  
-//   return (
-//     <div className="fellowship-list-page">
-//       <PageHeader 
-//         title="Fellowships"
-//         subtitle="Manage church fellowships"
-//         breadcrumb={[
-//           { title: 'Home', path: '/' },
-//           { title: 'Fellowships' }
-//         ]}
-//         actions={
-//           canCreateFellowship ? (
-//             <Button 
-//               type="primary" 
-//               icon={<PlusOutlined />} 
-//               onClick={() => Navigation.Fellowships.toCreate()}
-//             >
-//               New Fellowship
-//             </Button>
-//           ) : null
-//         }
-//       />
-      
-//       <Card>
-//         <AsyncStateMatcher
-//           state={fellowshipsState}
-//           views={{
-//             SuccessView: ({ state }) => {
-//               if (FellowshipsListSuccessState.is(state)) {
-//                 return (
-//                   <div>
-//                     <div className="table-toolbar">
-//                       {state.renderSearchBar()}
-//                     </div>
-                    
-//                     <Divider style={{ margin: '12px 0' }}/>
-                    
-//                     <Table
-//                       {...state.tableProps}
-//                       dataSource={state.data.fellowships}
-//                       pagination={{
-//                         current: state.pagination.current,
-//                         pageSize: state.pagination.pageSize,
-//                         total: state.pagination.total,
-//                         onChange: state.pagination.onChange,
-//                         showSizeChanger: false,
-//                         showTotal: (total, range) => 
-//                           `Showing ${range[0]} to ${range[1]} of ${total} fellowships`,
-//                         position: ['bottomRight']
-//                       }}
-//                       loading={state.loading}
-//                       size="middle"
-//                       className="fellowships-table"
-//                     />
-                    
-//                     {state.data.fellowships.length === 0 && !state.loading && (
-//                       <div className="empty-state" style={{ textAlign: 'center', padding: '40px 0' }}>
-//                         <TeamOutlined style={{ fontSize: 48, color: '#ccc', marginBottom: 16 }} />
-//                         <Title level={4}>No Fellowships Found</Title>
-//                         <Text type="secondary">
-//                           {state.filters.searchTerm 
-//                             ? `No results found for "${state.filters.searchTerm}". Try different search terms or clear filters.` 
-//                             : 'There are no fellowships in the system yet.'}
-//                         </Text>
-//                         {canCreateFellowship && (
-//                           <div style={{ marginTop: 16 }}>
-//                             <Button 
-//                               type="primary" 
-//                               icon={<PlusOutlined />}
-//                               onClick={() => Navigation.Fellowships.toCreate()}
-//                             >
-//                               Create Fellowship
-//                             </Button>
-//                           </div>
-//                         )}
-//                       </div>
-//                     )}
-//                   </div>
-//                 );
-//               }
-//               return null;
-//             }
-//           }}
-//         />
-//       </Card>
-//     </div>
-//   );
-// };
-
-// export default FellowshipListPage;
 import React, { useState } from 'react';
-import { 
-  Card, 
-  Table, 
-  Button, 
-  Typography, 
-  Divider, 
-  Row, 
-  Col, 
-  Space, 
-  Dropdown, 
-  Menu, 
+import {
+  Card,
+  Table,
+  Button,
+  Typography,
+  Divider,
+  Row,
+  Col,
+  Space,
+  Dropdown,
+  Menu,
   Drawer,
   Form,
   Input,
   Select,
   Badge,
   Tag,
-  Tooltip
+  Tooltip,
+  Spin
 } from 'antd';
-import { 
-  PlusOutlined, 
-  TeamOutlined, 
-  FilterOutlined, 
+import {
+  PlusOutlined,
+  TeamOutlined,
+  FilterOutlined,
   ReloadOutlined,
   SortAscendingOutlined,
   DownOutlined
@@ -138,8 +32,7 @@ import { AsyncStateMatcher } from '@/lib/state/async_state.matcher';
 import { Navigation } from '@/app';
 import { AuthManager } from '@/managers/auth';
 import { Fellowship } from '@/models';
-import { FellowshipFilterState, useFellowshipFilterStore } from '@/features/fellowship/fellowship-list/filter_store';
-import { Actions } from '@/managers/auth/permission';
+import { FellowshipFilterState, useFellowshipFilterStore } from '@/features/fellowship/fellowship-list';
 
 const { Title, Text } = Typography;
 
@@ -172,7 +65,7 @@ const FellowshipFilters: React.FC<{
       <Form.Item label="Fellowship Name" name="searchTerm">
         <Input placeholder="Search by name" />
       </Form.Item>
-      
+
       <Form.Item label="Member Count" name="memberCount">
         <Select placeholder="Filter by members">
           <Select.Option value="empty">No members (0)</Select.Option>
@@ -181,16 +74,16 @@ const FellowshipFilters: React.FC<{
           <Select.Option value="large">Large (31+)</Select.Option>
         </Select>
       </Form.Item>
-      
+
       <Form.Item label="Has Leadership" name="hasLeadership">
         <Select placeholder="Leadership status">
           <Select.Option value={true}>Has leadership</Select.Option>
           <Select.Option value={false}>Missing leadership</Select.Option>
         </Select>
       </Form.Item>
-      
+
       <Divider />
-      
+
       <Row gutter={16}>
         <Col span={12}>
           <Button block onClick={handleReset}>
@@ -214,7 +107,7 @@ const SortMenu: React.FC<{
   onChange: (field: string, direction: 'asc' | 'desc') => void
 }> = ({ currentSort, currentDirection, onChange }) => {
   return (
-    <Menu 
+    <Menu
       selectedKeys={currentSort ? [currentSort] : []}
       onClick={({ key }) => onChange(key, currentDirection || 'asc')}
     >
@@ -222,8 +115,8 @@ const SortMenu: React.FC<{
       <Menu.Item key="memberCount">Member Count</Menu.Item>
       <Menu.Item key="createdAt">Date Created</Menu.Item>
       <Menu.Divider />
-      <Menu.Item 
-        key="direction" 
+      <Menu.Item
+        key="direction"
         onClick={(e) => {
           e.domEvent.stopPropagation();
           if (currentSort) {
@@ -239,13 +132,17 @@ const SortMenu: React.FC<{
 
 // Expanded row content for fellowship details
 const ExpandedRowContent: React.FC<{ fellowship: Fellowship }> = ({ fellowship }) => {
+  // Get the member count (from our enhanced property)
+  const memberCount = (fellowship as any).memberCount;
+
   return (
-    <Card bordered={false} size="small" className="expanded-row-content">
-      <Row gutter={[16, 16]}>
-        <Col span={24}>
+    <Card variant={"outlined"} size="small" className="expanded-row-content">
+      <Row gutter={[24, 16]}>
+        {/* Leadership Column */}
+        <Col xs={24} md={12}>
           <Title level={5}>Leadership</Title>
           {fellowship.hasLeadership() ? (
-            <ul style={{ paddingLeft: 20 }}>
+            <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
               {fellowship.getLeaderContactInfo().map((contact, index) => (
                 <li key={index}>{contact}</li>
               ))}
@@ -254,28 +151,63 @@ const ExpandedRowContent: React.FC<{ fellowship: Fellowship }> = ({ fellowship }
             <Text type="secondary">No leadership assigned to this fellowship</Text>
           )}
         </Col>
-        
+
+        {/* Members Summary Column */}
+        <Col xs={24} md={12}>
+          <Title level={5}>Members</Title>
+          {memberCount !== undefined ? (
+            <div>
+              <Text>{memberCount} member{memberCount !== 1 ? 's' : ''}</Text>
+              {memberCount > 0 && (
+                <div style={{ marginTop: 8 }}>
+                  <Button
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      Navigation.Members.list({ fellowshipId: fellowship.id });
+                    }}
+                  >
+                    View All Members
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Spin size="small" />
+          )}
+        </Col>
+
+        {/* Notes Row (Full Width) */}
         {fellowship.notes && (
           <Col span={24}>
+            <Divider style={{ margin: '8px 0' }} />
             <Title level={5}>Notes</Title>
             <Text>{fellowship.notes}</Text>
           </Col>
         )}
-        
+
+        {/* Actions */}
         <Col span={24}>
+          <Divider style={{ margin: '8px 0' }} />
           <Space>
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               size="small"
-              onClick={() => Navigation.Fellowships.toDetails(fellowship.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                Navigation.Fellowships.toDetails(fellowship.id);
+              }}
             >
               View Details
             </Button>
-            <Button 
+            <Button
               size="small"
-              // onClick={() => Navigation.Members.list({ fellowshipId: fellowship.id })}
+              onClick={(e) => {
+                e.stopPropagation();
+                Navigation.Fellowships.toEdit(fellowship.id);
+              }}
             >
-              View Members
+              Edit Fellowship
             </Button>
           </Space>
         </Col>
@@ -288,17 +220,17 @@ const ExpandedRowContent: React.FC<{ fellowship: Fellowship }> = ({ fellowship }
 const FellowshipListPage: React.FC = () => {
   // Get the fellowship list state
   const fellowshipsState = useFellowshipsList();
-  
+
   // Filter and sort state from store
   const filterStore = useFellowshipFilterStore();
-  
+
   // Local state for UI controls
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
-  
+
   // Check if user has permission to create fellowships
-  const canCreateFellowship = AuthManager.instance.hasPermission(Actions.FELLOWSHIP_CREATE);
-  
+  const canCreateFellowship = AuthManager.instance.hasPermission('FELLOWSHIP_CREATE');
+
   // Count active filters
   React.useEffect(() => {
     // Count non-empty filter values
@@ -307,13 +239,25 @@ const FellowshipListPage: React.FC = () => {
     ).length;
     setActiveFiltersCount(count);
   }, [filterStore.filters]);
-  
+
   // Handle filter application
   const handleApplyFilters = (values: any) => {
-    filterStore.setFilters(values);
+    // Format values for our enhanced filtering system
+    // This is the appropriate place to transform filter values
+    const formattedValues = {
+      ...values,
+      // Ensure memberCount is passed correctly
+      memberCount: values.memberCount || undefined,
+      // Ensure hasLeadership is a boolean if it exists
+      hasLeadership: values.hasLeadership !== undefined
+        ? values.hasLeadership === true || values.hasLeadership === 'true'
+        : undefined
+    };
+
+    filterStore.setFilters(formattedValues);
     setFilterDrawerOpen(false);
   };
-  
+
   // Handle sorting change
   const handleSortChange = (field: string, direction: 'asc' | 'desc') => {
     if (field === 'direction') return;
@@ -322,7 +266,7 @@ const FellowshipListPage: React.FC = () => {
       sortDirection: direction
     });
   };
-  
+
   return (
     <div className="fellowship-list-page">
       <AsyncStateMatcher
@@ -336,7 +280,10 @@ const FellowshipListPage: React.FC = () => {
                     <Row justify="space-between" align="middle">
                       <Col>
                         <Title level={3} style={{ margin: 0 }}>
-                          Fellowships <Text type="secondary">({state.pagination.total})</Text>
+                          Fellowships
+                          <Tag color="blue" style={{ marginLeft: 8 }}>
+                            {state.pagination.total} total
+                          </Tag>
                         </Title>
                         <Text type="secondary">Manage church fellowships and their leadership</Text>
                       </Col>
@@ -344,29 +291,29 @@ const FellowshipListPage: React.FC = () => {
                         <Space>
                           <Tooltip title="Filter Fellowships">
                             <Badge count={activeFiltersCount} size="small">
-                              <Button 
-                                icon={<FilterOutlined />} 
+                              <Button
+                                icon={<FilterOutlined />}
                                 onClick={() => setFilterDrawerOpen(true)}
                               >
                                 Filters
                               </Button>
                             </Badge>
                           </Tooltip>
-                          
+
                           <Tooltip title="Refresh List">
-                            <Button 
-                              icon={<ReloadOutlined />} 
+                            <Button
+                              icon={<ReloadOutlined />}
                               onClick={() => state.refresh()}
                               loading={state.loading}
                             >
                               Refresh
                             </Button>
                           </Tooltip>
-                          
+
                           {canCreateFellowship && (
-                            <Button 
-                              type="primary" 
-                              icon={<PlusOutlined />} 
+                            <Button
+                              type="primary"
+                              icon={<PlusOutlined />}
                               onClick={() => Navigation.Fellowships.toCreate()}
                             >
                               New Fellowship
@@ -376,18 +323,18 @@ const FellowshipListPage: React.FC = () => {
                       </Col>
                     </Row>
                   </Card>
-                  
+
                   <Card style={{ marginTop: 16 }}>
                     <Row justify="end" style={{ marginBottom: 16 }}>
                       <Col>
-                        <Dropdown 
+                        <Dropdown
                           overlay={
-                            <SortMenu 
+                            <SortMenu
                               currentSort={filterStore.filters.sortBy}
                               currentDirection={filterStore.filters.sortDirection}
                               onChange={handleSortChange}
                             />
-                          } 
+                          }
                           trigger={['click']}
                         >
                           <Button>
@@ -400,7 +347,7 @@ const FellowshipListPage: React.FC = () => {
                         </Dropdown>
                       </Col>
                     </Row>
-                    
+
                     <Table
                       {...state.tableProps}
                       dataSource={state.data.fellowships}
@@ -409,10 +356,10 @@ const FellowshipListPage: React.FC = () => {
                         pageSize: state.pagination.pageSize,
                         total: state.pagination.total,
                         onChange: state.pagination.onChange,
-                       // showSizeChanger: true,
-                       // pageSizeOptions: ['10', '20', '50', '100'],
-                       // onShowSizeChange: (current, size) => filterStore.setPageSize(size),
-                        showTotal: (total, range) => 
+                        showSizeChanger: true,
+                        pageSizeOptions: ['10', '20', '50', '100'],
+                        onShowSizeChange: (_, size) => filterStore.setPageSize(size),
+                        showTotal: (total, range) =>
                           `${range[0]}-${range[1]} of ${total} fellowships`,
                         position: ['bottomRight']
                       }}
@@ -440,24 +387,62 @@ const FellowshipListPage: React.FC = () => {
                         {
                           title: "Members",
                           key: "memberCount",
-                          render: (_, fellowship) => fellowship.getMembershipSummary(),
+                          render: (_, fellowship) => {
+                            // Check if we have a memberCount property (added by our hook)
+                            if ((fellowship as any).memberCount !== undefined) {
+                              const count = (fellowship as any).memberCount;
+                              return `${count} member${count !== 1 ? 's' : ''}`;
+                            }
+
+                            // Gracefully handle undefined memberCount
+                            return <span><Spin size="small" style={{ marginRight: 8 }} />Loading count...</span>;
+                          },
                         },
+                        {
+                          title: "Actions",
+                          key: "actions",
+                          width: 180,
+                          render: (_, fellowship) => (
+                            <Space>
+                              <Button
+                                type="link"
+                                size="small"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  Navigation.Fellowships.toDetails(fellowship.id);
+                                }}
+                              >
+                                View
+                              </Button>
+                              <Button
+                                type="link"
+                                size="small"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  Navigation.Fellowships.toEdit(fellowship.id);
+                                }}
+                              >
+                                Edit
+                              </Button>
+                            </Space>
+                          ),
+                        }
                       ]}
                     />
-                    
+
                     {state.data.fellowships.length === 0 && !state.loading && (
                       <div className="empty-state" style={{ textAlign: 'center', padding: '40px 0' }}>
                         <TeamOutlined style={{ fontSize: 48, color: '#ccc', marginBottom: 16 }} />
                         <Title level={4}>No Fellowships Found</Title>
                         <Text type="secondary">
-                          {activeFiltersCount > 0 
-                            ? `No results found with the current filters. Try different filters or clear them.` 
+                          {activeFiltersCount > 0
+                            ? `No results found with the current filters. Try different filters or clear them.`
                             : 'There are no fellowships in the system yet.'}
                         </Text>
                         {canCreateFellowship && (
                           <div style={{ marginTop: 16 }}>
-                            <Button 
-                              type="primary" 
+                            <Button
+                              type="primary"
                               icon={<PlusOutlined />}
                               onClick={() => Navigation.Fellowships.toCreate()}
                             >
@@ -468,7 +453,7 @@ const FellowshipListPage: React.FC = () => {
                       </div>
                     )}
                   </Card>
-                  
+
                   {/* Filter Drawer */}
                   <Drawer
                     title="Filter Fellowships"
@@ -476,7 +461,9 @@ const FellowshipListPage: React.FC = () => {
                     width={320}
                     onClose={() => setFilterDrawerOpen(false)}
                     open={filterDrawerOpen}
-                    bodyStyle={{ paddingBottom: 80 }}
+                    styles={{
+                      body: { paddingBottom: 80 }
+                    }}
                   >
                     <FellowshipFilters
                       initialValues={filterStore.filters}

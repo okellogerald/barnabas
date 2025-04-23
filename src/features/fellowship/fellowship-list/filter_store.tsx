@@ -4,6 +4,7 @@ import { create } from "zustand";
 export interface FellowshipFilters {
   searchTerm?: string;
   hasLeadership?: boolean;
+  memberCount?: string; // 'empty', 'small', 'medium', 'large'
   sortBy?: string;
   sortDirection?: 'asc' | 'desc';
 }

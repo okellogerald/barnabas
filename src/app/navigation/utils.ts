@@ -24,7 +24,23 @@ export const Navigation = {
      * Member-related navigation
      */
     Members: {
-        toList: () => {
+        /**
+         * Navigate to the members list page with optional filter parameters
+         *
+         * @param params Optional filter parameters like fellowshipId
+         */
+        list: (params?: { fellowshipId?: string }) => {
+            // If we have params, pre-set them in the filter store before navigation
+            if (params) {
+                if (params.fellowshipId) {
+                    sessionStorage.setItem(
+                        "memberList_fellowshipId",
+                        params.fellowshipId,
+                    );
+                }
+            }
+
+            // Navigate to the members list page
             window.location.href = ROUTES.MEMBERS.LIST;
         },
         toDetails: (id: string) => {

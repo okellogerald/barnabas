@@ -126,4 +126,86 @@ export const dateUtils = {
             ? parsedDate.format(DATE_FORMATS.ISO)
             : null;
     },
+
+    /**
+     * Formats a date for display
+     *
+     * @param date The date to format
+     * @param includeTime Whether to include the time in the formatted string
+     * @returns Formatted date string
+     */
+    formatDate(date: Date | string, includeTime: boolean = false): string {
+        if (!date) return "N/A";
+
+        const dateObj = date instanceof Date ? date : new Date(date);
+
+        // Check if date is valid
+        if (isNaN(dateObj.getTime())) {
+            return "Invalid Date";
+        }
+
+        const options: Intl.DateTimeFormatOptions = {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        };
+
+        if (includeTime) {
+            options.hour = "2-digit";
+            options.minute = "2-digit";
+        }
+
+        return dateObj.toLocaleDateString("en-US", options);
+    },
+
+    /**
+     * Formats a date to display how long ago it was
+     *
+     * @param date The date to format
+     * @returns Relative time string (e.g., "2 days ago")
+     */
+    formatRelativeTime(date: Date | string): string {
+        if (!date) return "N/A";
+
+        const dateObj = date instanceof Date ? date : new Date(date);
+
+        // Check if date is valid
+        if (isNaN(dateObj.getTime())) {
+            return "Invalid Date";
+        }
+
+        const now = new Date();
+        const diffInSeconds = Math.floor(
+            (now.getTime() - dateObj.getTime()) / 1000,
+        );
+
+        if (diffInSeconds < 60) {
+            return "just now";
+        }
+
+        const diffInMinutes = Math.floor(diffInSeconds / 60);
+        if (diffInMinutes < 60) {
+            return `${diffInMinutes} minute${
+                diffInMinutes !== 1 ? "s" : ""
+            } ago`;
+        }
+
+        const diffInHours = Math.floor(diffInMinutes / 60);
+        if (diffInHours < 24) {
+            return `${diffInHours} hour${diffInHours !== 1 ? "s" : ""} ago`;
+        }
+
+        const diffInDays = Math.floor(diffInHours / 24);
+        if (diffInDays < 30) {
+            return `${diffInDays} day${diffInDays !== 1 ? "s" : ""} ago`;
+        }
+
+        const diffInMonths = Math.floor(diffInDays / 30);
+        if (diffInMonths < 12) {
+            return `${diffInMonths} month${diffInMonths !== 1 ? "s" : ""} ago`;
+        }
+
+        const diffInYears = Math.floor(diffInMonths / 12);
+        return `${diffInYears} year${diffInYears !== 1 ? "s" : ""} ago`;
+    },
 };
