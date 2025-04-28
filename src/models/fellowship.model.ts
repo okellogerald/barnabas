@@ -4,6 +4,7 @@ import {
     UpdateFellowshipDTO,
 } from "@/data/fellowship";
 import { modelFactory } from "./model.factory";
+import type { Member } from "./member.model";
 
 /**
  * Fellowship model representing a church fellowship
@@ -21,10 +22,10 @@ export class Fellowship {
     updatedAt: Date;
 
     // Transient properties for related entities
-    chairman?: any; // Will be Member type at runtime
-    deputyChairman?: any; // Will be Member type at runtime
-    secretary?: any; // Will be Member type at runtime
-    treasurer?: any; // Will be Member type at runtime
+    chairman?: Member; // Will be Member type at runtime
+    deputyChairman?: Member; // Will be Member type at runtime
+    secretary?: Member; // Will be Member type at runtime
+    treasurer?: Member; // Will be Member type at runtime
     memberCount?: number;
 
     constructor(dto: FellowshipDTO) {

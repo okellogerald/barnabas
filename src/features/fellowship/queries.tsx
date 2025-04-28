@@ -23,7 +23,7 @@ export const FellowshipQueries = {
    * @param {FellowshipQueryParams} params Optional parameters for filtering and pagination
    * @returns {UseQueryResult<{results: Fellowship[], total: number}, Error>} Query result with fellowships and total
    */
-  useList: (params?: FellowshipQueryParams): UseQueryResult<{ fellowships: Fellowship[], total: number }, Error> =>
+  useList: (params?: Record<string, any>): UseQueryResult<{ fellowships: Fellowship[], total: number }, Error> =>
     useQuery({
       queryKey: [QueryKeys.Fellowships.list(), params],
       queryFn: async () => {
@@ -33,6 +33,8 @@ export const FellowshipQueries = {
           rangeEnd: params?.rangeEnd || 9,
           eager: params?.eager ?? FellowshipRepository.defaultQueryParams.eager,
         }
+
+        console.log(_params)
         return await fellowshipManager.getFellowships(_params);
       },
     }),

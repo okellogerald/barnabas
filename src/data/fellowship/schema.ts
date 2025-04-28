@@ -58,7 +58,8 @@ const fellowshipQueryParamsSchema = z.object({
     eager: z.string().default("[chairman,deputyChairman,secretary,treasurer]").optional(),
     rangeStart: z.coerce.number().optional().default(0),
     rangeEnd: z.coerce.number().optional().default(9),
-    search: z.string().optional(),
+    name: z.string().optional(),
+    chairmadId: z.string().nullable().optional(),
     includeMemberCount: z.coerce.boolean().default(false).optional(),
 });
 

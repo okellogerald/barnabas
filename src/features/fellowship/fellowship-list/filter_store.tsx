@@ -1,8 +1,7 @@
-// features/fellowship/filter-store.ts
 import { create } from "zustand";
 
 export interface FellowshipFilters {
-  searchTerm?: string;
+  name?: string;
   hasLeadership?: boolean;
   memberCount?: string; // 'empty', 'small', 'medium', 'large'
   sortBy?: string;
@@ -49,11 +48,11 @@ export const useFellowshipFilterStore = create<FellowshipFilterState & Fellowshi
   }),
 
   setCurrentPage: (page) => set({ currentPage: page }),
-  
+
   setPageSize: (size) => set({ pageSize: size }),
 
   selectFellowship: (id, selected) => set((state) => ({
-    selectedFellowships: selected 
+    selectedFellowships: selected
       ? [...state.selectedFellowships, id]
       : state.selectedFellowships.filter(fellowshipId => fellowshipId !== id)
   })),

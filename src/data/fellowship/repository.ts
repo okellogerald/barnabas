@@ -118,24 +118,4 @@ export class FellowshipRepository extends BaseRepository<typeof fellowshipContra
             throw new Error(`Failed to delete fellowship with ID ${id}.`);
         }
     }
-
-    /**
-     * Searches for fellowships by name or notes.
-     * @param searchTerm Text to search for.
-     * @returns Object containing fellowship data array and total count.
-     * @throws Error if there's an issue searching for fellowships.
-     */
-    async search(searchTerm: string): Promise<GetFellowshipsResponse> {
-        try {
-            return this.getAll({
-                ...FellowshipRepository.defaultQueryParams,
-                search: searchTerm,
-            });
-        } catch (error) {
-            console.error(`Error in search with term ${searchTerm}:`, error);
-            throw new Error(
-                `Failed to search fellowships with term ${searchTerm}.`,
-            );
-        }
-    }
 }

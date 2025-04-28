@@ -17,7 +17,7 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
         super("member", memberContract);
     }
 
-    private static defaultQueryParams: MemberQueryParams = {
+    static defaultQueryParams: MemberQueryParams = {
         eager: "fellowship",
         rangeStart: 0,
         rangeEnd: 9,

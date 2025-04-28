@@ -16,6 +16,8 @@ const MemberEditPage = lazy(() => import('@/pages/member-edit/member_edit.page')
 const MemberDetailsPage = lazy(() => import('@/pages/member-details/member_details.page'));
 const FellowshipListPage = lazy(() => import('@/pages/fellowship/list/page'));
 const FellowshipDetailsPage = lazy(() => import('@/pages/fellowship/details/page'));
+const FellowshipCreatePage = lazy(() => import('@/pages/fellowship/create/page'));
+const FellowshipEditPage = lazy(() => import('@/pages/fellowship/edit/page'));
 const NotFoundPage = lazy(() => import('@/pages/errors/not_found.page'));
 
 // Loading component for suspense fallback
@@ -71,6 +73,8 @@ const AppRoutes: React.FC = () => {
           {/* Fellowships routes */}
           <Route path={ROUTES.FELLOWSHIPS.LIST} element={<FellowshipListPage />} />
           <Route path={ROUTES.FELLOWSHIPS.DETAILS} element={<FellowshipDetailsPage />} />
+          <Route path={ROUTES.FELLOWSHIPS.CREATE} element={<FellowshipCreatePage />} />
+          <Route path={ROUTES.FELLOWSHIPS.EDIT} element={<FellowshipEditPage />} />
 
           <Route path={ROUTES.OPPORTUNITIES.LIST} element={"Opportunities page not currently implemented"} />
 
