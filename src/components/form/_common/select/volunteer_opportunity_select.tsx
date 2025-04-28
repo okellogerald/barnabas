@@ -1,6 +1,6 @@
 import React from 'react';
 import { SelectProps } from 'antd';
-import { VolunteerOpportunity } from '@/models/volunteer';
+import { VolunteerOpportunity } from '@/models';
 import { VolunteerOpportunityManager } from '@/managers/volunteer';
 import { AsyncSelect } from './async_select';
 

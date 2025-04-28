@@ -1,4 +1,4 @@
-import { Member } from "@/models/member";
+import { Member } from "@/models";
 import { MemberManager } from "@/managers/member";
 import { notifyUtils } from "@/utilities/notification.utils";
 import { memberTableStore } from "./store.table";

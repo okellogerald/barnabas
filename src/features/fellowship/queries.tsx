@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Query, queryClient, QueryKeys } from "@/lib/query";
 import { UseQueryResult, UseMutationResult } from "@tanstack/react-query";
-import { Fellowship } from "@/models/fellowship";
+import { Fellowship } from "@/models";
 import {
   CreateFellowshipDTO,
   FellowshipQueryParams,

@@ -164,7 +164,7 @@ const ExpandedRowContent: React.FC<{ fellowship: Fellowship }> = ({ fellowship }
                     size="small"
                     onClick={(e) => {
                       e.stopPropagation();
-                      Navigation.Members.list({ fellowshipId: fellowship.id });
+                      Navigation.Members.toList({ fellowshipId: fellowship.id });
                     }}
                   >
                     View All Members
@@ -356,8 +356,8 @@ const FellowshipListPage: React.FC = () => {
                         pageSize: state.pagination.pageSize,
                         total: state.pagination.total,
                         onChange: state.pagination.onChange,
-                        showSizeChanger: true,
-                        pageSizeOptions: ['10', '20', '50', '100'],
+                        showSizeChanger: false,
+                        pageSizeOptions: ['10'],
                         onShowSizeChange: (_, size) => filterStore.setPageSize(size),
                         showTotal: (total, range) =>
                           `${range[0]}-${range[1]} of ${total} fellowships`,
@@ -398,35 +398,6 @@ const FellowshipListPage: React.FC = () => {
                             return <span><Spin size="small" style={{ marginRight: 8 }} />Loading count...</span>;
                           },
                         },
-                        {
-                          title: "Actions",
-                          key: "actions",
-                          width: 180,
-                          render: (_, fellowship) => (
-                            <Space>
-                              <Button
-                                type="link"
-                                size="small"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  Navigation.Fellowships.toDetails(fellowship.id);
-                                }}
-                              >
-                                View
-                              </Button>
-                              <Button
-                                type="link"
-                                size="small"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  Navigation.Fellowships.toEdit(fellowship.id);
-                                }}
-                              >
-                                Edit
-                              </Button>
-                            </Space>
-                          ),
-                        }
                       ]}
                     />
 

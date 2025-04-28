@@ -1,4 +1,5 @@
 import { RoleDTO } from "@/data/role";
+import { modelFactory } from "./model.factory";
 
 /**
  * Role model representing a user role
@@ -71,3 +72,6 @@ export class Role {
         };
     }
 }
+
+// Register the Role class with the factory
+modelFactory.register('Role', Role);

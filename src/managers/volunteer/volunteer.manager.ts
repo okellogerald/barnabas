@@ -1,5 +1,5 @@
 import { OpportunityRepository } from "@/data/volunteer";
-import { VolunteerOpportunity } from "@/models/volunteer";
+import { VolunteerOpportunity } from "@/models";
 
 /**
  * Member Manager

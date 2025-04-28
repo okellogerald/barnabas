@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: "0.0.0.0",
-      port: 4173,
+     // port: 4173,
     },
     // Make env variables available
     define: {

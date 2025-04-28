@@ -1,4 +1,4 @@
-import { Fellowship } from "@/models/fellowship";
+import { Fellowship } from "@/models";
 import { FellowshipManager } from "@/managers/fellowship";
 import { notifyUtils } from "@/utilities/notification.utils";
 import { fellowshipTableStore } from "./store.table";

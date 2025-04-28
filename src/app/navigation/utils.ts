@@ -29,7 +29,7 @@ export const Navigation = {
          *
          * @param params Optional filter parameters like fellowshipId
          */
-        list: (params?: { fellowshipId?: string }) => {
+        toList: (params?: { fellowshipId?: string }) => {
             // If we have params, pre-set them in the filter store before navigation
             if (params) {
                 if (params.fellowshipId) {

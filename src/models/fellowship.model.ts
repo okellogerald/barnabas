@@ -3,7 +3,7 @@ import {
     FellowshipDTO,
     UpdateFellowshipDTO,
 } from "@/data/fellowship";
-import { User } from "@/models";
+import { modelFactory } from "./model.factory";
 
 /**
  * Fellowship model representing a church fellowship
@@ -21,10 +21,10 @@ export class Fellowship {
     updatedAt: Date;
 
     // Transient properties for related entities
-    chairman?: User;
-    deputyChairman?: User;
-    secretary?: User;
-    treasurer?: User;
+    chairman?: any; // Will be Member type at runtime
+    deputyChairman?: any; // Will be Member type at runtime
+    secretary?: any; // Will be Member type at runtime
+    treasurer?: any; // Will be Member type at runtime
     memberCount?: number;
 
     constructor(dto: FellowshipDTO) {
@@ -48,43 +48,20 @@ export class Fellowship {
             memberCount?: number;
         };
 
-        if (dtoAny.chairman) {
-            // If it's already a User instance, use it directly
-            if (dtoAny.chairman instanceof User) {
-                this.chairman = dtoAny.chairman;
-            } // Otherwise if it's a raw object with user properties, convert it to a User instance
-            else if (
-                typeof dtoAny.chairman === "object" && dtoAny.chairman.id
-            ) {
-                this.chairman = User.fromDTO(dtoAny.chairman);
-            }
+        if (dtoAny.chairman && typeof dtoAny.chairman === "object" && dtoAny.chairman.id) {
+            this.chairman = modelFactory.createMember(dtoAny.chairman);
         }
 
-        if (dtoAny.deputyChairman) {
-            if (dtoAny.deputyChairman instanceof User) {
-                this.deputyChairman = dtoAny.deputyChairman;
-            } else if (
-                typeof dtoAny.deputyChairman === "object" &&
-                dtoAny.deputyChairman.id
-            ) {
-                this.deputyChairman = User.fromDTO(dtoAny.deputyChairman);
-            }
+        if (dtoAny.deputyChairman && typeof dtoAny.deputyChairman === "object" && dtoAny.deputyChairman.id) {
+            this.deputyChairman = modelFactory.createMember(dtoAny.deputyChairman);
         }
 
-        if (dtoAny.secretary) {
-            if (dtoAny.secretary instanceof User) {
-                this.secretary = dtoAny.secretary;
-            } else if (
-                typeof dtoAny.secretary === "object" && dtoAny.secretary.id
-            ) {
-                this.secretary = User.fromDTO(dtoAny.secretary);
-            }
+        if (dtoAny.secretary && typeof dtoAny.secretary === "object" && dtoAny.secretary.id) {
+            this.secretary = modelFactory.createMember(dtoAny.secretary);
         }
 
-        if (dtoAny.treasurer) {
-            if (typeof dtoAny.treasurer === "object" && dtoAny.treasurer.id) {
-                this.treasurer = User.fromDTO(dtoAny.treasurer);
-            }
+        if (dtoAny.treasurer && typeof dtoAny.treasurer === "object" && dtoAny.treasurer.id) {
+            this.treasurer = modelFactory.createMember(dtoAny.treasurer);
         }
 
         if (dtoAny.memberCount !== undefined) {
@@ -114,20 +91,20 @@ export class Fellowship {
         const leaders = [];
 
         if (this.chairman) {
-            leaders.push(`Chairman: ${this.chairman.getDisplayName()}`);
+            leaders.push(`Chairman: ${this.chairman.getFullName()}`);
         }
 
         if (this.secretary) {
-            leaders.push(`Secretary: ${this.secretary.getDisplayName()}`);
+            leaders.push(`Secretary: ${this.secretary.getFullName()}`);
         }
 
         if (this.treasurer) {
-            leaders.push(`Treasurer: ${this.treasurer.getDisplayName()}`);
+            leaders.push(`Treasurer: ${this.treasurer.getFullName()}`);
         }
 
         if (this.deputyChairman) {
             leaders.push(
-                `Deputy Chairman: ${this.deputyChairman.getDisplayName()}`,
+                `Deputy Chairman: ${this.deputyChairman.getFullName()}`,
             );
         }
 
@@ -142,25 +119,25 @@ export class Fellowship {
 
         if (this.chairman) {
             contacts.push(
-                `Chairman: ${this.chairman.name} | ${this.chairman.phoneNumber}`,
+                `Chairman: ${this.chairman.getFullName()} | ${this.chairman.phoneNumber}`,
             );
         }
 
         if (this.secretary) {
             contacts.push(
-                `Secretary: ${this.secretary.name} | ${this.secretary.phoneNumber}`,
+                `Secretary: ${this.secretary.getFullName()} | ${this.secretary.phoneNumber}`,
             );
         }
 
         if (this.treasurer) {
             contacts.push(
-                `Treasurer: ${this.treasurer.name} | ${this.treasurer.phoneNumber}`,
+                `Treasurer: ${this.treasurer.getFullName()} | ${this.treasurer.phoneNumber}`,
             );
         }
 
         if (this.deputyChairman) {
             contacts.push(
-                `Deputy Chairman: ${this.deputyChairman.name} | ${this.deputyChairman.phoneNumber}`,
+                `Deputy Chairman: ${this.deputyChairman.getFullName()} | ${this.deputyChairman.phoneNumber}`,
             );
         }
 
@@ -227,3 +204,6 @@ export class Fellowship {
         };
     }
 }
+
+// Register the Fellowship class with the factory
+modelFactory.register('Fellowship', Fellowship);

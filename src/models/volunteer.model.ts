@@ -3,6 +3,7 @@ import {
     OpportunityDTO,
     UpdateOpportunityDTO,
 } from "@/data/volunteer";
+import { modelFactory } from "./model.factory";
 
 /**
  * Volunteer Opportunity model
@@ -18,7 +19,7 @@ export class VolunteerOpportunity {
     updatedAt: Date;
 
     // Transient properties
-    interestedMembers?: any[];
+    interestedMembers?: any[]; // Will be Member[] at runtime
     memberCount?: number;
 
     constructor(dto: OpportunityDTO) {
@@ -31,7 +32,9 @@ export class VolunteerOpportunity {
 
         // Handle related entities if present in the DTO
         if ((dto as any).interestedMembers) {
-            this.interestedMembers = (dto as any).interestedMembers;
+            this.interestedMembers = ((dto as any).interestedMembers).map(
+                (member: any) => modelFactory.createMember(member)
+            );
         }
 
         if ((dto as any).memberCount !== undefined) {
@@ -107,3 +110,6 @@ export class VolunteerOpportunity {
         };
     }
 }
+
+// Register the VolunteerOpportunity class with the factory
+modelFactory.register('VolunteerOpportunity', VolunteerOpportunity);

@@ -119,7 +119,7 @@ export const useFellowshipDetail = () => {
 
     const viewMembers = useCallback(() => {
         if (id) {
-            Navigation.Members.list({ fellowshipId: id });
+            Navigation.Members.toList({ fellowshipId: id });
         }
     }, [id]);
 

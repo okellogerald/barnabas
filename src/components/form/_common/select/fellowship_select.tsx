@@ -1,7 +1,7 @@
 import React from 'react';
 import { SelectProps } from 'antd';
 import { AsyncSelect } from './async_select';
-import { Fellowship } from '@/models/fellowship';
+import { Fellowship } from '@/models';
 import { FellowshipManager } from '@/managers/fellowship';
 
 interface FellowshipOption {

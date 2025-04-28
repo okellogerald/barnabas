@@ -1,6 +1,6 @@
 import { RoleDTO } from "@/data/role";
-import { Role } from "@/models/role/role.model";
-import { UserDTO } from "../../data/user/schema";
+import { Role } from "@/models/role.model";
+import { UserDTO } from "../data/user/schema";
 
 /**
  * User model representing a system user with enhanced functionality

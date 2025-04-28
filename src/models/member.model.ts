@@ -1,10 +1,7 @@
 import { MemberDTO, UpdateMemberDTO } from "@/data/member";
 import { Dependant } from "./dependant.model";
-import { FellowshipDTO } from "@/data/fellowship";
-import { OpportunityDTO } from "@/data/volunteer";
-import { Fellowship } from "@/models/fellowship";
-import { VolunteerOpportunity } from "@/models/volunteer";
 import { EducationLevel, Gender, MaritalStatus, MarriageType, MemberRole } from "@/constants";
+import { modelFactory } from "./model.factory";
 
 /**
  * Member model representing a church member
@@ -51,8 +48,8 @@ export class Member {
 
   // Related entities
   dependants: Dependant[];
-  fellowship: Fellowship | null;
-  interests: VolunteerOpportunity[];
+  fellowship: any | null; // Will be Fellowship type at runtime
+  interests: any[]; // Will be VolunteerOpportunity[] at runtime
 
   constructor(dto: MemberDTO) {
     this.id = dto.id;
@@ -101,17 +98,20 @@ export class Member {
 
     // Handle fellowship if present in the DTO
     this.fellowship = dto.fellowship
-      ? Fellowship.fromDTO(dto.fellowship as unknown as FellowshipDTO)
+      ? modelFactory.createFellowship(dto.fellowship)
       : null;
 
     // Handle interests array
     this.interests = dto.interests?.map((i) => {
       // If the interest is already a full opportunity object
       if (typeof i === "object" && i.id) {
-        return VolunteerOpportunity.fromDTO(i as unknown as OpportunityDTO);
+        return modelFactory.createVolunteerOpportunity(i);
       }
       // If the interest is just an ID or object with ID
-      return new VolunteerOpportunity({
+      const VolunteerOpportunityClass = modelFactory.getModelClass('VolunteerOpportunity');
+      if (!VolunteerOpportunityClass) return null;
+      
+      return new VolunteerOpportunityClass({
         id: typeof i === "string" ? i : i.id,
         churchId: this.churchId,
         name: typeof i === "object" && i.name ? i.name : "Unknown",
@@ -313,3 +313,6 @@ export class Member {
     };
   }
 }
+
+// Register the Member class with the factory
+modelFactory.register('Member', Member);
