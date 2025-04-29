@@ -3,7 +3,7 @@ import { MemberManager } from "@/managers/member";
 import { notifyUtils } from "@/utilities/notification.utils";
 import { memberTableStore } from "./store.table";
 import { getFilterParams, memberFilterStore } from "./store.filters";
-import { ErrorCategory, handleApiError } from "@/utilities/errors";
+import { ErrorCategory, handleApiError } from "@/lib/error";
 import { MEMBER_API, MEMBER_NOTIFICATIONS, PAGINATION } from "@/constants";
 
 /**

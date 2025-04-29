@@ -5,6 +5,7 @@ import { SchemaFormFieldsMap, useSchemaFormBuilder } from '@/components/form/sch
 import { useCallback } from 'react';
 import { Form } from 'antd';
 import { FieldData } from "rc-field-form/lib/interface";
+import { ZodFormUtils } from '@/utilities';
 
 /**
  * Hook to create and setup professional form fields
@@ -12,15 +13,7 @@ import { FieldData } from "rc-field-form/lib/interface";
 export const useProfessionalFields = () => {
     const [form] = Form.useForm<MemberCreateProfessionalInfo>();
     const builder = useSchemaFormBuilder(MemberCreateProfessionalInfoSchema)
-
-
-    // Create initial values object
-    const initialValues: Partial<MemberCreateProfessionalInfo> = {
-        // occupation: sampleMember.occupation,
-        // placeOfWork: sampleMember.placeOfWork,
-        // educationLevel: sampleMember.educationLevel || EducationLevel.Primary,
-        // profession: sampleMember.profession,
-    };
+    const initialValues = ZodFormUtils.getDefaultsFromSchema(MemberCreateProfessionalInfoSchema)
 
     // Handle field changes
     const changeHandler = useCallback((changedFields: FieldData[]) => {

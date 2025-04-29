@@ -11,36 +11,12 @@ import {
 } from "@ant-design/icons";
 
 /**
- * UI state for the member create form
+ * Context information for the member create form
  */
-export interface MemberCreateUIState {
-  // Current step in the form
-  currentStep: number;
-
-  loading: boolean
-}
-
-/**
- * UI actions for the member create form
- */
-export interface MemberCreateUIActions {
-  // Set the current step
-  setCurrentStep: (step: number) => void;
-
-  // Navigate to the next step
-  nextStep: () => void;
-
-  // Navigate to the previous step
-  previousStep: () => void;
-
-  // Set the loading state
-  setLoading: (loading: boolean) => void;
-
-  // Reset the UI state
-  reset: () => void;
-
-  // Get the current step key
-  getCurrentStepKey: () => FormSectionKey;
+export interface MemberCreateContext {
+  fellowshipId?: string;
+  fellowshipName?: string;
+  sourcePage?: 'fellowship';
 }
 
 /**
@@ -92,35 +68,82 @@ export const STEPS: StepDefinition[] = [
 ];
 
 /**
+ * UI state for the member create form
+ */
+export interface MemberCreateUIState {
+  // Current step key in the form
+  currentStepKey: FormSectionKey;
+  currentStepIndex: number;
+
+  loading: boolean;
+  context: MemberCreateContext;
+}
+
+/**
+ * UI actions for the member create form
+ */
+export interface MemberCreateUIActions {
+  setCurrentStepKey: (stepKey: FormSectionKey) => void;
+  setCurrentStepIndex: (stepIndex: number) => void;
+  nextStep: () => void;
+  previousStep: () => void;
+  setLoading: (loading: boolean) => void;
+  reset: () => void;
+  getCurrentStepKey: () => FormSectionKey;
+  setContext: (context: MemberCreateContext) => void;
+  getStepSequence: () => FormSectionKey[];
+  getSteps: () => StepDefinition[];
+}
+
+/**
  * Initial UI state
  */
 const initialState: MemberCreateUIState = {
-  currentStep: 0,
+  currentStepKey: 'personal', // Start from 'personal'
+  currentStepIndex: 0,
   loading: false,
+  context: {},
 };
 
-/**
- * Create the UI store
- */
 export const useMemberCreateUIStore = create<MemberCreateUIState & MemberCreateUIActions>(
   (set, get) => ({
     ...initialState,
 
-    setCurrentStep: (step: number) => {
-      set({ currentStep: step });
+    setCurrentStepKey: (stepKey: FormSectionKey) => {
+      const { currentStepKey } = get();
+      const sequence = get().getStepSequence();
+
+      const currentIndex = sequence.indexOf(currentStepKey);
+
+      set({ currentStepKey: stepKey, currentStepIndex: currentIndex });
+    },
+
+    setCurrentStepIndex: (index: number) => {
+      const sequence = get().getStepSequence();
+      const stepKey = sequence[index];
+
+      set({ currentStepKey: stepKey, currentStepIndex: index });
     },
 
     nextStep: () => {
-      const { currentStep } = get();
-      if (currentStep < STEPS.length - 1) {
-        set({ currentStep: currentStep + 1 });
+      const { currentStepKey } = get();
+      const sequence = get().getStepSequence();
+
+      const currentIndex = sequence.indexOf(currentStepKey);
+
+      if (currentIndex < sequence.length - 1) {
+        set({ currentStepKey: sequence[currentIndex + 1], currentStepIndex: currentIndex + 1 });
       }
     },
 
     previousStep: () => {
-      const { currentStep } = get();
-      if (currentStep > 0) {
-        set({ currentStep: currentStep - 1 });
+      const { currentStepKey } = get();
+      const sequence = get().getStepSequence();
+
+      const currentIndex = sequence.indexOf(currentStepKey);
+
+      if (currentIndex > 0) {
+        set({ currentStepKey: sequence[currentIndex - 1], currentStepIndex: currentIndex - 1 });
       }
     },
 
@@ -133,8 +156,34 @@ export const useMemberCreateUIStore = create<MemberCreateUIState & MemberCreateU
     },
 
     getCurrentStepKey: () => {
-      const { currentStep } = get();
-      return STEPS[currentStep].key;
+      return get().currentStepKey;
     },
+
+    setContext: (context: MemberCreateContext) => {
+      set({ context });
+    },
+
+    getStepSequence: () => {
+      const { context } = get();
+
+      if (context.sourcePage === 'fellowship') {
+        return [
+          'personal',
+          'church',
+          'contact',
+          'marital',
+          'professional',
+          'dependants',
+          'interests'
+        ];
+      }
+
+      return STEPS.map(step => step.key);
+    },
+
+    getSteps: () => {
+      const sequence = get().getStepSequence();
+      return sequence.map(key => STEPS.find(step => step.key === key)!).filter(Boolean);
+    }
   })
 );

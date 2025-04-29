@@ -5,6 +5,7 @@ import { SchemaFormFieldsMap, useSchemaFormBuilder } from '@/components/form/sch
 import { useEffect, useState, useCallback } from 'react';
 import { Form } from 'antd';
 import { FieldData } from "rc-field-form/lib/interface";
+import { ZodFormUtils } from '@/utilities/zod.utils';
 
 /**
  * Hook to create and setup marital form fields with change tracking
@@ -13,16 +14,7 @@ export const useMaritalFields = () => {
   const [form] = Form.useForm<MemberCreateMaritalInfo>();
   const [fieldState, setFieldState] = useState<'enabled' | 'disabled'>('enabled');
   const builder = useSchemaFormBuilder(MemberCreateMaritalInfoSchema)
-
-  // Create initial values object
-  const initialValues: Partial<MemberCreateMaritalInfo> = {
-    // maritalStatus: sampleMember.maritalStatus ?? MaritalStatus.Single,
-    // marriageType: sampleMember.marriageType ?? MarriageType.None,
-    // dateOfMarriage: sampleMember.dateOfMarriage,
-    // spouseName: sampleMember.spouseName,
-    // placeOfMarriage: sampleMember.placeOfMarriage,
-    // spousePhoneNumber: sampleMember.spousePhoneNumber,
-  };
+  const initialValues = ZodFormUtils.getDefaultsFromSchema(MemberCreateMaritalInfoSchema)
 
   // Handle field change event - specifically for marital status changes
   const changeHandler = useCallback((changedFields: FieldData[]) => {

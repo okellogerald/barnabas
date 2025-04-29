@@ -6,7 +6,7 @@ import {
 } from "@/data/member";
 import { Actions, PermissionsManager } from "@/managers/auth/permission";
 import { Member } from "@/models";
-import { PermissionError } from "@/utilities/errors";
+import { PermissionError } from "@/lib/error";
 
 /**
  * @typedef {object} GetMembersResponse

@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { notifyUtils } from "@/utilities/notification.utils";
 import { memnberCreateService } from "./service";
 import { validateSection, validateDependantSection } from "./schemas/schemas.member";
@@ -12,9 +12,11 @@ import { useChurchFields } from "./_field_hooks/use_church_fields";
 import { useProfessionalFields } from "./_field_hooks/use_professional_fields";
 import { useDependantFields } from "./_field_hooks/use_dependants_fields";
 import { useInterestFields } from "./_field_hooks/use_interests_fields";
-import { STEPS } from "./stores/store.ui";
+import { MemberCreateContext, STEPS } from "./stores/store.ui";
 import { useMemberCreateUIStore } from "./stores/store.ui";
 import { useStore } from "zustand";
+import { FellowshipManager } from "@/managers/fellowship";
+import { FormSectionKey } from "./types";
 
 /**
  * Result of the member create hook
@@ -22,9 +24,11 @@ import { useStore } from "zustand";
 export interface UseMemberCreateResult {
   // UI state from store
   ui: {
-    currentStep: number;
+    currentStepIndex: number;
+    currentStepKey: FormSectionKey;
     steps: typeof STEPS;
-    loading: boolean;
+    isSubmittingForm: boolean;
+    context?: MemberCreateContext;
   };
 
   // Form instances and fields for each section
@@ -58,7 +62,7 @@ export const useMemberCreate = (): UseMemberCreateResult => {
   const uiStore = useStore(useMemberCreateUIStore);
 
   // Create mutation for form submission
-  const mutation = useMutation({
+  const submitFormMutation = useMutation({
     mutationKey: ["member-create"],
     mutationFn: memnberCreateService.submitForm,
   });
@@ -71,6 +75,47 @@ export const useMemberCreate = (): UseMemberCreateResult => {
   const professional = useProfessionalFields();
   const dependant = useDependantFields();
   const interest = useInterestFields();
+
+  // Parse URL parameters for fellowship context
+  useEffect(() => {
+    // Get URL parameters
+    const params = new URLSearchParams(window.location.search);
+    const fellowshipId = params.get('fellowshipId');
+
+    if (fellowshipId) {
+      // Initialize with fellowship context
+      uiStore.setContext({
+        fellowshipId,
+        sourcePage: 'fellowship'
+      });
+
+      // Pre-fill the fellowship field
+      church.form.setFieldValue('fellowshipId', fellowshipId);
+
+      // Set attendsFellowship to true for better UX
+      church.form.setFieldValue('attendsFellowship', true);
+
+      // User can't change the fellowship
+      church.controls.setFieldDisabled("fellowshipId", true)
+
+      // Optionally fetch fellowship details to get the name
+      // This could use an async approach, but here's a simple example:
+      try {
+        const fellowshipManager = FellowshipManager.instance;
+        fellowshipManager.getFellowshipById(fellowshipId).then(fellowship => {
+          if (fellowship) {
+            uiStore.setContext({
+              fellowshipId,
+              fellowshipName: fellowship.name,
+              sourcePage: 'fellowship'
+            });
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching fellowship details:", error);
+      }
+    }
+  }, []);
 
   // Create a function to get combined form values
   const getFormValues = useCallback(() => {
@@ -212,7 +257,7 @@ export const useMemberCreate = (): UseMemberCreateResult => {
     };
 
     // Submit data
-    await mutation.mutateAsync(formData);
+    await submitFormMutation.mutateAsync(formData);
 
   }, [
     uiStore,
@@ -224,15 +269,17 @@ export const useMemberCreate = (): UseMemberCreateResult => {
     interest.form,
     dependant.dependants,
     getFormValues,
-    mutation
+    submitFormMutation
   ]);
 
   return {
     // UI state from store
     ui: {
-      currentStep: uiStore.currentStep,
-      steps: STEPS,
-      loading: mutation.isPending,
+      currentStepKey: uiStore.currentStepKey,
+      currentStepIndex: uiStore.currentStepIndex,
+      steps: uiStore.getSteps(),
+      isSubmittingForm: submitFormMutation.isPending,
+      context: uiStore.context,
     },
 
     // Section hooks
@@ -248,7 +295,7 @@ export const useMemberCreate = (): UseMemberCreateResult => {
     actions: {
       nextStep,
       previousStep: uiStore.previousStep,
-      goToStep: uiStore.setCurrentStep,
+      goToStep: uiStore.setCurrentStepIndex,
       reset,
       submit
     }

@@ -2,8 +2,8 @@ import { Fellowship } from "@/models";
 import { FellowshipManager } from "@/managers/fellowship";
 import { notifyUtils } from "@/utilities/notification.utils";
 import { fellowshipTableStore } from "./store.table";
-import { getFilterParams, fellowshipFilterStore } from "./store.filters";
-import { ErrorCategory, handleApiError } from "@/utilities/errors";
+import { fellowshipFilterStore, getFilterParams } from "./store.filters";
+import { ErrorCategory, handleApiError } from "@/lib/error";
 import { FELLOWSHIP_API, FELLOWSHIP_NOTIFICATIONS } from "./constants";
 import { FellowshipQueryParams } from "@/data/fellowship";
 import { PAGINATION } from "@/constants";
@@ -43,8 +43,8 @@ export const fellowshipService = {
         };
 
         try {
-            const { fellowships, total } =
-                await FellowshipManager.instance.getFellowships(queryParams);
+            const { fellowships, total } = await FellowshipManager.instance
+                .getFellowships(queryParams);
             // Initialize store with fetched data
             fellowshipTableStore.getState().init(fellowships, total);
             return { fellowships, total };
@@ -116,8 +116,8 @@ export const fellowshipService = {
         };
 
         try {
-            const { fellowships } =
-                await FellowshipManager.instance.getFellowships(queryParams);
+            const { fellowships } = await FellowshipManager.instance
+                .getFellowships(queryParams);
             return fellowships;
         } catch (error) {
             throw handleApiError(error, ErrorCategory.FETCH, {
@@ -178,12 +178,14 @@ export const fellowshipService = {
      * @param fellowship The fellowship to delete.
      */
     deleteFellowship: async (fellowship: Fellowship): Promise<void> => {
-         // Basic confirmation, consider using a modal for better UX
+        // Basic confirmation, consider using a modal for better UX
         if (!window.confirm(FELLOWSHIP_NOTIFICATIONS.DELETE.CONFIRM)) {
             return;
         }
 
-        const toastId = notifyUtils.showLoading(FELLOWSHIP_NOTIFICATIONS.DELETE.DELETING);
+        const toastId = notifyUtils.showLoading(
+            FELLOWSHIP_NOTIFICATIONS.DELETE.DELETING,
+        );
         try {
             await FellowshipManager.instance.deleteFellowship(fellowship.id);
             notifyUtils.dismiss(toastId);
@@ -194,5 +196,5 @@ export const fellowshipService = {
             notifyUtils.dismiss(toastId);
             // Error handled by FellowshipManager which uses handleApiError
         }
-    }
+    },
 };

@@ -6,33 +6,44 @@ import { useEffect, useState, useCallback } from 'react';
 import { Form } from 'antd';
 import { FieldData } from "rc-field-form/lib/interface";
 import { FellowshipSelect } from '@/components/form';
+import { ZodFormUtils } from '@/utilities/zod.utils';
+
+// Define the field properties we want to control
+interface FieldProperties {
+    disabled?: boolean;
+    hidden?: boolean;
+    required?: boolean;
+}
+
+// Define the state structure for field controls
+type FieldControlState = {
+    [K in ChurchInfoKeys]?: FieldProperties;
+};
 
 /**
- * Hook to create and setup church form fields
+ * Hook to create and setup church form fields with dynamic control capabilities
  */
 export const useChurchFields = () => {
     const [form] = Form.useForm<MemberCreateChurchInfo>();
-    const [fieldState, setFieldState] = useState<{
-        fellowshipAbsenceReason: 'enabled' | 'disabled'
-    }>({
-        fellowshipAbsenceReason: 'enabled'
+
+    // State to track field properties
+    const [fieldControls, setFieldControls] = useState<FieldControlState>({
+        fellowshipId: {
+            disabled: false,
+            hidden: false,
+            required: true
+        },
+        fellowshipAbsenceReason: {
+            disabled: true, // Initially disabled if attendsFellowship is true
+            hidden: false,
+            required: false
+        },
     });
 
-    const builder = useSchemaFormBuilder(MemberCreateChurchInfoSchema)
+    const builder = useSchemaFormBuilder(MemberCreateChurchInfoSchema);
 
     // Create initial values object
-    const initialValues: Partial<MemberCreateChurchInfo> = {
-        // formerChurch: sampleMember.formerChurch,
-        // memberRole: sampleMember.memberRole || MemberRole.Regular,
-        // isBaptized: sampleMember.isBaptized ?? false,
-        // isConfirmed: sampleMember.isConfirmed ?? false,
-        // partakesLordSupper: sampleMember.partakesLordSupper ?? false,
-        // fellowshipId: sampleMember.fellowshipId,
-        // nearestMemberName: sampleMember.nearestMemberName,
-        // nearestMemberPhone: sampleMember.nearestMemberPhone,
-        // attendsFellowship: sampleMember.attendsFellowship ?? false,
-        // fellowshipAbsenceReason: sampleMember.fellowshipAbsenceReason,
-    };
+    const initialValues: Partial<MemberCreateChurchInfo> = ZodFormUtils.getDefaultsFromSchema(MemberCreateChurchInfoSchema)
 
     // Handle field changes - specifically for attendsFellowship changes
     const changeHandler = useCallback((changedFields: FieldData[]) => {
@@ -43,11 +54,15 @@ export const useChurchFields = () => {
         if (attendsField !== undefined) {
             const attends = attendsField.value as boolean;
 
-            // If member attends fellowship, disable absence reason field
-            // If member doesn't attend, enable absence reason field
-            setFieldState({
-                fellowshipAbsenceReason: attends ? 'disabled' : 'enabled'
-            });
+            // Update field controls
+            setFieldControls(prev => ({
+                ...prev,
+                fellowshipAbsenceReason: {
+                    ...prev.fellowshipAbsenceReason,
+                    disabled: attends,
+                    required: !attends
+                }
+            }));
 
             // If switching to attends=true, clear the absence reason
             if (attends) {
@@ -58,40 +73,102 @@ export const useChurchFields = () => {
         }
     }, [form]);
 
-    // Set up the builder with initial values
+    // Set up initial field controls based on initial values
     useEffect(() => {
-        // Set initial field state based on attendsFellowship
-        setFieldState({
-            fellowshipAbsenceReason: initialValues.attendsFellowship ? 'disabled' : 'enabled'
-        });
+        setFieldControls(prev => ({
+            ...prev,
+            fellowshipAbsenceReason: {
+                ...prev.fellowshipAbsenceReason,
+                disabled: initialValues.attendsFellowship ?? true
+            }
+        }));
     }, []);
 
-    // Create the form fields
+    // Create the form fields - now using fieldControls
     const createFields = useCallback((): SchemaFormFieldsMap<MemberCreateChurchInfo, ChurchInfoKeys> => {
         return {
-            formerChurch: builder.createTextField('formerChurch'),
-            memberRole: builder.createEnumSelectField('memberRole', MemberRole, {
-                placeholder: "Select member role"
+            formerChurch: builder.createTextField('formerChurch', {
+                disabled: fieldControls.formerChurch?.disabled,
             }),
-            isBaptized: builder.createSwitchField('isBaptized'),
-            isConfirmed: builder.createSwitchField('isConfirmed'),
-            partakesLordSupper: builder.createSwitchField('partakesLordSupper'),
+            memberRole: builder.createEnumSelectField('memberRole', MemberRole, {
+                placeholder: "Select member role",
+                disabled: fieldControls.memberRole?.disabled,
+            }),
+            isBaptized: builder.createSwitchField('isBaptized', {
+                disabled: fieldControls.isBaptized?.disabled,
+            }),
+            isConfirmed: builder.createSwitchField('isConfirmed', {
+                disabled: fieldControls.isConfirmed?.disabled,
+            }),
+            partakesLordSupper: builder.createSwitchField('partakesLordSupper', {
+                disabled: fieldControls.partakesLordSupper?.disabled,
+            }),
             fellowshipId: builder.createCustomField('fellowshipId',
-                () => <FellowshipSelect />,
+                () => <FellowshipSelect disabled={fieldControls.fellowshipId?.disabled} />,
                 {
                     label: "Fellowship",
-                    rules: [{ required: true, message: "Please select the fellowship this member belongs to" }]
+                    rules: fieldControls.fellowshipId?.required
+                        ? [{ required: true, message: "Please select the fellowship this member belongs to" }]
+                        : undefined
                 }
             ),
-            nearestMemberName: builder.createTextField('nearestMemberName'),
-            nearestMemberPhone: builder.createPhoneField('nearestMemberPhone'),
-            attendsFellowship: builder.createSwitchField('attendsFellowship'),
+            nearestMemberName: builder.createTextField('nearestMemberName', {
+                disabled: fieldControls.nearestMemberName?.disabled,
+            }),
+            nearestMemberPhone: builder.createPhoneField('nearestMemberPhone', {
+                disabled: fieldControls.nearestMemberPhone?.disabled,
+            }),
+            attendsFellowship: builder.createSwitchField('attendsFellowship', {
+                disabled: fieldControls.attendsFellowship?.disabled,
+            }),
             fellowshipAbsenceReason: builder.createTextAreaField('fellowshipAbsenceReason', {
-                disabled: fieldState.fellowshipAbsenceReason === 'disabled',
-                placeholder: "Please provide a reason for not attending fellowship"
+                disabled: fieldControls.fellowshipAbsenceReason?.disabled,
+                placeholder: "Please provide a reason for not attending fellowship",
             }),
         };
-    }, [fieldState]);
+    }, [fieldControls, builder]);
+
+    // Field control methods
+    const setFieldProperty = useCallback((
+        fieldName: ChurchInfoKeys,
+        property: keyof FieldProperties,
+        value: boolean
+    ) => {
+        setFieldControls(prev => ({
+            ...prev,
+            [fieldName]: {
+                ...prev[fieldName],
+                [property]: value
+            }
+        }));
+    }, []);
+
+    // Convenience methods for common operations
+    const setFieldDisabled = useCallback((fieldName: ChurchInfoKeys, disabled: boolean) => {
+        setFieldProperty(fieldName, 'disabled', disabled);
+    }, [setFieldProperty]);
+
+    const setFieldHidden = useCallback((fieldName: ChurchInfoKeys, hidden: boolean) => {
+        setFieldProperty(fieldName, 'hidden', hidden);
+    }, [setFieldProperty]);
+
+    const setFieldRequired = useCallback((fieldName: ChurchInfoKeys, required: boolean) => {
+        setFieldProperty(fieldName, 'required', required);
+    }, [setFieldProperty]);
+
+    // Reset field controls to their default state
+    const resetFieldControls = useCallback(() => {
+        setFieldControls({
+            fellowshipId: {
+                disabled: false,
+                required: true
+            },
+            fellowshipAbsenceReason: {
+                disabled: initialValues.attendsFellowship ?? true,
+                required: !(initialValues.attendsFellowship ?? true)
+            },
+        });
+    }, [initialValues.attendsFellowship]);
 
     return {
         form,
@@ -109,6 +186,14 @@ export const useChurchFields = () => {
             span: 8, // 3 fields per row (24/3=8)
         },
         onFieldsChange: changeHandler,
-        initialValues
+        initialValues,
+        // Export control methods
+        controls: {
+            setFieldProperty,
+            setFieldDisabled,
+            setFieldHidden,
+            setFieldRequired,
+            resetFieldControls
+        }
     };
 };

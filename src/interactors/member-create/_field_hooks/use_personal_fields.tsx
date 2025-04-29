@@ -5,6 +5,7 @@ import { SchemaFormFieldsMap, useSchemaFormBuilder } from '@/components/form/sch
 import { useCallback } from 'react';
 import { Form } from 'antd';
 import { FieldData } from "rc-field-form/lib/interface";
+import { ZodFormUtils } from '@/utilities';
 
 /**
  * Hook to create and setup personal form fields
@@ -12,18 +13,7 @@ import { FieldData } from "rc-field-form/lib/interface";
 export const usePersonalFields = () => {
     const [form] = Form.useForm<MemberCreatePersonalInfo>();
     const builder = useSchemaFormBuilder(MemberCreatePersonalInfoSchema)
-
-    // Create initial values object
-    const initialValues: Partial<MemberCreatePersonalInfo> = {
-        // envelopeNumber: sampleMember.envelopeNumber,
-        // firstName: sampleMember.firstName,
-        // middleName: sampleMember.middleName,
-        // lastName: sampleMember.lastName,
-        // gender: sampleMember.gender || Gender.Male,
-        // dateOfBirth: sampleMember.dateOfBirth || undefined,
-        // placeOfBirth: sampleMember.placeOfBirth,
-        // profilePhoto: sampleMember.profilePhoto,
-    };
+    const initialValues = ZodFormUtils.getDefaultsFromSchema(MemberCreatePersonalInfoSchema)
 
     // Handle field changes
     const changeHandler = useCallback((changedFields: FieldData[]) => {

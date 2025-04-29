@@ -385,15 +385,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
   return (
     <Drawer
       title={
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span><FilterOutlined /> Filter Fellowships</span>
-          <Button
-            type="text"
-            icon={<CloseOutlined />}
-            size="small"
-            onClick={onClose}
-          />
-        </div>
+        <span><FilterOutlined /> Filter Fellowships</span>
       }
       placement="right"
       width={320}
@@ -413,7 +405,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         </Form.Item>
 
         <Form.Item label="Has Leadership" name="hasLeadership">
-          <Select placeholder="Leadership status">
+          <Select placeholder="Leadership status" allowClear>
             <Select.Option value={true}>Has leadership</Select.Option>
             <Select.Option value={false}>Missing leadership</Select.Option>
           </Select>

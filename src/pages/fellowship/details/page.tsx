@@ -202,7 +202,7 @@ const FellowshipDetailsPage: React.FC = () => {
                   {/* Deputy Chairman */}
                   {fellowship.deputyChairman && (
                     <Col xs={24} sm={12} md={6}>
-                      <Card size="small" title="Deputy Chairman" bordered>
+                      <Card size="small" title="Deputy Chairman" variant='outlined'>
                         <Space direction="vertical" size="small" style={{ width: '100%' }}>
                           <Text strong>{fellowship.deputyChairman.getFullName()}</Text>
                           {fellowship.deputyChairman.phoneNumber && (
@@ -219,7 +219,7 @@ const FellowshipDetailsPage: React.FC = () => {
                   {/* Secretary */}
                   {fellowship.secretary && (
                     <Col xs={24} sm={12} md={6}>
-                      <Card size="small" title="Secretary" bordered>
+                      <Card size="small" title="Secretary" variant='outlined'>
                         <Space direction="vertical" size="small" style={{ width: '100%' }}>
                           <Text strong>{fellowship.secretary.getFullName()}</Text>
                           {fellowship.secretary.phoneNumber && (
@@ -236,7 +236,7 @@ const FellowshipDetailsPage: React.FC = () => {
                   {/* Treasurer */}
                   {fellowship.treasurer && (
                     <Col xs={24} sm={12} md={6}>
-                      <Card size="small" title="Treasurer" bordered>
+                      <Card size="small" title="Treasurer" variant='outlined'>
                         <Space direction="vertical" size="small" style={{ width: '100%' }}>
                           <Text strong>{fellowship.treasurer.getFullName()}</Text>
                           {fellowship.treasurer.phoneNumber && (
@@ -264,7 +264,7 @@ const FellowshipDetailsPage: React.FC = () => {
               
               <Row gutter={[16, 16]}>
                 <Col span={24}>
-                  <Card bordered={false} className="stats-card">
+                  <Card variant="borderless" className="stats-card">
                     <Row justify="space-between" align="middle">
                       <Col>
                         <Space direction="vertical" size="small">

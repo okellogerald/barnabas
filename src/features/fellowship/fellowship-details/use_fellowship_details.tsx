@@ -42,14 +42,12 @@ export const useFellowshipDetails = () => {
 
         // Navigate to create member page
         addMember: () => {
-            Navigation.Members.toCreate(/* { fellowshipId: id || '' } */)
+            Navigation.Members.toCreate({ fellowshipId: id || '' })
         },
 
         // Navigate to members list filtered by this fellowship
         viewMembers: () => {
-            // Store the fellowship ID in sessionStorage for the member list to pick up
-            sessionStorage.setItem('memberList_fellowshipId', id || '');
-            Navigation.Fellowships.toList();
+            Navigation.Members.toList({ fellowshipId: id });
         },
 
         // Show delete confirmation modal

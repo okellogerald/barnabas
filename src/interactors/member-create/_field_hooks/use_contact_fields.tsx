@@ -4,6 +4,7 @@ import { SchemaFormFieldsMap, useSchemaFormBuilder } from '@/components/form/sch
 import { useCallback } from 'react';
 import { Form } from 'antd';
 import { FieldData } from "rc-field-form/lib/interface";
+import { ZodFormUtils } from '@/utilities/zod.utils';
 
 /**
  * Hook to create and setup contact form fields
@@ -11,16 +12,7 @@ import { FieldData } from "rc-field-form/lib/interface";
 export const useContactFields = () => {
     const [form] = Form.useForm<MemberCreateContactInfo>();
     const builder = useSchemaFormBuilder(MemberCreateContactInfoSchema)
-
-    // Create initial values object
-    const initialValues: Partial<MemberCreateContactInfo> = {
-        // phoneNumber: sampleMember.phoneNumber,
-        // email: sampleMember.email,
-        // residenceNumber: sampleMember.residenceNumber,
-        // residenceBlock: sampleMember.residenceBlock,
-        // postalBox: sampleMember.postalBox,
-        // residenceArea: sampleMember.residenceArea,
-    };
+    const initialValues = ZodFormUtils.getDefaultsFromSchema(MemberCreateContactInfoSchema)
 
     // Handle field changes
     const changeHandler = useCallback((changedFields: FieldData[]) => {

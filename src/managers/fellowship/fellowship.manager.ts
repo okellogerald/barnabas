@@ -6,7 +6,7 @@ import {
 } from "@/data/fellowship";
 import { Actions, PermissionsManager } from "@/managers/auth/permission";
 import { Fellowship } from "@/models";
-import { PermissionError } from "@/utilities/errors";
+import { PermissionError } from "@/lib/error";
 import { MemberManager } from "../member";
 import { MemberQueryParams } from "@/data/member";
 
@@ -115,7 +115,7 @@ export class FellowshipManager {
             // Convert DTOs returned by the repo into Fellowship model instances
             const fellowships = response.results.map(Fellowship.fromDTO);
             // Return the fellowships for the current page and the total count
-            return fellowships
+            return fellowships;
         } catch (error) {
             console.error("Error retrieving fellowships:", error);
             throw new Error("Failed to retrieve fellowships.");

@@ -46,8 +46,18 @@ export const Navigation = {
         toDetails: (id: string) => {
             window.location.href = ROUTES.MEMBERS.DETAILS.replace(":id", id);
         },
-        toCreate: () => {
-            window.location.href = ROUTES.MEMBERS.CREATE;
+        toCreate: (params?: { fellowshipId?: string }) => {
+            // const queryString = params?.fellowshipId
+            //     ? `?fellowshipId=${params.fellowshipId}`
+            //     : "";
+            // window.location.href = ROUTES.MEMBERS.CREATE + queryString;
+            const queryParams = new URLSearchParams();
+            if (params?.fellowshipId) {
+                queryParams.append("fellowshipId", params.fellowshipId);
+            }
+
+            const queryString = queryParams.toString();
+            window.location.href = ROUTES.MEMBERS.CREATE + "?" + queryString;
         },
         toEdit: (id: string) => {
             window.location.href = ROUTES.MEMBERS.EDIT.replace(":id", id);

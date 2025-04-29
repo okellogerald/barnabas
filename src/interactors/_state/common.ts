@@ -12,7 +12,7 @@
  */
 
 import { ActionPermission } from "@/managers/auth/permission";
-import { PermissionError } from "@/utilities/errors";
+import { PermissionError } from "@/lib/error";
 
 /**
  * Enumeration of possible UI state types
