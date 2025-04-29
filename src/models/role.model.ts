@@ -8,7 +8,7 @@ export class Role {
     id: string;
     name: string;
     churchId: string;
-    description: string | null;
+    description?: string | null;
     createdAt: Date;
     updatedAt: Date;
 

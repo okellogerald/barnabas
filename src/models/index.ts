@@ -13,7 +13,7 @@ export * from './role.model';
 export * from './volunteer.model';
 export * from './fellowship.model';
 export * from './member.model';
-export * from "./auth_user.model";
+export * from "./user.model";
 export * from "./church.model";
 export * from "./dependant.model";
 

@@ -16,6 +16,7 @@ import { AuthManager } from '@/managers/auth/auth.manager';
 import { User } from '@/models';
 import { ItemType, MenuItemType } from 'antd/es/menu/interface';
 import { DesignTokens } from '@/app';
+import { Actions } from '@/managers/auth/permission';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -56,7 +57,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ currentPath, authManage
         {
             key: 'members',
             icon: <TeamOutlined />,
-            label: authManager.hasPermission('member.findAll') ? (
+            label: authManager.hasPermission(Actions.MEMBER_FIND_ALL) ? (
                 <Link to="/members">Members</Link>
             ) : (
                 <span style={styles.disabledMenuItem}>Members</span>
@@ -65,7 +66,7 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ currentPath, authManage
         {
             key: 'fellowships',
             icon: <PartitionOutlined />,
-            label: authManager.hasPermission('fellowship.findAll') ? (
+            label: authManager.hasPermission(Actions.FELLOWSHIP_FIND_ALL) ? (
                 <Link to="/fellowships">Fellowships</Link>
             ) : (
                 <span style={styles.disabledMenuItem}>Fellowships</span>
@@ -81,9 +82,18 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ currentPath, authManage
             ),
         },
         {
+            key: 'users',
+            icon: <TeamOutlined />,
+            label: authManager.hasPermission(Actions.USER_FIND_ALL) ? (
+                <Link to="/users">Users</Link>
+            ) : (
+                <span style={styles.disabledMenuItem}>Users</span>
+            ),
+        },
+        {
             key: 'roles',
             icon: <SettingOutlined />,
-            label: authManager.hasPermission('role.findAll') ? (
+            label: authManager.hasPermission(Actions.ROLE_FIND_ALL) ? (
                 <Link to="/roles">Roles</Link>
             ) : (
                 <span style={styles.disabledMenuItem}>Roles</span>
@@ -176,6 +186,7 @@ const AppLayout: React.FC = () => {
         if (path.startsWith('/fellowships')) return 'fellowships';
         if (path.startsWith('/opportunities')) return 'opportunities';
         if (path.startsWith('/roles')) return 'roles';
+        if (path.startsWith('/users')) return 'users';
         return '';
     };
 

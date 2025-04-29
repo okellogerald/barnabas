@@ -27,5 +27,14 @@ export const ROUTES = {
     },
     ROLES: {
         LIST: "/roles",
+        DETAILS: "/roles/:id",
+        CREATE: "/roles/create",
+        EDIT: "/roles/edit/:id",
+    },
+    USERS: {
+        LIST: "/users",
+        DETAILS: "/users/:id",
+        CREATE: "/users/create",
+        EDIT: "/users/edit/:id",
     },
 } as const;

@@ -17,8 +17,8 @@ export class UserRepository extends BaseRepository<typeof userContract> {
         super("user", userContract);
     }
 
-    private static defaultQueryParams: UserQueryParams = {
-        eager: "role",
+    static defaultQueryParams: UserQueryParams = {
+        //eager: "role",
         rangeStart: 0,
         rangeEnd: 9,
     };
@@ -50,12 +50,12 @@ export class UserRepository extends BaseRepository<typeof userContract> {
      */
     async getById(
         id: string,
-        eager: string = "role",
+       // eager: string = "role",
     ): Promise<UserDTO | undefined> {
         try {
             const result = await this.client.getById({
                 params: { id },
-                query: { eager },
+               // query: { eager },
             });
             if (result.status === 404) {
                 return undefined;
@@ -120,24 +120,6 @@ export class UserRepository extends BaseRepository<typeof userContract> {
     }
 
     /**
-     * Searches for users by name or email.
-     * @param searchTerm Text to search for.
-     * @returns Object containing user data array and total count.
-     * @throws Error if there's an issue searching for users.
-     */
-    async search(searchTerm: string): Promise<GetUsersResponse> {
-        try {
-            return this.getAll({
-                ...UserRepository.defaultQueryParams,
-                search: searchTerm,
-            });
-        } catch (error) {
-            console.error(`Error in search with term ${searchTerm}:`, error);
-            throw new Error(`Failed to search users with term ${searchTerm}.`);
-        }
-    }
-
-    /**
      * Gets users by role.
      * @param roleId Role ID.
      * @returns Object containing user data array and total count.
@@ -165,7 +147,7 @@ export class UserRepository extends BaseRepository<typeof userContract> {
         try {
             return this.getAll({
                 ...UserRepository.defaultQueryParams,
-                isActive,
+                isActive: Number(isActive)
             });
         } catch (error) {
             console.error(

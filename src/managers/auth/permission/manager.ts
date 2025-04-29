@@ -80,7 +80,7 @@ export class PermissionsManager {
         if (!userJson) return null;
 
         try {
-            return User.fromJSON(userJson);
+            return User.fromJson(userJson);
         } catch (error) {
             console.error("Error parsing user from store:", error);
             return null;
@@ -95,7 +95,7 @@ export class PermissionsManager {
         if (!userJson) return null;
 
         try {
-            return User.fromJSON(userJson);
+            return User.fromJson(userJson);
         } catch (error) {
             console.error("Error parsing user from store:", error);
             return null;

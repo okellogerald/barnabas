@@ -18,6 +18,11 @@ const FellowshipListPage = lazy(() => import('@/pages/fellowship/list/page'));
 const FellowshipDetailsPage = lazy(() => import('@/pages/fellowship/details/page'));
 const FellowshipCreatePage = lazy(() => import('@/pages/fellowship/create/page'));
 const FellowshipEditPage = lazy(() => import('@/pages/fellowship/edit/page'));
+const UserListPage = lazy(() => import('@/pages/user/user.list.page'));
+const UserCreatePage = lazy(() => import('@/pages/user/user.create.page'));
+const UserDetailsPage = lazy(() => import('@/pages/user/user.details.page'));
+const UserEditPage = lazy(() => import('@/pages/user/user.edit.page'));
+
 const NotFoundPage = lazy(() => import('@/pages/errors/not_found.page'));
 
 // Loading component for suspense fallback
@@ -79,6 +84,12 @@ const AppRoutes: React.FC = () => {
           <Route path={ROUTES.OPPORTUNITIES.LIST} element={"Opportunities page not currently implemented"} />
 
           <Route path={ROUTES.ROLES.LIST} element={"Roles page not currently implemented"} />
+
+          <Route path={ROUTES.USERS.LIST} element={<UserListPage />} />
+          <Route path={ROUTES.USERS.CREATE} element={<UserCreatePage />} />
+          <Route path={ROUTES.USERS.EDIT} element={<UserEditPage />} />
+          <Route path={ROUTES.USERS.DETAILS} element={<UserDetailsPage />} />
+
 
           {/* 404 catch-all */}
           <Route path="*" element={<NotFoundPage />} />

@@ -40,9 +40,25 @@ export const QueryKeys = {
         count: () => [...QueryKeys.Members.all, "count"] as const,
     },
 
+    // User-related query keys
+    Users: {
+        all: ["users"] as const,
+        list: (params?: {
+            searchTerm?: string;
+            roleId?: string;
+            isActive?: boolean;
+            rangeStart?: number;
+            rangeEnd?: number;
+        }) => [...QueryKeys.Users.all, "list", params] as const,
+        detail: (id: string) =>
+            [...QueryKeys.Users.all, "detail", id] as const,
+        count: () => [...QueryKeys.Users.all, "count"] as const,
+    },
+
     // Role-related query keys
     Roles: {
         all: ["roles"] as const,
+        count: () => [...QueryKeys.Roles.all, "count"] as const,
         list: () => [...QueryKeys.Roles.all, "list"] as const,
         detail: (id: string) => [...QueryKeys.Roles.all, "detail", id] as const,
         permissions: (roleId: string) =>

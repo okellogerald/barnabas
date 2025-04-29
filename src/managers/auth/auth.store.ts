@@ -26,7 +26,7 @@ export const useAuthStore = create<AuthState>()(
             token: null,
             allowedActions: [],
 
-            setUser: (user) => set({ user: user ? user.toJSON() : null }),
+            setUser: (user) => set({ user: user ? user.toJson() : null }),
             setToken: (token) => set({ token }),
             setAllowedActions: (actions) => set({ allowedActions: actions }),
             clearAuth: () =>

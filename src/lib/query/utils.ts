@@ -204,6 +204,79 @@ export const QueryUtils = (queryClient: QueryClient) => ({
     },
 
     /**
+     * User-related query utilities
+     */
+    Users: {
+        /**
+         * Invalidate all user-related queries
+         */
+        invalidateAll: () =>
+            queryClient.invalidateQueries({ queryKey: QueryKeys.Users.all }),
+
+        /**
+         * Invalidate the users list query with optional filters
+         */
+        invalidateList: (
+            params?: { searchTerm?: string; roleId?: string; isActive?: boolean },
+        ) => {
+            if (params) {
+                queryClient.invalidateQueries({
+                    queryKey: QueryKeys.Users.list(params),
+                });
+            } else {
+                // Invalidate all list queries regardless of parameters
+                queryClient.invalidateQueries({
+                    queryKey: QueryKeys.Users.all,
+                    predicate: (query) => {
+                        if (
+                            Array.isArray(query.queryKey) &&
+                            query.queryKey[0] === "users"
+                        ) {
+                            return query.queryKey.length > 1 &&
+                                query.queryKey[1] === "list";
+                        }
+                        return false;
+                    },
+                });
+            }
+        },
+
+        /**
+         * Invalidate user count query
+         */
+        invalidateCount: () =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Users.count(),
+            }),
+
+        /**
+         * Invalidate a specific user detail query
+         */
+        invalidateDetail: (id: string) =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Users.detail(id),
+            }),
+
+        /**
+         * Prefetch a specific user's details
+         */
+        prefetchDetail: (id: string, fetchFn: () => Promise<any>) =>
+            queryClient.prefetchQuery({
+                queryKey: QueryKeys.Users.detail(id),
+                queryFn: fetchFn,
+            }),
+
+        /**
+         * Remove a specific user from the cache
+         * Useful after deletion
+         */
+        removeDetail: (id: string) =>
+            queryClient.removeQueries({
+                queryKey: QueryKeys.Users.detail(id),
+            }),
+    },
+
+    /**
      * Role-related query utilities
      */
     Roles: {

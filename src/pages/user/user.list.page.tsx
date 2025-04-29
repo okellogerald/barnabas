@@ -15,48 +15,50 @@ import {
   Select,
   Badge,
   Tag,
-  Tooltip,
-  Spin
+  Tooltip
 } from 'antd';
 import {
   PlusOutlined,
-  TeamOutlined,
+  UserOutlined,
   FilterOutlined,
   ReloadOutlined,
   DownOutlined,
   SortAscendingOutlined,
   SortDescendingOutlined,
+  LockOutlined,
+  UnlockOutlined,
+  MailOutlined
 } from '@ant-design/icons';
-import { useFellowshipsList, FellowshipsListSuccessState } from '@/features/fellowship/fellowship-list';
 import { AsyncStateMatcher } from '@/lib/state/async_state.matcher';
 import { Navigation } from '@/app';
 import { AuthManager } from '@/managers/auth';
-import { Fellowship } from '@/models';
-import { FellowshipFilterState, useFellowshipFilterStore } from '@/features/fellowship/fellowship-list';
+import { User } from '@/models';
 import { Actions } from '@/managers/auth/permission';
+import { UserFilterState, UsersListSuccessState, useUserFilterStore, useUsersList } from '@/features/user';
+import { SORT_DIRECTION } from '@/constants';
 
 const { Title, Text } = Typography;
 
 /**
- * Component: FellowshipListPage
+ * Component: UserListPage
  * 
- * A page to display and manage fellowships with filtering, sorting, and pagination
+ * A page to display and manage system users with filtering, sorting, and pagination
  */
-const FellowshipListPage: React.FC = () => {
+const UserListPage: React.FC = () => {
   // ======== STATE MANAGEMENT ========
-  // Get the fellowship list state
-  const fellowshipsState = useFellowshipsList();
+  // Get the user list state
+  const usersState = useUsersList();
   
   // Filter and sort state from store
-  const filterStore = useFellowshipFilterStore();
+  const filterStore = useUserFilterStore();
   
   // Local state for UI controls
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
 
   // ======== PERMISSIONS ========
-  // Check if user has permission to create fellowships
-  const canCreateFellowship = AuthManager.instance.hasPermission(Actions.FELLOWSHIP_CREATE);
+  // Check if user has permission to create users
+  const canCreateUser = AuthManager.instance.hasPermission(Actions.USER_CREATE);
 
   // ======== FILTER COUNT TRACKING ========
   // Count active filters (excluding sort options)
@@ -80,9 +82,9 @@ const FellowshipListPage: React.FC = () => {
     // Format values for our filtering system
     const formattedValues = {
       ...values,
-      // Ensure hasLeadership is a boolean if it exists
-      hasLeadership: values.hasLeadership !== undefined
-        ? values.hasLeadership === true || values.hasLeadership === 'true'
+      // Ensure isActive is a boolean if it exists
+      isActive: values.isActive !== undefined
+        ? values.isActive === true || values.isActive === 'true'
         : undefined
     };
 
@@ -93,7 +95,7 @@ const FellowshipListPage: React.FC = () => {
   // Handle sorting change
   const handleSortChange = (field: string) => {
     // Keep the same direction for a new field
-    const currentDirection = filterStore.filters.sortDirection || 'asc';
+    const currentDirection = filterStore.filters.sortDirection || SORT_DIRECTION.ASC;
     
     filterStore.setFilters({
       ...filterStore.filters,
@@ -105,7 +107,7 @@ const FellowshipListPage: React.FC = () => {
   // Toggle sort direction
   const toggleSortDirection = () => {
     const currentField = filterStore.filters.sortBy || 'name';
-    const newDirection = filterStore.filters.sortDirection === 'asc' ? 'desc' : 'asc';
+    const newDirection = filterStore.filters.sortDirection === SORT_DIRECTION.ASC ? SORT_DIRECTION.DESC : SORT_DIRECTION.ASC;
     
     filterStore.setFilters({
       ...filterStore.filters,
@@ -122,12 +124,12 @@ const FellowshipListPage: React.FC = () => {
 
   // ======== RENDER COMPONENTS ========
   return (
-    <div className="fellowship-list-page">
+    <div className="user-list-page">
       <AsyncStateMatcher
-        state={fellowshipsState}
+        state={usersState}
         views={{
           SuccessView: ({ state }) => {
-            if (FellowshipsListSuccessState.is(state)) {
+            if (UsersListSuccessState.is(state)) {
               return (
                 <>
                   {/* Header Card with Title and Actions */}
@@ -135,17 +137,17 @@ const FellowshipListPage: React.FC = () => {
                     <Row justify="space-between" align="middle">
                       <Col>
                         <Title level={3} style={{ margin: 0 }}>
-                          Fellowships
+                          System Users
                           <Tag color="blue" style={{ marginLeft: 8 }}>
                             {state.pagination.total} total
                           </Tag>
                         </Title>
-                        <Text type="secondary">Manage church fellowships and their leadership</Text>
+                        <Text type="secondary">Manage system users and their roles</Text>
                       </Col>
                       <Col>
                         <Space>
                           {/* Filter Button with Badge */}
-                          <Tooltip title="Filter Fellowships">
+                          <Tooltip title="Filter Users">
                             <Badge count={activeFiltersCount} size="small" offset={[5, -3]}>
                               <Button
                                 icon={<FilterOutlined />}
@@ -168,14 +170,14 @@ const FellowshipListPage: React.FC = () => {
                             </Button>
                           </Tooltip>
 
-                          {/* Create New Fellowship Button */}
-                          {canCreateFellowship && (
+                          {/* Create New User Button */}
+                          {canCreateUser && (
                             <Button
                               type="primary"
                               icon={<PlusOutlined />}
-                              onClick={() => Navigation.Fellowships.toCreate()}
+                              onClick={() => Navigation.Users.toCreate()}
                             >
-                              New Fellowship
+                              New User
                             </Button>
                           )}
                         </Space>
@@ -194,6 +196,7 @@ const FellowshipListPage: React.FC = () => {
                             menu={{
                               items: [
                                 { key: 'name', label: 'Name', onClick: () => handleSortChange('name') },
+                                { key: 'email', label: 'Email', onClick: () => handleSortChange('email') },
                                 { key: 'createdAt', label: 'Date Created', onClick: () => handleSortChange('createdAt') },
                                 { key: 'updatedAt', label: 'Last Updated', onClick: () => handleSortChange('updatedAt') },
                               ]
@@ -206,6 +209,7 @@ const FellowshipListPage: React.FC = () => {
                                   const sortBy = filterStore.filters.sortBy || 'name';
                                   switch(sortBy) {
                                     case 'name': return 'Name';
+                                    case 'email': return 'Email';
                                     case 'createdAt': return 'Date Created';
                                     case 'updatedAt': return 'Last Updated';
                                     default: return 'Name';
@@ -226,10 +230,10 @@ const FellowshipListPage: React.FC = () => {
                       </Col>
                     </Row>
 
-                    {/* Fellowships Table */}
+                    {/* Users Table */}
                     <Table
                       {...state.tableProps}
-                      dataSource={state.data.fellowships}
+                      dataSource={state.data.users}
                       pagination={{
                         current: state.pagination.current,
                         pageSize: state.pagination.pageSize,
@@ -237,14 +241,14 @@ const FellowshipListPage: React.FC = () => {
                         onChange: state.pagination.onChange,
                         showSizeChanger: false,
                         showTotal: (total, range) =>
-                          `${range[0]}-${range[1]} of ${total} fellowships`,
+                          `${range[0]}-${range[1]} of ${total} users`,
                         position: ['bottomRight']
                       }}
                       loading={state.loading}
                       size="middle"
-                      className="fellowships-table"
+                      className="users-table"
                       expandable={{
-                        expandedRowRender: (record) => <ExpandedRowContent fellowship={record} />,
+                        expandedRowRender: (record) => <ExpandedRowContent user={record} />,
                         rowExpandable: () => true,
                       }}
                       columns={[
@@ -252,75 +256,79 @@ const FellowshipListPage: React.FC = () => {
                           title: "Name",
                           dataIndex: "name",
                           key: "name",
-                          render: (_, fellowship) => (
+                          render: (_, user) => (
                             <Space>
-                              <Text strong>{fellowship.getDisplayName()}</Text>
-                              {!fellowship.hasLeadership() && (
-                                <Tag color="orange">No Leadership</Tag>
+                              <Text strong>{user.displayName}</Text>
+                              {!user.isActive && (
+                                <Tag color="orange">Inactive</Tag>
+                              )}
+                              {user.isDeleted && (
+                                <Tag color="red">Deleted</Tag>
                               )}
                             </Space>
                           ),
                         },
                         {
-                          title: "Leadership",
-                          key: "leadership",
-                          render: (_, fellowship) => {
-                            if (!fellowship.hasLeadership()) {
-                              return <Text type="secondary">Not assigned</Text>;
-                            }
-                            
-                            const chairmanName = fellowship.chairman?.getFullName?.() || "N/A";
+                          title: "Email",
+                          dataIndex: "email",
+                          key: "email",
+                          render: (email) => (
+                            <Space>
+                              <MailOutlined />
+                              <Text>{email}</Text>
+                            </Space>
+                          ),
+                        },
+                        {
+                          title: "Role",
+                          key: "role",
+                          render: (_, user) => {
+                            const roleName = user.role?.getDisplayName();
                             return (
-                              <Space direction="vertical" size="small">
-                                <Text>Chairman: {chairmanName}</Text>
-                                {fellowship.secretaryId && <Tag color="blue">Has Secretary</Tag>}
-                                {fellowship.treasurerId && <Tag color="green">Has Treasurer</Tag>}
-                              </Space>
+                              <Tag color="blue">{roleName}</Tag>
                             );
                           },
                         },
                         {
-                          title: "Members",
-                          key: "memberCount",
-                          render: (_, fellowship) => {
-                            // Check if we have a memberCount property (added by hook)
-                            if ((fellowship as any).memberCount !== undefined) {
-                              const count = (fellowship as any).memberCount;
-                              return `${count} member${count !== 1 ? 's' : ''}`;
+                          title: "Status",
+                          key: "status",
+                          render: (_, user) => {
+                            if (user.isDeleted) {
+                              return <Tag color="red" icon={<LockOutlined />}>Deleted</Tag>;
                             }
-
-                            // Gracefully handle undefined memberCount
-                            return <span><Spin size="small" style={{ marginRight: 8 }} />Loading count...</span>;
+                            return user.isActive ? 
+                              <Tag color="green" icon={<UnlockOutlined />}>Active</Tag> : 
+                              <Tag color="orange" icon={<LockOutlined />}>Inactive</Tag>;
                           },
                         },
                         {
                           title: "Created",
                           key: "createdAt",
-                          render: (_, fellowship) => {
-                            return fellowship.createdAt.toLocaleDateString();
+                          render: (_, user) => {
+                            return user.createdAt.toLocaleDateString();
                           },
                         },
                       ]}
                     />
 
                     {/* Empty State */}
-                    {state.data.fellowships.length === 0 && !state.loading && (
+                    {state.data.users.length === 0 && !state.loading && (
                       <div className="empty-state" style={{ textAlign: 'center', padding: '40px 0' }}>
-                        <TeamOutlined style={{ fontSize: 48, color: '#ccc', marginBottom: 16 }} />
-                        <Title level={4}>No Fellowships Found</Title>
+                        <UserOutlined style={{ fontSize: 48, color: '#ccc', marginBottom: 16 }} />
+                        <Title level={4}>No Users Found</Title>
                         <Text type="secondary">
                           {activeFiltersCount > 0
                             ? `No results found with the current filters. Try different filters or clear them.`
-                            : 'There are no fellowships in the system yet.'}
+                            : 'There are no users in the system yet.'}
                         </Text>
-                        {canCreateFellowship && (
+                        {canCreateUser && (
                           <div style={{ marginTop: 16 }}>
                             <Button
                               type="primary"
                               icon={<PlusOutlined />}
-                              onClick={() => Navigation.Fellowships.toCreate()}
+                              onClick={() => Navigation.Users.toCreate()}
                             >
-                              Create Fellowship
+                              Create User
                             </Button>
                           </div>
                         )}
@@ -335,6 +343,7 @@ const FellowshipListPage: React.FC = () => {
                     onClose={() => setFilterDrawerOpen(false)}
                     onApply={handleApplyFilters}
                     onReset={handleResetFilters}
+                    roles={state.roles}
                   />
                 </>
               );
@@ -350,14 +359,15 @@ const FellowshipListPage: React.FC = () => {
 /**
  * Component: FilterDrawer
  * 
- * Drawer component that contains fellowship filter form
+ * Drawer component that contains user filter form
  */
 interface FilterDrawerProps {
   open: boolean;
-  initialValues: Partial<FellowshipFilterState['filters']>;
+  initialValues: Partial<UserFilterState['filters']>;
   onClose: () => void;
   onApply: (values: any) => void;
   onReset: () => void;
+  roles: { id: string; name: string }[];
 }
 
 const FilterDrawer: React.FC<FilterDrawerProps> = ({ 
@@ -365,7 +375,8 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
   initialValues, 
   onClose, 
   onApply, 
-  onReset 
+  onReset,
+  roles
 }) => {
   const [form] = Form.useForm();
 
@@ -384,7 +395,7 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
   return (
     <Drawer
       title={
-        <span><FilterOutlined /> Filter Fellowships</span>
+        <span><FilterOutlined /> Filter Users</span>
       }
       placement="right"
       width={320}
@@ -399,14 +410,28 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         layout="vertical"
         initialValues={initialValues}
       >
-        <Form.Item label="Fellowship Name" name="name">
+        <Form.Item label="Name" name="name">
           <Input placeholder="Search by name" />
         </Form.Item>
 
-        <Form.Item label="Has Leadership" name="hasLeadership">
-          <Select placeholder="Leadership status" allowClear>
-            <Select.Option value={true}>Has leadership</Select.Option>
-            <Select.Option value={false}>Missing leadership</Select.Option>
+        <Form.Item label="Email" name="email">
+          <Input placeholder="Search by email" />
+        </Form.Item>
+
+        <Form.Item label="Role" name="roleId">
+          <Select placeholder="Select role" allowClear>
+            {roles.map(role => (
+              <Select.Option key={role.id} value={role.id}>
+                {role.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+
+        <Form.Item label="Status" name="isActive">
+          <Select placeholder="Select status" allowClear>
+            <Select.Option value={true}>Active</Select.Option>
+            <Select.Option value={false}>Inactive</Select.Option>
           </Select>
         </Form.Item>
 
@@ -432,64 +457,47 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
 /**
  * Component: ExpandedRowContent
  * 
- * Renders the expanded row content with details about the fellowship
+ * Renders the expanded row content with details about the user
  */
-const ExpandedRowContent: React.FC<{ fellowship: Fellowship }> = ({ fellowship }) => {
-  // Get the member count (from our enhanced property)
-  const memberCount = (fellowship as any).memberCount;
-
+const ExpandedRowContent: React.FC<{ user: User }> = ({ user }) => {
   return (
-    <Card variant={"outlined"} size="small" className="expanded-row-content">
+    <Card size="small" className="expanded-row-content">
       <Row gutter={[24, 16]}>
-        {/* Leadership Column */}
+        {/* Contact Details */}
         <Col xs={24} md={12}>
-          <Title level={5}>Leadership</Title>
-          {fellowship.hasLeadership() ? (
-            <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
-              {fellowship.getLeaderContactInfo().map((contact, index) => (
-                <li key={index}>{contact}</li>
-              ))}
-            </ul>
-          ) : (
-            <Text type="secondary">No leadership assigned to this fellowship</Text>
-          )}
-        </Col>
-
-        {/* Members Summary Column */}
-        <Col xs={24} md={12}>
-          <Title level={5}>Members</Title>
-          {memberCount !== undefined ? (
-            <div>
-              <Text>{memberCount} member{memberCount !== 1 ? 's' : ''}</Text>
-              {memberCount > 0 && (
-                <div style={{ marginTop: 8 }}>
-                  <Button
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Store the fellowship ID in sessionStorage for the member list to pick up
-                      sessionStorage.setItem('memberList_fellowshipId', fellowship.id);
-                      Navigation.Members.toList();
-                    }}
-                  >
-                    View All Members
-                  </Button>
+          <Title level={5}>Contact Information</Title>
+          <div>
+            <Space direction="vertical" size="small">
+              <div>
+                <Text type="secondary">Email:</Text> {user.email}
+              </div>
+              {user.phoneNumber && (
+                <div>
+                  <Text type="secondary">Phone:</Text> {user.phoneNumber}
                 </div>
               )}
-            </div>
-          ) : (
-            <Spin size="small" />
-          )}
+            </Space>
+          </div>
         </Col>
 
-        {/* Notes Row (Full Width) */}
-        {fellowship.notes && (
-          <Col span={24}>
-            <Divider style={{ margin: '8px 0' }} />
-            <Title level={5}>Notes</Title>
-            <Text>{fellowship.notes}</Text>
-          </Col>
-        )}
+        {/* System Information */}
+        <Col xs={24} md={12}>
+          <Title level={5}>System Information</Title>
+          <Space direction="vertical" size="small">
+            <div>
+              <Text type="secondary">Created:</Text> {user.createdAt.toLocaleString()}
+            </div>
+            <div>
+              <Text type="secondary">Last Updated:</Text> {user.updatedAt.toLocaleString()}
+            </div>
+            <div>
+              <Text type="secondary">Status:</Text> {user.email}
+            </div>
+            <div>
+              <Text type="secondary">Role:</Text> {user.getRoleName()}
+            </div>
+          </Space>
+        </Col>
 
         {/* Actions */}
         <Col span={24}>
@@ -500,7 +508,7 @@ const ExpandedRowContent: React.FC<{ fellowship: Fellowship }> = ({ fellowship }
               size="small"
               onClick={(e) => {
                 e.stopPropagation();
-                Navigation.Fellowships.toDetails(fellowship.id);
+                Navigation.Users.toDetails(user.id);
               }}
             >
               View Details
@@ -509,10 +517,10 @@ const ExpandedRowContent: React.FC<{ fellowship: Fellowship }> = ({ fellowship }
               size="small"
               onClick={(e) => {
                 e.stopPropagation();
-                Navigation.Fellowships.toEdit(fellowship.id);
+                Navigation.Users.toEdit(user.id);
               }}
             >
-              Edit Fellowship
+              Edit User
             </Button>
           </Space>
         </Col>
@@ -521,4 +529,4 @@ const ExpandedRowContent: React.FC<{ fellowship: Fellowship }> = ({ fellowship }
   );
 };
 
-export default FellowshipListPage;
+export default UserListPage;

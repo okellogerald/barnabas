@@ -1,7 +1,7 @@
 import type { FellowshipDTO } from "@/data/fellowship";
 import type { MemberDTO } from "@/data/member";
-import type { UserDTO } from "@/data/auth/schema";
 import type { RoleDTO } from "@/data/role";
+import { UserDTO } from "@/data/user";
 import type { OpportunityDTO } from "@/data/volunteer";
 
 /**
