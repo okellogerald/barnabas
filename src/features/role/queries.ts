@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { UseQueryResult } from "@tanstack/react-query";
 import { queryClient, QueryKeys } from "@/lib/query";
 import { RoleQueryParams } from "@/data/role";
-import { Role } from "@/models";
+import { Role, RoleAction } from "@/models";
 import { RoleManager } from "@/managers/role";
 
 // Create a repository instance
@@ -67,20 +67,6 @@ export const RoleQueries = {
             enabled: !!id,
         }),
 
-    // /**
-    //  * Hook to fetch permissions for a role
-    //  * @param {string} roleId The role ID
-    //  * @returns {UseQueryResult<string[], Error>} Query result with permissions list
-    //  */
-    // usePermissions: (roleId: string): UseQueryResult<string[], Error> =>
-    //     useQuery({
-    //         queryKey: QueryKeys.Roles.permissions(roleId),
-    //         queryFn: async () => {
-    //             return roleManager.getRolePermissions(roleId);
-    //         },
-    //         enabled: !!roleId,
-    //     }),
-
     /**
      * Prefetch a role's details
      * @param {string} id The role ID to prefetch
@@ -95,96 +81,19 @@ export const RoleQueries = {
             },
             staleTime: 5 * 60 * 1000, // 5 minutes
         }),
-    // /**
-    //  * Hook for creating a new role
-    //  * @returns {UseMutationResult<Role, Error, CreateRoleDTO, unknown>} Mutation result
-    //  */
-    // useCreate: (): UseMutationResult<Role, Error, CreateRoleDTO, unknown> =>
-    //     useMutation({
-    //         mutationFn: async (data: CreateRoleDTO) => {
-    //             return roleManager.createRole(data);
-    //         },
-    //         onSuccess: () => {
-    //             // Invalidate relevant queries
-    //             Query.Roles.invalidateList();
-    //             Query.Roles.invalidateCount();
-    //         },
-    //     }),
 
-    // /**
-    //  * Hook for updating an existing role
-    //  * @returns {UseMutationResult<Role, Error, {id: string, data: UpdateRoleDTO}, unknown>} Mutation result
-    //  */
-    // useUpdate: (): UseMutationResult<
-    //     Role,
-    //     Error,
-    //     { id: string; data: UpdateRoleDTO },
-    //     unknown
-    // > => useMutation({
-    //     mutationFn: async (
-    //         { id, data }: { id: string; data: UpdateRoleDTO },
-    //     ) => {
-    //         return roleManager.updateRole(id, data);
-    //     },
-    //     onSuccess: (updatedRole) => {
-    //         // Update the detail cache
-    //         queryClient.setQueryData(
-    //             QueryKeys.Roles.detail(updatedRole.id),
-    //             updatedRole,
-    //         );
-
-    //         // Invalidate lists
-    //         Query.Roles.invalidateList();
-    //     },
-    // }),
-
-    // /**
-    //  * Hook for updating role permissions
-    //  * @returns {UseMutationResult<string[], Error, {roleId: string, permissions: string[]}, unknown>} Mutation result
-    //  */
-    // useUpdatePermissions: (): UseMutationResult<
-    //     string[],
-    //     Error,
-    //     { roleId: string; permissions: string[] },
-    //     unknown
-    // > => useMutation({
-    //     mutationFn: async (
-    //         { roleId, permissions }: { roleId: string; permissions: string[] },
-    //     ) => {
-    //         return roleManager.updateRolePermissions(roleId, permissions);
-    //     },
-    //     onSuccess: (_, variables) => {
-    //         // Update the permissions cache
-    //         queryClient.setQueryData(
-    //             QueryKeys.Roles.permissions(variables.roleId),
-    //             variables.permissions,
-    //         );
-
-    //         // Invalidate role detail as permissions may affect it
-    //         Query.Roles.invalidateDetail(variables.roleId);
-
-    //         // Invalidate any auth queries since permissions changed
-    //         queryClient.invalidateQueries({ queryKey: ["auth"] });
-    //     },
-    // }),
-
-    // /**
-    //  * Hook for deleting a role
-    //  * @returns {UseMutationResult<void, Error, string, unknown>} Mutation result
-    //  */
-    // useDelete: (): UseMutationResult<void, Error, string, unknown> =>
-    //     useMutation({
-    //         mutationFn: (id: string) => roleManager.deleteRole(id),
-    //         onSuccess: (_, deletedId) => {
-    //             // Remove from cache
-    //             Query.Roles.removeDetail(deletedId);
-
-    //             // Invalidate lists and counts
-    //             Query.Roles.invalidateList();
-    //             Query.Roles.invalidateCount();
-
-    //             // Since users might reference this role, invalidate user queries too
-    //             Query.Users.invalidateList();
-    //         },
-    //     }),
+    /**
+     * Hook to fetch actions for a role
+     * @param {string} roleId The role ID
+     * @param {object} options Optional query configuration
+     * @returns {UseQueryResult<string[], Error>} Query result with actions list
+     */
+    useActions: (roleId: string): UseQueryResult<RoleAction[], Error> =>
+        useQuery({
+            queryKey: QueryKeys.Roles.actions(roleId),
+            queryFn: async () => {
+                return roleManager.getRoleActions(roleId);
+            },
+            enabled: !!roleId,
+        }),
 };

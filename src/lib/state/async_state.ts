@@ -70,7 +70,7 @@ export abstract class BaseState<T extends UI_STATE_TYPE = UI_STATE_TYPE> {
 export class IdleState extends BaseState<UI_STATE_TYPE.IDLE> {
   constructor(
     public message?: string,
-    public actions: IdleStateActions = {}
+    public actions: IdleStateActions = {},
   ) {
     super(UI_STATE_TYPE.IDLE);
   }
@@ -89,7 +89,7 @@ export class IdleState extends BaseState<UI_STATE_TYPE.IDLE> {
 export class LoadingState extends BaseState<UI_STATE_TYPE.LOADING> {
   constructor(
     public message?: string,
-    public actions: LoadingStateActions = {}
+    public actions: LoadingStateActions = {},
   ) {
     super(UI_STATE_TYPE.LOADING);
   }
@@ -103,10 +103,12 @@ export class ErrorState extends BaseState<UI_STATE_TYPE.ERROR> {
 
   constructor(
     public error: Error,
-    public actions: ErrorStateActions
+    public actions: ErrorStateActions,
   ) {
     super(UI_STATE_TYPE.ERROR);
-    this.message = this.error instanceof Error ? this.error.message : this.error;
+    this.message = this.error instanceof Error
+      ? this.error.message
+      : this.error;
   }
 
   // Get the full error stack if available
@@ -132,7 +134,7 @@ export class UnauthorizedState extends BaseState<UI_STATE_TYPE.UNAUTHORIZED> {
   constructor(
     public message: string,
     public requiredPermissions: string[] = [],
-    public actions: UnauthorizedStateActions
+    public actions: UnauthorizedStateActions,
   ) {
     super(UI_STATE_TYPE.UNAUTHORIZED);
   }
@@ -193,10 +195,11 @@ export class NotFoundState extends BaseState<UI_STATE_TYPE.NOT_FOUND> {
 /**
  * Unauthenticated state - user is not logged in
  */
-export class UnauthenticatedState extends BaseState<UI_STATE_TYPE.UNAUTHENTICATED> {
+export class UnauthenticatedState
+  extends BaseState<UI_STATE_TYPE.UNAUTHENTICATED> {
   constructor(
     public message: string,
-    public actions: UnauthenticatedStateActions
+    public actions: UnauthenticatedStateActions,
   ) {
     super(UI_STATE_TYPE.UNAUTHENTICATED);
   }
@@ -220,7 +223,7 @@ export class UnauthenticatedState extends BaseState<UI_STATE_TYPE.UNAUTHENTICATE
 export class SuccessState<T> extends BaseState<UI_STATE_TYPE.SUCCESS> {
   constructor(
     public data: T,
-    public actions: SuccessStateActions = {}
+    public actions: SuccessStateActions = {},
   ) {
     super(UI_STATE_TYPE.SUCCESS);
   }
@@ -251,11 +254,15 @@ export type AsyncState<T = any> =
  * Factory for creating state instances with appropriate actions
  */
 export class StateFactory {
-  static idle(args: { message?: string; actions?: IdleStateActions } = {}): IdleState {
+  static idle(
+    args: { message?: string; actions?: IdleStateActions } = {},
+  ): IdleState {
     return new IdleState(args.message, args.actions);
   }
 
-  static loading(args: { message?: string; actions?: LoadingStateActions } = {}): LoadingState {
+  static loading(
+    args: { message?: string; actions?: LoadingStateActions } = {},
+  ): LoadingState {
     return new LoadingState(args.message, args.actions);
   }
 
@@ -268,9 +275,13 @@ export class StateFactory {
       message: string;
       requiredPermissions?: string[];
       actions: UnauthorizedStateActions;
-    }
+    },
   ): UnauthorizedState {
-    return new UnauthorizedState(args.message, args.requiredPermissions, args.actions);
+    return new UnauthorizedState(
+      args.message,
+      args.requiredPermissions,
+      args.actions,
+    );
   }
 
   static notFound(
@@ -279,16 +290,25 @@ export class StateFactory {
       resourceType: string;
       resourceId?: string;
       actions: NotFoundStateActions;
-    }
+    },
   ): NotFoundState {
-    return new NotFoundState(args.message, args.resourceType, args.actions, args.resourceId);
+    return new NotFoundState(
+      args.message,
+      args.resourceType,
+      args.actions,
+      args.resourceId,
+    );
   }
 
-  static unauthenticated(args: { message: string; actions: UnauthenticatedStateActions }): UnauthenticatedState {
+  static unauthenticated(
+    args: { message: string; actions: UnauthenticatedStateActions },
+  ): UnauthenticatedState {
     return new UnauthenticatedState(args.message, args.actions);
   }
 
-  static success<T>(args: { data: T; actions?: SuccessStateActions }): SuccessState<T> {
+  static success<T>(
+    args: { data: T; actions?: SuccessStateActions },
+  ): SuccessState<T> {
     return new SuccessState<T>(args.data, args.actions);
   }
 }
@@ -308,7 +328,9 @@ export function isErrorState(state: AsyncState): state is ErrorState {
   return state.type === UI_STATE_TYPE.ERROR;
 }
 
-export function isUnauthorizedState(state: AsyncState): state is UnauthorizedState {
+export function isUnauthorizedState(
+  state: AsyncState,
+): state is UnauthorizedState {
   return state.type === UI_STATE_TYPE.UNAUTHORIZED;
 }
 
@@ -316,10 +338,14 @@ export function isNotFoundState(state: AsyncState): state is NotFoundState {
   return state.type === UI_STATE_TYPE.NOT_FOUND;
 }
 
-export function isUnauthenticatedState(state: AsyncState): state is UnauthenticatedState {
+export function isUnauthenticatedState(
+  state: AsyncState,
+): state is UnauthenticatedState {
   return state.type === UI_STATE_TYPE.UNAUTHENTICATED;
 }
 
-export function isSuccessState<T>(state: AsyncState<T>): state is SuccessState<T> {
+export function isSuccessState<T>(
+  state: AsyncState<T>,
+): state is SuccessState<T> {
   return state.type === UI_STATE_TYPE.SUCCESS;
 }

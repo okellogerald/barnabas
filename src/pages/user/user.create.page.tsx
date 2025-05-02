@@ -10,7 +10,6 @@ import {
   Row,
   Col,
   Select,
-  Switch,
   Spin,
   Alert
 } from 'antd';
@@ -24,6 +23,7 @@ import {
   ReloadOutlined
 } from '@ant-design/icons';
 import { useUserCreate } from '@/features/user/user-create';
+import { Rule } from 'antd/es/form';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -44,20 +44,24 @@ const UserCreatePage: React.FC = () => {
     handleCancel,
     handleReset
   } = useUserCreate();
-  
+
   // Validation rules
-  const validationRules = {
+  const validationRules: Record<string, Rule[]> = {
     name: [
       { required: true, message: 'Please enter a name' },
       { min: 3, message: 'Name must be at least 3 characters' }
     ],
     email: [
       { required: true, message: 'Please enter an email address' },
-      { type: 'email', message: 'Please enter a valid email address' }
+      { type: 'email' as const, message: 'Please enter a valid email address' }
     ],
     password: [
       { required: true, message: 'Please enter a password' },
       { min: 8, message: 'Password must be at least 8 characters' }
+    ],
+    phoneNumber: [
+      { required: true, message: 'Please enter a phone number' },
+      { min: 9, message: 'Password must be at least 9 characters' }
     ],
     confirmPassword: [
       { required: true, message: 'Please confirm your password' },
@@ -74,7 +78,7 @@ const UserCreatePage: React.FC = () => {
       { required: true, message: 'Please select a role' }
     ]
   };
-  
+
   return (
     <div className="user-create-page">
       <Card>
@@ -83,9 +87,9 @@ const UserCreatePage: React.FC = () => {
         <Text type="secondary">
           Create a new system user with access to {churchData.church?.name || 'the church management system'}
         </Text>
-        
+
         <Divider />
-        
+
         {/* Form */}
         <Form
           form={form}
@@ -95,97 +99,87 @@ const UserCreatePage: React.FC = () => {
         >
           {/* Personal Information Section */}
           <Title level={5}>User Information</Title>
-          
+
           <Row gutter={16}>
             <Col xs={24} md={12}>
-              <Form.Item 
-                name="name" 
+              <Form.Item
+                name="name"
                 label="Full Name"
                 rules={validationRules.name}
               >
-                <Input 
-                  prefix={<UserOutlined />} 
+                <Input
+                  prefix={<UserOutlined />}
                   placeholder="Full name"
                 />
               </Form.Item>
             </Col>
-            
+
             <Col xs={24} md={12}>
-              <Form.Item 
-                name="email" 
+              <Form.Item
+                name="email"
                 label="Email Address"
                 rules={validationRules.email}
               >
-                <Input 
-                  prefix={<MailOutlined />} 
+                <Input
+                  prefix={<MailOutlined />}
                   placeholder="Email address"
                   type="email"
                 />
               </Form.Item>
             </Col>
           </Row>
-          
+
           <Row gutter={16}>
             <Col xs={24} md={12}>
-              <Form.Item 
-                name="password" 
+              <Form.Item
+                name="password"
                 label="Password"
                 rules={validationRules.password}
               >
-                <Input.Password 
-                  prefix={<LockOutlined />} 
+                <Input.Password
+                  prefix={<LockOutlined />}
                   placeholder="Password"
                 />
               </Form.Item>
             </Col>
-            
+
             <Col xs={24} md={12}>
-              <Form.Item 
-                name="confirmPassword" 
+              <Form.Item
+                name="confirmPassword"
                 label="Confirm Password"
                 rules={validationRules.confirmPassword}
               >
-                <Input.Password 
-                  prefix={<LockOutlined />} 
+                <Input.Password
+                  prefix={<LockOutlined />}
                   placeholder="Confirm password"
                 />
               </Form.Item>
             </Col>
           </Row>
-          
+
           <Row gutter={16}>
             <Col xs={24} md={12}>
-              <Form.Item 
-                name="phoneNumber" 
-                label="Phone Number (Optional)"
+              <Form.Item
+                name="phoneNumber"
+                label="Phone Number"
+                rules={validationRules.phoneNumber}
               >
-                <Input 
-                  prefix={<PhoneOutlined />} 
+                <Input
+                  prefix={<PhoneOutlined />}
                   placeholder="Phone number"
                 />
               </Form.Item>
             </Col>
-            
-            <Col xs={24} md={12}>
-              <Form.Item 
-                name="isActive" 
-                label="Status" 
-                valuePropName="checked"
-              >
-                <Switch 
-                  checkedChildren="Active" 
-                  unCheckedChildren="Inactive" 
-                  defaultChecked 
-                />
-              </Form.Item>
-            </Col>
           </Row>
-          
+
           <Divider />
-          
+
           {/* System Role Section */}
           <Title level={5}>System Role</Title>
-          
+          <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
+            Select a predefined role to determine the user's permissions in the system
+          </Text>
+
           {rolesData.loading ? (
             <div style={{ textAlign: 'center', padding: '20px' }}>
               <Spin />
@@ -193,15 +187,15 @@ const UserCreatePage: React.FC = () => {
           ) : rolesData.roles.length === 0 ? (
             <Alert
               message="No roles available"
-              description="There are no roles defined in the system. Please create roles first."
+              description="There are no predefined roles available in the system."
               type="warning"
             />
           ) : (
-            <Form.Item 
-              name="roleId" 
+            <Form.Item
+              name="roleId"
               label="Role"
               rules={validationRules.roleId}
-              extra="The role determines what permissions the user will have in the system"
+              extra="The role determines what actions the user will be allowed to perform in the system"
             >
               <Select placeholder="Select a role">
                 {rolesData.roles.map(role => (
@@ -212,29 +206,29 @@ const UserCreatePage: React.FC = () => {
               </Select>
             </Form.Item>
           )}
-          
+
           <Divider />
-          
+
           {/* Form Actions */}
           <Row justify="end">
             <Space>
-              <Button 
-                icon={<ArrowLeftOutlined />} 
+              <Button
+                icon={<ArrowLeftOutlined />}
                 onClick={handleCancel}
               >
                 Cancel
               </Button>
-              
-              <Button 
-                icon={<ReloadOutlined />} 
+
+              <Button
+                icon={<ReloadOutlined />}
                 onClick={handleReset}
               >
                 Reset
               </Button>
-              
-              <Button 
-                type="primary" 
-                icon={<SaveOutlined />} 
+
+              <Button
+                type="primary"
+                icon={<SaveOutlined />}
                 loading={isSubmitting}
                 htmlType="submit"
                 disabled={rolesData.roles.length === 0}

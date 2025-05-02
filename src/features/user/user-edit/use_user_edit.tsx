@@ -26,7 +26,7 @@ export interface UserEditFormValues {
  */
 export const useUserEdit = () => {
   // Get user ID from URL params
-  const { userId = '' } = useParams<{ userId: string }>();
+  const { id: userId = '' } = useParams<{ id: string }>();
   
   // Form instance
   const [form] = Form.useForm<UserEditFormValues>();

@@ -1,6 +1,7 @@
 import type { FellowshipDTO } from "@/data/fellowship";
 import type { MemberDTO } from "@/data/member";
 import type { RoleDTO } from "@/data/role";
+import { RoleActionDTO } from "@/data/role-actions";
 import { UserDTO } from "@/data/user";
 import type { OpportunityDTO } from "@/data/volunteer";
 
@@ -41,7 +42,7 @@ export class ModelFactory {
    * Create a Member instance from DTO
    */
   public createMember(dto: MemberDTO): any {
-    const MemberClass = this.getModelClass('Member');
+    const MemberClass = this.getModelClass("Member");
     if (!MemberClass) return null;
     return MemberClass.fromDTO(dto);
   }
@@ -50,7 +51,7 @@ export class ModelFactory {
    * Create a Fellowship instance from DTO
    */
   public createFellowship(dto: FellowshipDTO): any {
-    const FellowshipClass = this.getModelClass('Fellowship');
+    const FellowshipClass = this.getModelClass("Fellowship");
     if (!FellowshipClass) return null;
     return FellowshipClass.fromDTO(dto);
   }
@@ -59,7 +60,7 @@ export class ModelFactory {
    * Create a User instance from DTO
    */
   public createUser(dto: UserDTO): any {
-    const UserClass = this.getModelClass('User');
+    const UserClass = this.getModelClass("User");
     if (!UserClass) return null;
     return UserClass.fromDTO(dto);
   }
@@ -68,16 +69,25 @@ export class ModelFactory {
    * Create a Role instance from DTO
    */
   public createRole(dto: RoleDTO): any {
-    const RoleClass = this.getModelClass('Role');
+    const RoleClass = this.getModelClass("Role");
     if (!RoleClass) return null;
     return RoleClass.fromDTO(dto);
+  }
+
+  /**
+   * Create a Role instance from DTO
+   */
+  public createRoleAction(dto: RoleActionDTO): any {
+    const RoleActionClass = this.getModelClass("RoleAction");
+    if (!RoleActionClass) return null;
+    return RoleActionClass.fromDTO(dto);
   }
 
   /**
    * Create a VolunteerOpportunity instance from DTO
    */
   public createVolunteerOpportunity(dto: OpportunityDTO): any {
-    const OpportunityClass = this.getModelClass('VolunteerOpportunity');
+    const OpportunityClass = this.getModelClass("VolunteerOpportunity");
     if (!OpportunityClass) return null;
     return OpportunityClass.fromDTO(dto);
   }

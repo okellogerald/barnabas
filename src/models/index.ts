@@ -16,6 +16,7 @@ export * from './member.model';
 export * from "./user.model";
 export * from "./church.model";
 export * from "./dependant.model";
+export * from "./role_action.model";
 
 // Re-export the factory instance
 export { modelFactory };

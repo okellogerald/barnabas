@@ -50,8 +50,7 @@ export const QueryKeys = {
             rangeStart?: number;
             rangeEnd?: number;
         }) => [...QueryKeys.Users.all, "list", params] as const,
-        detail: (id: string) =>
-            [...QueryKeys.Users.all, "detail", id] as const,
+        detail: (id: string) => [...QueryKeys.Users.all, "detail", id] as const,
         count: () => [...QueryKeys.Users.all, "count"] as const,
     },
 
@@ -63,6 +62,8 @@ export const QueryKeys = {
         detail: (id: string) => [...QueryKeys.Roles.all, "detail", id] as const,
         permissions: (roleId: string) =>
             [...QueryKeys.Roles.all, "permissions", roleId] as const,
+        actions: (roleId: string) =>
+            [...QueryKeys.Roles.all, roleId, "actions"] as const,
     },
 
     // Volunteer-related query keys

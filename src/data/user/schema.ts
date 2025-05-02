@@ -26,28 +26,16 @@ export const userSchema = z.object({
 });
 
 // Schema for creating a new user
-export const createUserSchema = userSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  role: true,
-  isDeleted: true,
-}).extend({
+export const createUserSchema = z.object({
+  name: CommonSchemas.name,
+  email: z.string().email(),
   password: z.string().min(6),
+  phoneNumber: CommonSchemas.phoneNumber.nullable(),
+  roleId: CommonSchemas.id,
 });
 
 // Schema for updating an existing user
-export const updateUserSchema = userSchema.omit({
-  id: true,
-  churchId: true,
-  email: true, // Email typically shouldn't be changed in an update
-  createdAt: true,
-  updatedAt: true,
-  role: true,
-  isDeleted: true,
-}).partial().extend({
-  password: z.string().min(6).optional(),
-});
+export const updateUserSchema = createUserSchema.partial();
 
 // Define query parameters for getAll
 export const userQueryParamsSchema = z.object({

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Form, message } from 'antd';
+import { Form } from 'antd';
 import { CreateUserDTO } from '@/data/user';
 import { Navigation } from '@/app';
 import { useQuery } from '@tanstack/react-query';
@@ -7,7 +7,7 @@ import { QueryKeys } from '@/lib/query';
 import { ChurchManager } from '@/managers/church/church.manager';
 import { RoleQueries } from '@/features/role';
 import { UserQueries } from '../user.queries';
-import { AuthManager } from '@/managers/auth';
+import { notifyUtils } from '@/utilities';
 
 /**
  * Form values interface for user creation
@@ -17,7 +17,7 @@ export interface UserFormValues {
   email: string;
   password: string;
   confirmPassword: string;
-  phoneNumber?: string;
+  phoneNumber: string;
   roleId: string;
   isActive: boolean;
 }
@@ -51,7 +51,7 @@ export const useUserCreate = () => {
     try {
       // Make sure passwords match
       if (values.password !== values.confirmPassword) {
-        message.error('Passwords do not match');
+        notifyUtils.error('Passwords do not match');
         return;
       }
       
@@ -62,23 +62,23 @@ export const useUserCreate = () => {
         name: values.name.trim(),
         email: values.email.trim(),
         password: values.password,
-        phoneNumber: values.phoneNumber?.trim() || null,
+        phoneNumber: values.phoneNumber.trim(),
         roleId: values.roleId,
-        isActive: values.isActive,
-        churchId: AuthManager.instance.getUser()?.churchId ?? "",
+        // isActive: values.isActive,
+        // churchId: AuthManager.instance.getUser()?.churchId ?? "",
       };
       
       // Call API to create user
       await createMutation.mutateAsync(createDto);
       
       // Show success message
-      message.success('User created successfully');
+      notifyUtils.success('User created successfully');
       
       // Navigate to user list
       Navigation.Users.toList();
     } catch (error) {
       console.error('Error creating user:', error);
-      message.error('Failed to create user. Please try again.');
+      notifyUtils.error('Failed to create user. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

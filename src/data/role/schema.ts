@@ -45,7 +45,7 @@ const roleQueryParamsSchema = z.object({
   eager: z.string().default("permissions").optional(),
   rangeStart: z.coerce.number().default(0).optional(),
   rangeEnd: z.coerce.number().default(9).optional(),
-  search: z.string().optional(),
+  name: z.string().optional(),
   isSystem: z.coerce.boolean().optional(),
 });
 

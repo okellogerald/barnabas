@@ -10,18 +10,24 @@ import { MemberDetailsRouteLoader } from '@/pages/member-details/loader';
 // Lazy-loaded components
 const LoginPage = lazy(() => import('@/pages/auth/login.page'));
 const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard.page'));
+
 const MembersPage = lazy(() => import('@/pages/member-list/member_list.page'));
 const MemberCreatePage = lazy(() => import('@/pages/member-create/member_create.page'));
 const MemberEditPage = lazy(() => import('@/pages/member-edit/member_edit.page'));
 const MemberDetailsPage = lazy(() => import('@/pages/member-details/member_details.page'));
+
 const FellowshipListPage = lazy(() => import('@/pages/fellowship/list/page'));
 const FellowshipDetailsPage = lazy(() => import('@/pages/fellowship/details/page'));
 const FellowshipCreatePage = lazy(() => import('@/pages/fellowship/create/page'));
 const FellowshipEditPage = lazy(() => import('@/pages/fellowship/edit/page'));
+
 const UserListPage = lazy(() => import('@/pages/user/user.list.page'));
 const UserCreatePage = lazy(() => import('@/pages/user/user.create.page'));
 const UserDetailsPage = lazy(() => import('@/pages/user/user.details.page'));
 const UserEditPage = lazy(() => import('@/pages/user/user.edit.page'));
+
+const RoleListPage = lazy(() => import('@/pages/role/role_list.page'));
+const RoleDetailsPage = lazy(() => import('@/pages/role/role_details.page'));
 
 const NotFoundPage = lazy(() => import('@/pages/errors/not_found.page'));
 
@@ -83,7 +89,8 @@ const AppRoutes: React.FC = () => {
 
           <Route path={ROUTES.OPPORTUNITIES.LIST} element={"Opportunities page not currently implemented"} />
 
-          <Route path={ROUTES.ROLES.LIST} element={"Roles page not currently implemented"} />
+          <Route path={ROUTES.ROLES.LIST} element={<RoleListPage />} />
+          <Route path={ROUTES.ROLES.DETAILS} element={<RoleDetailsPage />} />
 
           <Route path={ROUTES.USERS.LIST} element={<UserListPage />} />
           <Route path={ROUTES.USERS.CREATE} element={<UserCreatePage />} />
