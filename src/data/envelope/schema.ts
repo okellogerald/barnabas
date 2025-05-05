@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { CommonSchemas } from "../_common";
+import { MemberSchemas } from "../member";
 
 // Envelope Activity Type enum as Zod enum
 export const envelopeActivityTypeSchema = z.enum([
@@ -15,6 +16,7 @@ export const envelopeSchema = z.object({
   memberId: CommonSchemas.id.nullable(),
   assignedAt: CommonSchemas.date.nullable(),
   releasedAt: CommonSchemas.date.nullable(),
+  member: MemberSchemas.memberSchema.nullable(),
   ...CommonSchemas.systemDates,
 });
 
@@ -26,6 +28,7 @@ export const envelopeHistorySchema = z.object({
   memberId: CommonSchemas.id,
   activityType: envelopeActivityTypeSchema,
   activityAt: CommonSchemas.date,
+  member: MemberSchemas.memberSchema.nullable(),
   ...CommonSchemas.systemDates,
 });
 

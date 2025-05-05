@@ -18,7 +18,7 @@ export class EnvelopeHistory {
     updatedAt: Date;
 
     // Related entities
-    member?: Member;
+    member?: Member | null;
 
     constructor(dto: EnvelopeHistoryDTO) {
         this.id = dto.id;
@@ -30,10 +30,10 @@ export class EnvelopeHistory {
         this.createdAt = new Date(dto.createdAt);
         this.updatedAt = new Date(dto.updatedAt);
 
-        // // Handle member if present
-        // if (dto.member) {
-        //     this.member = modelFactory.createMember(dto.member);
-        // }
+        // Handle member if present
+        if (dto.member) {
+            this.member = modelFactory.createMember(dto.member);
+        }
     }
 
     /**
@@ -73,6 +73,7 @@ export class EnvelopeHistory {
             activityAt: this.activityAt,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
+            member: this.member ? this.member.toDTO() : null,
         };
     }
 }

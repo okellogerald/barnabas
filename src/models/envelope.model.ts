@@ -25,10 +25,10 @@ export class Envelope {
         this.createdAt = new Date(dto.createdAt);
         this.updatedAt = new Date(dto.updatedAt);
 
-        // // Handle member if present
-        // if (dto.member) {
-        //     this.member = modelFactory.createMember(dto.member);
-        // }
+        // Handle member if present
+        if (dto.member) {
+            this.member = modelFactory.createMember(dto.member);
+        }
     }
 
     /**
@@ -79,6 +79,7 @@ export class Envelope {
             releasedAt: this.releasedAt,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt,
+            member: this.member ? this.member.toDTO() : null,
         };
     }
 }
