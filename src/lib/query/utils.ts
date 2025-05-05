@@ -217,7 +217,11 @@ export const QueryUtils = (queryClient: QueryClient) => ({
          * Invalidate the users list query with optional filters
          */
         invalidateList: (
-            params?: { searchTerm?: string; roleId?: string; isActive?: boolean },
+            params?: {
+                searchTerm?: string;
+                roleId?: string;
+                isActive?: boolean;
+            },
         ) => {
             if (params) {
                 queryClient.invalidateQueries({
@@ -380,5 +384,38 @@ export const QueryUtils = (queryClient: QueryClient) => ({
             queryClient.removeQueries({
                 queryKey: QueryKeys.Volunteers.opportunityDetail(id),
             }),
+    },
+
+    Envelopes: {
+        invalidateList: () => {
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Envelopes.list(),
+            });
+        },
+        invalidateCount: () => {
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Envelopes.count(),
+            });
+        },
+        invalidateDetail: (id: string) => {
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Envelopes.detail(id),
+            });
+        },
+        invalidateAvailable: () => {
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Envelopes.available(),
+            });
+        },
+        invalidateHistory: (id: string) => {
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Envelopes.history(id),
+            });
+        },
+        removeDetail: (id: string) => {
+            queryClient.removeQueries({
+                queryKey: QueryKeys.Envelopes.detail(id),
+            });
+        },
     },
 });

@@ -50,6 +50,7 @@ export class Member {
   dependants: Dependant[];
   fellowship: any | null; // Will be Fellowship type at runtime
   interests: any[]; // Will be VolunteerOpportunity[] at runtime
+  envelope: any | null; // Will be Envelope type at runtime
 
   constructor(dto: MemberDTO) {
     this.id = dto.id;

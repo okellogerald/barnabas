@@ -56,6 +56,9 @@ export const Navigation = {
     toEdit: (id: string) => {
       window.location.href = ROUTES.MEMBERS.EDIT.replace(":id", id);
     },
+    toAssignEnvelope: (id: string) => {
+      window.location.href = ROUTES.MEMBERS.ASSIGN_ENVELOPE.replace(":id", id);
+    },
   },
 
   /**
@@ -133,6 +136,36 @@ export const Navigation = {
     },
     toEdit: (id: string) => {
       window.location.href = ROUTES.USERS.EDIT.replace(":id", id);
+    },
+  },
+
+  /**
+   * Envelope-related navigation
+   */
+  Envelopes: {
+    toList: (params?: { isAssigned?: boolean; memberId?: string }) => {
+      if (params) {
+        // Store filter parameters in session storage for the envelope list page
+        if (params.isAssigned !== undefined) {
+          sessionStorage.setItem(
+            "envelopeList_isAssigned",
+            params.isAssigned.toString(),
+          );
+        }
+        if (params.memberId) {
+          sessionStorage.setItem(
+            "envelopeList_memberId",
+            params.memberId,
+          );
+        }
+      }
+      window.location.href = ROUTES.ENVELOPES.LIST;
+    },
+    toDetails: (id: string) => {
+      window.location.href = ROUTES.ENVELOPES.DETAILS.replace(":id", id);
+    },
+    toAssign: (id: string) => {
+      window.location.href = ROUTES.ENVELOPES.ASSIGN.replace(":id", id);
     },
   },
 

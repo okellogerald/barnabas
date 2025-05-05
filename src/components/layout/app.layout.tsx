@@ -75,10 +75,19 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ currentPath, authManage
         {
             key: 'opportunities',
             icon: <HeartOutlined />,
-            label: authManager.hasPermission('opportunity.findAll') ? (
+            label: authManager.hasPermission(Actions.MEMBER_CREATE) ? (
                 <Link to="/opportunities">Opportunities</Link>
             ) : (
                 <span style={styles.disabledMenuItem}>Opportunities</span>
+            ),
+        },
+        {
+            key: 'envelopes',
+            icon: <HeartOutlined />,
+            label: authManager.hasPermission(Actions.MEMBER_CREATE) ? (
+                <Link to="/envelopes">Envelopes</Link>
+            ) : (
+                <span style={styles.disabledMenuItem}>Envelopes</span>
             ),
         },
         {
@@ -185,6 +194,7 @@ const AppLayout: React.FC = () => {
         if (path.startsWith('/members')) return 'members';
         if (path.startsWith('/fellowships')) return 'fellowships';
         if (path.startsWith('/opportunities')) return 'opportunities';
+        if (path.startsWith('/envelopes')) return 'envelopes';
         if (path.startsWith('/roles')) return 'roles';
         if (path.startsWith('/users')) return 'users';
         return '';

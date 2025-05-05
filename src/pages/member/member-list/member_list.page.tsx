@@ -1,7 +1,6 @@
 import React from "react";
 import { Button, Typography, Flex, Tag, Space, Divider } from "antd";
 import { PlusOutlined, RedoOutlined } from "@ant-design/icons";
-import { UI_STATE_TYPE } from "../../interactors/_state";
 import { AsyncPageContentLayout } from "@/components/layout";
 import { MemberListPageUIState, MemberListSuccessState } from "@/interactors/member-list/types";
 import { useMemberList } from "@/interactors/member-list/hook";
@@ -11,6 +10,7 @@ import {
     LazyMemberSorting,
 } from "./lazy_components";
 import { LazyLoadErrorBoundary } from "@/components";
+import { UI_STATE_TYPE } from "@/interactors/_state";
 
 const { Title } = Typography;
 

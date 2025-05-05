@@ -80,4 +80,17 @@ export const QueryKeys = {
                 opportunityId,
             ] as const,
     },
+
+    Envelopes: {
+        base: ["envelopes"] as const,
+        list: () => [...QueryKeys.Envelopes.base, "list"] as const,
+        count: () => [...QueryKeys.Envelopes.base, "count"] as const,
+        detail: (id: string) =>
+            [...QueryKeys.Envelopes.base, "detail", id] as const,
+        byNumber: (number: number) =>
+            [...QueryKeys.Envelopes.base, "byNumber", number] as const,
+        available: () => [...QueryKeys.Envelopes.base, "available"] as const,
+        history: (id: string) =>
+            [...QueryKeys.Envelopes.base, "history", id] as const,
+    },
 };

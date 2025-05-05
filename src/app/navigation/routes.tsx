@@ -4,17 +4,21 @@ import AppLayout from '@/components/layout/app.layout';
 import { ROUTES } from './constants';
 import { AuthManager } from '@/managers/auth/auth.manager';
 import ProtectedRoute from './protected_route';
-import { MemberEditRouteLoader } from '@/pages/member-edit/loader';
-import { MemberDetailsRouteLoader } from '@/pages/member-details/loader';
+import { MemberEditRouteLoader } from '@/pages/member/member-edit/loader';
+import { MemberDetailsRouteLoader } from '@/pages/member/member-details/loader';
+import { EnvelopeListPage } from '@/pages/envelope';
+import EnvelopeDetailPage from '@/pages/envelope/envelope_details.page';
+import EnvelopeAssignPage from '@/pages/envelope/envelope_assing.page';
+import MemberAssignEnvelopePage from '@/pages/member/member-assign-envelope/assign_envelope.page';
 
 // Lazy-loaded components
 const LoginPage = lazy(() => import('@/pages/auth/login.page'));
 const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard.page'));
 
-const MembersPage = lazy(() => import('@/pages/member-list/member_list.page'));
-const MemberCreatePage = lazy(() => import('@/pages/member-create/member_create.page'));
-const MemberEditPage = lazy(() => import('@/pages/member-edit/member_edit.page'));
-const MemberDetailsPage = lazy(() => import('@/pages/member-details/member_details.page'));
+const MembersPage = lazy(() => import('@/pages/member/member-list/member_list.page'));
+const MemberCreatePage = lazy(() => import('@/pages/member/member-create/member_create.page'));
+const MemberEditPage = lazy(() => import('@/pages/member/member-edit/member_edit.page'));
+const MemberDetailsPage = lazy(() => import('@/pages/member/member-details/member_details.page'));
 
 const FellowshipListPage = lazy(() => import('@/pages/fellowship/list/page'));
 const FellowshipDetailsPage = lazy(() => import('@/pages/fellowship/details/page'));
@@ -80,6 +84,7 @@ const AppRoutes: React.FC = () => {
           <Route path={ROUTES.MEMBERS.CREATE} element={<MemberCreatePage />} />
           <Route path={ROUTES.MEMBERS.EDIT} loader={MemberEditRouteLoader} element={<MemberEditPage />} />
           <Route path={ROUTES.MEMBERS.DETAILS} loader={MemberDetailsRouteLoader} element={<MemberDetailsPage />} />
+          <Route path={ROUTES.MEMBERS.ASSIGN_ENVELOPE} element={<MemberAssignEnvelopePage />} />
 
           {/* Fellowships routes */}
           <Route path={ROUTES.FELLOWSHIPS.LIST} element={<FellowshipListPage />} />
@@ -97,6 +102,9 @@ const AppRoutes: React.FC = () => {
           <Route path={ROUTES.USERS.EDIT} element={<UserEditPage />} />
           <Route path={ROUTES.USERS.DETAILS} element={<UserDetailsPage />} />
 
+          <Route path={ROUTES.ENVELOPES.LIST} element={<EnvelopeListPage />} />
+          <Route path={ROUTES.ENVELOPES.DETAILS} element={<EnvelopeDetailPage />} />
+          <Route path={ROUTES.ENVELOPES.ASSIGN} element={<EnvelopeAssignPage />} />
 
           {/* 404 catch-all */}
           <Route path="*" element={<NotFoundPage />} />
@@ -119,27 +127,42 @@ export const useAppNavigation = () => {
 
     Members: {
       toList: () => navigate(ROUTES.MEMBERS.LIST),
-      toDetails: (id: string) => navigate(ROUTES.MEMBERS.DETAILS.replace(':id', id)),
+      toDetails: (id: string) =>
+        navigate(ROUTES.MEMBERS.DETAILS.replace(":id", id)),
       toCreate: () => navigate(ROUTES.MEMBERS.CREATE),
-      toEdit: (id: string) => navigate(ROUTES.MEMBERS.EDIT.replace(':id', id)),
+      toEdit: (id: string) => navigate(ROUTES.MEMBERS.EDIT.replace(":id", id)),
+      toAssignEnvelope: (id: string) =>
+        navigate(ROUTES.MEMBERS.ASSIGN_ENVELOPE.replace(":id", id)),
     },
 
     Fellowships: {
       toList: () => navigate(ROUTES.FELLOWSHIPS.LIST),
-      toDetails: (id: string) => navigate(ROUTES.FELLOWSHIPS.DETAILS.replace(':id', id)),
+      toDetails: (id: string) =>
+        navigate(ROUTES.FELLOWSHIPS.DETAILS.replace(":id", id)),
       toCreate: () => navigate(ROUTES.FELLOWSHIPS.CREATE),
-      toEdit: (id: string) => navigate(ROUTES.FELLOWSHIPS.EDIT.replace(':id', id)),
+      toEdit: (id: string) =>
+        navigate(ROUTES.FELLOWSHIPS.EDIT.replace(":id", id)),
     },
 
     Opportunities: {
       toList: () => navigate(ROUTES.OPPORTUNITIES.LIST),
-      toDetails: (id: string) => navigate(ROUTES.OPPORTUNITIES.DETAILS.replace(':id', id)),
+      toDetails: (id: string) =>
+        navigate(ROUTES.OPPORTUNITIES.DETAILS.replace(":id", id)),
       toCreate: () => navigate(ROUTES.OPPORTUNITIES.CREATE),
-      toEdit: (id: string) => navigate(ROUTES.OPPORTUNITIES.EDIT.replace(':id', id)),
+      toEdit: (id: string) =>
+        navigate(ROUTES.OPPORTUNITIES.EDIT.replace(":id", id)),
     },
 
     Roles: {
       toList: () => navigate(ROUTES.ROLES.LIST),
+    },
+
+    Envelopes: {
+      toList: () => navigate(ROUTES.ENVELOPES.LIST),
+      toDetails: (id: string) =>
+        navigate(ROUTES.ENVELOPES.DETAILS.replace(":id", id)),
+      toAssign: (id: string) =>
+        navigate(ROUTES.ENVELOPES.ASSIGN.replace(":id", id)),
     },
   };
 };

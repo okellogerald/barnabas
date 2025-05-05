@@ -12,6 +12,7 @@ export const ROUTES = {
         DETAILS: "/members/:id",
         CREATE: "/members/create",
         EDIT: "/members/edit/:id",
+        ASSIGN_ENVELOPE: "/members/:id/assign-envelope",
     },
     FELLOWSHIPS: {
         LIST: "/fellowships",
@@ -36,5 +37,10 @@ export const ROUTES = {
         DETAILS: "/users/:id",
         CREATE: "/users/create",
         EDIT: "/users/edit/:id",
+    },
+    ENVELOPES: {
+        LIST: "/envelopes",
+        DETAILS: "/envelopes/:id",
+        ASSIGN: "/envelopes/:id/assign",
     },
 } as const;

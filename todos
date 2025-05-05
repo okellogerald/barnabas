@@ -1,2 +1,2 @@
--send email in the create user endpoint
 -member-count on fellowship endpoints: "GET /fellowship" & "GET /fellowship/{id}"
+-do we have envelope specific permissions? like ENVELOPE.CREATE, ENVELOPE.EDIT
