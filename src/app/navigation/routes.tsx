@@ -8,8 +8,7 @@ import { MemberEditRouteLoader } from '@/pages/member/member-edit/loader';
 import { MemberDetailsRouteLoader } from '@/pages/member/member-details/loader';
 import { EnvelopeListPage } from '@/pages/envelope';
 import EnvelopeDetailPage from '@/pages/envelope/envelope_details.page';
-import EnvelopeAssignPage from '@/pages/envelope/envelope_assing.page';
-import MemberAssignEnvelopePage from '@/pages/member/member-assign-envelope/assign_envelope.page';
+import EnvelopeAssignPage from '@/pages/envelope/envelope_assign.page';
 
 // Lazy-loaded components
 const LoginPage = lazy(() => import('@/pages/auth/login.page'));
@@ -84,7 +83,6 @@ const AppRoutes: React.FC = () => {
           <Route path={ROUTES.MEMBERS.CREATE} element={<MemberCreatePage />} />
           <Route path={ROUTES.MEMBERS.EDIT} loader={MemberEditRouteLoader} element={<MemberEditPage />} />
           <Route path={ROUTES.MEMBERS.DETAILS} loader={MemberDetailsRouteLoader} element={<MemberDetailsPage />} />
-          <Route path={ROUTES.MEMBERS.ASSIGN_ENVELOPE} element={<MemberAssignEnvelopePage />} />
 
           {/* Fellowships routes */}
           <Route path={ROUTES.FELLOWSHIPS.LIST} element={<FellowshipListPage />} />

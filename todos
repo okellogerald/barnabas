@@ -1,2 +1,2 @@
 -member-count on fellowship endpoints: "GET /fellowship" & "GET /fellowship/{id}"
--do we have envelope specific permissions? like ENVELOPE.CREATE, ENVELOPE.EDIT
+-when envelope is assigned to a member through envelopes endpoints, the member envelope-number is not updated

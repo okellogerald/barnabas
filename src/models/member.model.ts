@@ -1,6 +1,12 @@
 import { MemberDTO, UpdateMemberDTO } from "@/data/member";
 import { Dependant } from "./dependant.model";
-import { EducationLevel, Gender, MaritalStatus, MarriageType, MemberRole } from "@/constants";
+import {
+  EducationLevel,
+  Gender,
+  MaritalStatus,
+  MarriageType,
+  MemberRole,
+} from "@/constants";
 import { modelFactory } from "./model.factory";
 
 /**
@@ -109,9 +115,11 @@ export class Member {
         return modelFactory.createVolunteerOpportunity(i);
       }
       // If the interest is just an ID or object with ID
-      const VolunteerOpportunityClass = modelFactory.getModelClass('VolunteerOpportunity');
+      const VolunteerOpportunityClass = modelFactory.getModelClass(
+        "VolunteerOpportunity",
+      );
       if (!VolunteerOpportunityClass) return null;
-      
+
       return new VolunteerOpportunityClass({
         id: typeof i === "string" ? i : i.id,
         churchId: this.churchId,
@@ -206,6 +214,14 @@ export class Member {
     }
 
     return this.fellowshipAbsenceReason || "Does not attend fellowship";
+  }
+
+  hasEnvelope(): boolean {
+    return !!this.envelope;
+  }
+
+  getEnvelopeNumber() {
+    return this.envelope?.envelopeNumber || null;
   }
 
   /**
@@ -316,4 +332,4 @@ export class Member {
 }
 
 // Register the Member class with the factory
-modelFactory.register('Member', Member);
+modelFactory.register("Member", Member);

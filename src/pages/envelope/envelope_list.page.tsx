@@ -4,6 +4,7 @@ import { PlusOutlined, DeleteOutlined, FilterOutlined, UndoOutlined } from '@ant
 import { EnvelopesListSuccessState, useEnvelopesList } from '@/features/envelope/envelope-list';
 import { useEnvelopeBlock } from '@/features/envelope/envelope-block';
 import { AsyncStateMatcher } from '@/lib/state';
+import { notifyUtils } from '@/utilities';
 
 const { Option } = Select;
 
@@ -34,6 +35,7 @@ const EnvelopeListPage: React.FC = () => {
         state.refresh();
       }
     } catch (error) {
+      notifyUtils.apiError(error)
       console.error("Failed to create envelope block:", error);
     }
   };

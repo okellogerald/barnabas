@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Form, message } from 'antd';
 import { CreateFellowshipDTO } from '@/data/fellowship';
-import { FellowshipQueries } from '@/features/fellowship/queries';
+import { FellowshipQueries } from '@/features/fellowship/fellowship.queries';
 import { Navigation } from '@/app';
 
 export interface FellowshipFormValues {

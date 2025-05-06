@@ -2,10 +2,10 @@ import { useState, useCallback } from "react";
 import { mapQueriesToAsyncState, SuccessState, UI_STATE_TYPE } from "@/lib/state";
 import { Envelope, Member } from "@/models";
 import { EnvelopeQueries } from "../queries";
-import { useNavigate } from "react-router-dom";
-import { MemberQueries } from "@/features/member";
 import { useQueries } from "@tanstack/react-query";
 import { QueryKeys } from "@/lib/query";
+import { MemberManager } from "@/managers/member";
+import { useAppNavigation } from "@/app";
 
 // Custom success state for envelope assignment
 export class EnvelopeAssignSuccessState extends SuccessState<{
@@ -68,7 +68,7 @@ export class EnvelopeAssignSuccessState extends SuccessState<{
 
 // Main hook for envelope assignment
 export const useEnvelopeAssign = (id: string) => {
-    const navigate = useNavigate();
+    const navigate = useAppNavigation();
     const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
     const assignMutation = EnvelopeQueries.useAssign();
 
@@ -80,10 +80,17 @@ export const useEnvelopeAssign = (id: string) => {
                 queryKey: QueryKeys.Envelopes.detail(id),
             },
             {
-                ...MemberQueries.useList({
-                    filter: { envelopeNumber: null }
-                }),
-                queryKey: QueryKeys.Members.list(/* { envelopeNumber: null } */),
+                queryKey: QueryKeys.Members.list(),
+                queryFn: async () => {
+                    const response = await MemberManager.instance.getMembers({
+                        rangeStart: 0,
+                        rangeEnd: 9,
+                    });
+                    return {
+                        results: response.members,
+                        total: response.total,
+                    };
+                }
             }
         ]
     });
@@ -94,7 +101,7 @@ export const useEnvelopeAssign = (id: string) => {
 
         try {
             await assignMutation.mutateAsync({ envelopeId: id, memberId });
-            navigate(`/envelopes/${id}`);
+            navigate.Envelopes.toDetails(id)
         } catch (error) {
             console.error('Failed to assign envelope:', error);
             throw error;
@@ -103,7 +110,7 @@ export const useEnvelopeAssign = (id: string) => {
 
     // Handle cancel
     const handleCancel = useCallback(() => {
-        navigate(`/envelopes/${id}`);
+        navigate.Envelopes.toDetails(id)
     }, [id, navigate]);
 
     // Combine queries to create a single state

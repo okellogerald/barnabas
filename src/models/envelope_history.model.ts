@@ -3,7 +3,7 @@ import { Member } from "./member.model";
 import { modelFactory } from "./model.factory";
 
 export enum EnvelopeActivityType {
-    ASSIGN = "ASSIGN",
+    ASSIGN = "ASSIGNMENT",
     RELEASE = "RELEASE"
 }
 

@@ -2,7 +2,7 @@ import { useCallback, useMemo, useEffect } from "react";
 import { TableProps } from "antd";
 import { mapQueryToAsyncState, SuccessState, UI_STATE_TYPE } from "@/lib/state";
 import { Fellowship } from "@/models";
-import { FellowshipQueries } from "../queries";
+import { FellowshipQueries } from "../fellowship.queries";
 import { useFellowshipFilterStore } from "./filter_store";
 import { Navigation } from "@/app";
 import _ from "lodash";
@@ -172,11 +172,11 @@ export const useFellowshipsList = () => {
             params['name:like'] = `%${filters.name}%`;
         }
 
-        if(filters.hasLeadership === true) {
+        if (filters.hasLeadership === true) {
             // the left operand here does not matter, either 0 or 1
             params["chairmanId:notNull"] = 0
-        } 
-        if(filters.hasLeadership === false) {
+        }
+        if (filters.hasLeadership === false) {
             // the left operand here does not matter, either 0 or 1
             params["chairmanId:isNull"] = 0
         }

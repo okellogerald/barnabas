@@ -21,11 +21,11 @@ export const MemberQueries = {
     /**
      * Hook to fetch a list of members with optional filtering and pagination
      * @param {MemberQueryParams} params Optional parameters for filtering and pagination
-     * @returns {UseQueryResult<{results: Member[], total: number}, Error>} Query result with members and total
+     * @returns {UseQueryResult<{members: Member[], total: number}, Error>} Query result with members and total
      */
     useList: (
         params?: Record<string, any>,
-    ): UseQueryResult<{ results: Member[]; total: number }, Error> =>
+    ): UseQueryResult<{ members: Member[]; total: number }, Error> =>
         useQuery({
             queryKey: [QueryKeys.Members.list(), params],
             queryFn: async () => {
@@ -37,10 +37,9 @@ export const MemberQueries = {
                         MemberRepository.defaultQueryParams?.eager,
                 };
 
-                console.log("Member query params:", _params);
                 const response = await memberManager.getMembers(_params);
                 return {
-                    results: response.members,
+                    members: response.members,
                     total: response.total,
                 };
             },

@@ -4,7 +4,7 @@ import { MemberSchemas } from "../member";
 
 // Envelope Activity Type enum as Zod enum
 export const envelopeActivityTypeSchema = z.enum([
-  "ASSIGN",
+  "ASSIGNMENT",
   "RELEASE"
 ]);
 

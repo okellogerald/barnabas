@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, message } from 'antd';
 import { useParams } from 'react-router-dom';
-import { FellowshipQueries } from '@/features/fellowship/queries';
+import { FellowshipQueries } from '@/features/fellowship/fellowship.queries';
 import { UpdateFellowshipDTO } from '@/data/fellowship';
 import { Navigation } from '@/app';
 import { mapQueryToAsyncState } from '@/lib/state';

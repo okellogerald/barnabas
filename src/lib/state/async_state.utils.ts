@@ -181,9 +181,6 @@ export function mapQueriesToAsyncState<
     const isSuccess = queries.every((q) => q.isSuccess);
     const isRefetching = queries.some((q) => q.isRefetching);
     const error = queries.find((q) => q.error)?.error;
-    // const results = queries.map((q) => q.data) as {
-    //     [K in keyof Q]: Q[K] extends UseQueryResult<infer D, any> ? D : never;
-    // };
 
     // Result tuple with possible undefineds
     const rawResults = queries.map((q) => q.data) as ExtractResults<Q>;

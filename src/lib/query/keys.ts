@@ -29,7 +29,6 @@ export const QueryKeys = {
         all: ["members"] as const,
         list: (params?: {
             fellowshipId?: string;
-            searchTerm?: string;
             rangeStart?: number;
             rangeEnd?: number;
         }) => [...QueryKeys.Members.all, "list", params] as const,

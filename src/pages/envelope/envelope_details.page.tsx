@@ -1,43 +1,45 @@
 import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Card, 
-  Descriptions, 
-  Button, 
-  Space, 
-  Divider, 
-  Timeline, 
-  Tag, 
-  Modal, 
-  Typography 
+import { useParams } from 'react-router-dom';
+import {
+  Card,
+  Descriptions,
+  Button,
+  Space,
+  Divider,
+  Timeline,
+  Tag,
+  Modal,
+  Typography
 } from 'antd';
-import { 
-  ExclamationCircleOutlined, 
-  UserOutlined, 
-  RollbackOutlined, 
-  HistoryOutlined 
+import {
+  ExclamationCircleOutlined,
+  UserOutlined,
+  RollbackOutlined,
+  HistoryOutlined
 } from '@ant-design/icons';
 import { EnvelopeActivityType } from '@/models';
 import { AsyncStateMatcher } from '@/lib/state';
 import { EnvelopeDetailSuccessState, useEnvelopeDetail } from '@/features/envelope/envelope-details';
+import { useAppNavigation } from '@/app';
 
 const { Title, Text } = Typography;
-const { confirm } = Modal;
 
 /**
  * Page to view and manage a specific envelope
  */
 const EnvelopeDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  
+  const navigate = useAppNavigation();
+  const [modal, contextHolder] = Modal.useModal();
+
   // Use our custom hook
   const state = useEnvelopeDetail(id || '');
 
   // Confirmation for releasing an envelope
   const showReleaseConfirm = () => {
     if (EnvelopeDetailSuccessState.is(state) && state.envelope.memberId) {
-      confirm({
+      console.log("in here, state is::", state)
+      modal.confirm({
         title: 'Are you sure you want to release this envelope?',
         icon: <ExclamationCircleOutlined />,
         content: 'This will make the envelope available for assignment to other members.',
@@ -49,15 +51,17 @@ const EnvelopeDetailPage: React.FC = () => {
           }
         },
       });
+    } else {
+      console.log(state)
     }
   };
 
   return (
-    <Card 
+    <Card
       title={
         <Space>
           <Title level={4}>Envelope Details</Title>
-          <Button onClick={() => navigate('/envelopes')} icon={<RollbackOutlined />}>
+          <Button onClick={() => navigate.Envelopes.toList()} icon={<RollbackOutlined />}>
             Back to List
           </Button>
         </Space>
@@ -70,30 +74,30 @@ const EnvelopeDetailPage: React.FC = () => {
             if (!EnvelopeDetailSuccessState.is(state)) {
               return null;
             }
-            
+
             const { envelope, history, isReleasing } = state;
-            
+
             return (
               <>
                 <Descriptions bordered column={1}>
                   <Descriptions.Item label="Envelope Number">
                     <Text strong>{envelope.envelopeNumber}</Text>
                   </Descriptions.Item>
-                  
+
                   <Descriptions.Item label="Status">
                     <Tag color={envelope.memberId ? 'blue' : (envelope.releasedAt ? 'orange' : 'green')}>
                       {envelope.getStatus()}
                     </Tag>
                   </Descriptions.Item>
-                  
+
                   <Descriptions.Item label="Assigned To">
                     {envelope.member ? (
                       <Space>
                         <Text>{envelope.member.getFullName()}</Text>
-                        <Button 
-                          type="link" 
+                        <Button
+                          type="link"
                           size="small"
-                          onClick={() => navigate(`/members/${envelope.memberId}`)}
+                          onClick={() => navigate.Members.toDetails(envelope.memberId ?? "")}
                         >
                           View Member
                         </Button>
@@ -102,7 +106,7 @@ const EnvelopeDetailPage: React.FC = () => {
                       <Text type="secondary">Not assigned</Text>
                     )}
                   </Descriptions.Item>
-                  
+
                   <Descriptions.Item label="Assigned Date">
                     {envelope.assignedAt ? (
                       envelope.assignedAt.toLocaleDateString()
@@ -110,7 +114,7 @@ const EnvelopeDetailPage: React.FC = () => {
                       <Text type="secondary">Never assigned</Text>
                     )}
                   </Descriptions.Item>
-                  
+
                   <Descriptions.Item label="Last Released Date">
                     {envelope.releasedAt ? (
                       envelope.releasedAt.toLocaleDateString()
@@ -124,18 +128,18 @@ const EnvelopeDetailPage: React.FC = () => {
 
                 <Space style={{ marginBottom: 16 }}>
                   {envelope.memberId ? (
-                    <Button 
-                      type="primary" 
-                      danger 
-                      onClick={showReleaseConfirm}
+                    <Button
+                      type="primary"
+                      danger
+                      onClick={() => showReleaseConfirm()}
                       loading={isReleasing}
                     >
                       Release from Member
                     </Button>
                   ) : (
-                    <Button 
-                      type="primary" 
-                      icon={<UserOutlined />} 
+                    <Button
+                      type="primary"
+                      icon={<UserOutlined />}
                       onClick={() => state.assign()}
                     >
                       Assign to Member
@@ -153,7 +157,7 @@ const EnvelopeDetailPage: React.FC = () => {
                 {history.length > 0 ? (
                   <Timeline mode="left">
                     {history.map((record) => (
-                      <Timeline.Item 
+                      <Timeline.Item
                         key={record.id}
                         color={record.activityType === EnvelopeActivityType.ASSIGN ? 'blue' : 'red'}
                         label={record.activityAt.toLocaleDateString()}
@@ -170,6 +174,7 @@ const EnvelopeDetailPage: React.FC = () => {
           }
         }}
       />
+      {contextHolder}
     </Card>
   );
 };
