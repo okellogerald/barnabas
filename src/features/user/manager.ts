@@ -6,7 +6,7 @@ import {
 } from "@/data/user";
 import { PermissionError } from "@/lib/error";
 import { Actions, PermissionsManager } from "@/features/auth/permission";
-import { User } from "@/models";
+import { User } from "@/models/user.model";
 
 /**
  * @typedef {object} GetUsersResponse
