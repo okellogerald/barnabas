@@ -4,10 +4,9 @@ import {
     FellowshipRepository,
     UpdateFellowshipDTO,
 } from "@/data/fellowship";
-import { Actions, PermissionsManager } from "@/managers/auth/permission";
+import { Actions, PermissionsManager } from "@/features/auth/permission";
 import { Fellowship } from "@/models";
 import { PermissionError } from "@/lib/error";
-import { MemberManager } from "../member";
 import { MemberQueryParams } from "@/data/member";
 
 /**
@@ -55,7 +54,7 @@ export class FellowshipManager {
         if (!FellowshipManager._instance) {
             FellowshipManager._instance = new FellowshipManager(
                 new FellowshipRepository(),
-                PermissionsManager.instance,
+                PermissionsManager.getInstance(),
             );
         }
         return FellowshipManager._instance;
@@ -71,7 +70,9 @@ export class FellowshipManager {
     public async getFellowshipsCount(): Promise<number> {
         // Check if the user has permission to find fellowships
         if (
-            !this._permissionsManager.hasPermission(Actions.FELLOWSHIP_FIND_ALL)
+            !this._permissionsManager.canPerformAction(
+                Actions.FELLOWSHIP_FIND_ALL,
+            )
         ) {
             throw PermissionError.fromAction(Actions.FELLOWSHIP_FIND_ALL);
         }
@@ -104,7 +105,9 @@ export class FellowshipManager {
         queryParams?: FellowshipQueryParams,
     ): Promise<Fellowship[]> {
         if (
-            !this._permissionsManager.hasPermission(Actions.FELLOWSHIP_FIND_ALL)
+            !this._permissionsManager.canPerformAction(
+                Actions.FELLOWSHIP_FIND_ALL,
+            )
         ) {
             throw PermissionError.fromAction(Actions.FELLOWSHIP_FIND_ALL);
         }
@@ -136,7 +139,9 @@ export class FellowshipManager {
         queryParams?: FellowshipQueryParams,
     ): Promise<GetFellowshipsResponse> {
         if (
-            !this._permissionsManager.hasPermission(Actions.FELLOWSHIP_FIND_ALL)
+            !this._permissionsManager.canPerformAction(
+                Actions.FELLOWSHIP_FIND_ALL,
+            )
         ) {
             throw PermissionError.fromAction(Actions.FELLOWSHIP_FIND_ALL);
         }
@@ -167,7 +172,9 @@ export class FellowshipManager {
         fellowship: CreateFellowshipDTO,
     ): Promise<Fellowship> {
         if (
-            !this._permissionsManager.hasPermission(Actions.FELLOWSHIP_CREATE)
+            !this._permissionsManager.canPerformAction(
+                Actions.FELLOWSHIP_CREATE,
+            )
         ) {
             throw PermissionError.fromAction(Actions.FELLOWSHIP_CREATE);
         }
@@ -202,7 +209,7 @@ export class FellowshipManager {
         fellowshipId: string,
     ): Promise<Fellowship | undefined> {
         if (
-            !this._permissionsManager.hasPermission(
+            !this._permissionsManager.canPerformAction(
                 Actions.FELLOWSHIP_FIND_BY_ID,
             )
         ) {
@@ -237,7 +244,9 @@ export class FellowshipManager {
         data: UpdateFellowshipDTO,
     ): Promise<Fellowship> {
         if (
-            !this._permissionsManager.hasPermission(Actions.FELLOWSHIP_UPDATE)
+            !this._permissionsManager.canPerformAction(
+                Actions.FELLOWSHIP_UPDATE,
+            )
         ) {
             throw PermissionError.fromAction(Actions.FELLOWSHIP_UPDATE);
         }
@@ -266,7 +275,7 @@ export class FellowshipManager {
      */
     public async deleteFellowship(fellowshipId: string): Promise<void> {
         if (
-            !this._permissionsManager.hasPermission(
+            !this._permissionsManager.canPerformAction(
                 Actions.FELLOWSHIP_DELETE_BY_ID,
             )
         ) {
@@ -299,18 +308,23 @@ export class FellowshipManager {
     > {
         // Need both fellowship and member permissions for this operation
         if (
-            !this._permissionsManager.hasPermission(Actions.FELLOWSHIP_FIND_ALL)
+            !this._permissionsManager.canPerformAction(
+                Actions.FELLOWSHIP_FIND_ALL,
+            )
         ) {
             throw PermissionError.fromAction(Actions.FELLOWSHIP_FIND_ALL);
         }
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_FIND_ALL)) {
+        if (
+            !this._permissionsManager.canPerformAction(Actions.MEMBER_FIND_ALL)
+        ) {
             throw PermissionError.fromAction(Actions.MEMBER_FIND_ALL);
         }
 
         try {
             // Import here to avoid circular dependencies
-            const { MemberManager } = require("@/managers/member");
-            const memberManager = MemberManager.instance as MemberManager;
+            const MemberManager =
+                (await import("@/features/member")).MemberManager;
+            const manager = MemberManager.instance;
 
             // Get all fellowships first
             const response = await this._repo.getAll();
@@ -323,7 +337,7 @@ export class FellowshipManager {
                         const query: MemberQueryParams = {
                             fellowshipId: fellowship.id,
                         };
-                        const memberCount = await memberManager.getMembersCount(
+                        const memberCount = await manager.getMembersCount(
                             query,
                         );
                         // Set the member count on the fellowship object

@@ -322,9 +322,9 @@ import { message } from 'antd';
 import { Navigation } from '@/app';
 import { AsyncState, mapQueryToAsyncState, UI_STATE_TYPE, SuccessState } from '@/lib/state';
 import { User } from '@/models';
-import { AuthManager } from '@/managers/auth';
-import { Actions } from '@/managers/auth/permission';
-import { UserQueries } from '../user.queries';
+import { AuthManager } from '@/features/auth';
+import { Actions } from '@/features/auth/permission';
+import { UserQueries } from '../queries';
 import { RoleQueries } from '@/features/role';
 
 interface UserDetailsSuccessStateArgs {

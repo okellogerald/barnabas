@@ -3,7 +3,7 @@ import {
     MemberEditFormSchema,
     MemberEditFormValues,
 } from "./schemas/schemas.member";
-import { MemberManager } from "@/managers/member";
+import { MemberManager } from "@/features/member";
 import { FormSectionKey } from "./types";
 import {
     MemberEditPersonalInfo,

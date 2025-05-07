@@ -8,7 +8,7 @@ import {
   UserRepository,
 } from "@/data/user";
 import { User } from "@/models";
-import { UserManager } from "@/managers/user";
+import { UserManager } from "@/features/user";
 
 // Create a repository instance
 const userManager = UserManager.instance;

@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/managers/auth";
+import { useAuthStore } from "@/features/auth";
 import { User } from "@/models";
 import { ActionPermission, Actions, ResourceType } from "./constants";
 import { useStore } from "zustand";
@@ -20,7 +20,7 @@ export class PermissionsManager {
     /**
      * Gets the singleton instance of PermissionsManager
      */
-    public static get instance(): PermissionsManager {
+    public static getInstance(): PermissionsManager {
         if (!PermissionsManager._instance) {
             PermissionsManager._instance = new PermissionsManager();
         }
@@ -36,17 +36,17 @@ export class PermissionsManager {
 
     /**
      * Checks if the current user has permission for a specific action
-     * @param permission The permission to check
+     * @param action The permission to check
      */
-    public hasPermission(permission: ActionPermission | string): boolean {
-        return this.getAllowedActions().includes(permission);
+    public canPerformAction(action: ActionPermission | string): boolean {
+        return this.getAllowedActions().includes(action);
     }
 
     /**
      * Checks if the user has any permissions for a specific resource
      * @param resource The resource type to check
      */
-    public hasResourcePermission(resource: ResourceType): boolean {
+    public canAccessResource(resource: ResourceType): boolean {
         const prefix = `${resource}.`;
         return this.getAllowedActions().some((action) =>
             action.startsWith(prefix)
@@ -57,7 +57,7 @@ export class PermissionsManager {
      * Get all permissions for a specific resource
      * @param resource The resource type to get permissions for
      */
-    public getResourcePermissions(resource: ResourceType): string[] {
+    public fetchResourcePermissions(resource: ResourceType): string[] {
         const prefix = `${resource}.`;
         return this.getAllowedActions().filter((action) =>
             action.startsWith(prefix)
@@ -67,7 +67,7 @@ export class PermissionsManager {
     /**
      * Checks if the current user is authenticated
      */
-    public get isAuthenticated(): boolean {
+    public get isUserAuthenticated(): boolean {
         const state = useAuthStore.getState();
         return !!state.token && !!state.user;
     }
@@ -75,7 +75,7 @@ export class PermissionsManager {
     /**
      * Gets the current authenticated user
      */
-    public getCurrentUser(): User | null {
+    public fetchCurrentUser(): User | null {
         const userJson = useAuthStore.getState().user;
         if (!userJson) return null;
 
@@ -90,7 +90,7 @@ export class PermissionsManager {
     /**
      * Gets the current authenticated user
      */
-    public useCurrentUser(): User | null {
+    public useAuthUser(): User | null {
         const userJson = useStore(useAuthStore).user;
         if (!userJson) return null;
 
@@ -106,9 +106,9 @@ export class PermissionsManager {
      * Checks if user is an admin (has all permissions or a specific admin flag)
      * This implementation can be adjusted based on your admin definition
      */
-    public isAdmin(): boolean {
+    public checkIsAdmin(): boolean {
         // Get the current user
-        const user = this.getCurrentUser();
+        const user = this.fetchCurrentUser();
         if (!user) return false;
 
         // Get the role name if available
@@ -129,9 +129,9 @@ export class PermissionsManager {
      * Checks if user is an admin (has all permissions or a specific admin flag)
      * This implementation can be adjusted based on your admin definition
      */
-    public useIsAdmin(): boolean {
+    public useAdminStatus(): boolean {
         // Get the current user
-        const user = this.useCurrentUser();
+        const user = this.useAuthUser();
         if (!user) return false;
 
         // Get the role name if available
@@ -152,7 +152,9 @@ export class PermissionsManager {
      * Hook to check if the current user has a specific permission
      * @param permission The permission to check
      */
-    public usePermission = (permission: ActionPermission | string): boolean => {
+    public useCanPerformAction = (
+        permission: ActionPermission | string,
+    ): boolean => {
         const allowedActions = useStore(useAuthStore).allowedActions;
         return allowedActions.includes(permission);
     };
@@ -161,7 +163,7 @@ export class PermissionsManager {
      * Hook to get all permissions for a specific resource
      * @param resource The resource type
      */
-    public useResourcePermissions = (resource: ResourceType): string[] => {
+    public useFetchResourcePermissions = (resource: ResourceType): string[] => {
         const allowedActions = useStore(useAuthStore).allowedActions;
         const prefix = `${resource}.`;
         return allowedActions.filter((action) => action.startsWith(prefix));

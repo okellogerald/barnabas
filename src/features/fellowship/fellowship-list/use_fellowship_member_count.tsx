@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { MemberManager } from '@/managers/member';
+import { MemberManager } from '@/features/member';
 
 /**
  * Custom hook to fetch member counts for a list of fellowships

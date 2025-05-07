@@ -2,7 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { Navigate, Routes, Route, useNavigate } from 'react-router-dom';
 import AppLayout from '@/components/layout/app.layout';
 import { ROUTES } from './constants';
-import { AuthManager } from '@/managers/auth/auth.manager';
+import { AuthManager } from '@/features/auth/auth.manager';
 import ProtectedRoute from './protected_route';
 import { MemberEditRouteLoader } from '@/pages/member/member-edit/loader';
 import { MemberDetailsRouteLoader } from '@/pages/member/member-details/loader';

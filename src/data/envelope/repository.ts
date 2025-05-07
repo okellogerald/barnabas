@@ -5,18 +5,11 @@ import {
     EnvelopeBlockDTO,
     EnvelopeDTO,
     EnvelopeHistoryDTO,
-    EnvelopeQueryParams,
 } from "./schema";
+import { EnvelopeQueryBuilder } from "./query_builder";
 
 export class EnvelopeRepository
     extends BaseRepository<typeof envelopeContract> {
-    // Default query parameters
-    static defaultQueryParams: EnvelopeQueryParams = {
-        eager: "member",
-        rangeStart: 0,
-        rangeEnd: 9,
-    };
-
     constructor() {
         super("envelope", envelopeContract);
     }
@@ -25,40 +18,30 @@ export class EnvelopeRepository
      * Get all envelopes with pagination and filtering
      */
     async getAll(
-        params?: EnvelopeQueryParams,
+        queryBuilder: EnvelopeQueryBuilder,
     ): Promise<{ results: EnvelopeDTO[]; total: number }> {
-        // Convert any non-string parameters to strings for the query
-        const queryParams: Record<string, string> = {};
-
-        if (params) {
-            if (params.rangeStart !== undefined) {
-                queryParams.rangeStart = String(params.rangeStart);
-            }
-            if (params.rangeEnd !== undefined) {
-                queryParams.rangeEnd = String(params.rangeEnd);
-            }
-            if (params.eager) queryParams.eager = params.eager;
-           // if (params.sort) queryParams.sort = JSON.stringify(params.sort);
-            if (params.filter) {
-                queryParams.filter = JSON.stringify(params.filter);
-            }
-            if (params.assigned !== undefined) {
-                queryParams.assigned = String(params.assigned);
-            }
-            if (params.available !== undefined) {
-                queryParams.available = String(params.available);
-            }
-            if (params.memberId) queryParams.memberId = params.memberId;
-            if (params.envelopeNumber !== undefined) {
-                queryParams.envelopeNumber = String(params.envelopeNumber);
-            }
-        }
-
-        const result = await this.client.getAll({ query: queryParams });
+        console.log(queryBuilder.build())
+        const result = await this.client.getAll({
+            query: queryBuilder.build(),
+        });
         return this.handleResponse<{ results: EnvelopeDTO[]; total: number }>(
             result,
             200,
         );
+    }
+
+    /**
+     * Get count of envelopes with specific criteria
+     */
+    async getCount(builder: EnvelopeQueryBuilder): Promise<number> {
+        // Ensure the builder is configured for count query
+        const countBuilder = EnvelopeQueryBuilder.is(builder)
+            ? builder.clone().configureForCount()
+            : builder;
+
+        // Get just enough data to retrieve the total
+        const response = await this.getAll(countBuilder);
+        return response.total;
     }
 
     /**

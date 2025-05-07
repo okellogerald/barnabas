@@ -1,5 +1,5 @@
 import { Member } from "@/models";
-import { MemberManager } from "@/managers/member";
+import { MemberManager } from "@/features/member";
 import { notifyUtils } from "@/utilities/notification.utils";
 import { memberTableStore } from "./store.table";
 import { getFilterParams, memberFilterStore } from "./store.filters";

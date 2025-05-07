@@ -3,7 +3,7 @@ import { Button, Card, Checkbox, Col, Input, Row, Select, Space, Divider } from 
 import { FilterOutlined, CloseOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { QueryKeys } from "@/interactors/_queries";
-import { FellowshipManager } from "@/managers/fellowship";
+import { FellowshipManager } from "@/features/fellowship";
 import { canApplyFilters, useMemberList } from "@/interactors/member-list";
 import { isSuccessState, UI_STATE_TYPE } from "@/interactors/_state";
 

@@ -1,11 +1,11 @@
 import React from 'react';
-import { 
-  Card, 
-  Typography, 
-  Button, 
-  Space, 
-  Row, 
-  Col, 
+import {
+  Card,
+  Typography,
+  Button,
+  Space,
+  Row,
+  Col,
   Divider,
   Descriptions,
   Tag,
@@ -14,11 +14,11 @@ import {
   Modal,
   Empty
 } from 'antd';
-import { 
-  ArrowLeftOutlined, 
-  EditOutlined, 
-  DeleteOutlined, 
-  UserAddOutlined, 
+import {
+  ArrowLeftOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  UserAddOutlined,
   TeamOutlined,
   CalendarOutlined,
   PhoneOutlined,
@@ -29,8 +29,8 @@ import {
 import { useFellowshipDetails } from '@/features/fellowship/fellowship-details';
 import { AsyncStateMatcher } from '@/lib/state/async_state.matcher';
 import { isSuccessState } from '@/lib/state';
-import { AuthManager } from '@/managers/auth';
-import { Actions } from '@/managers/auth/permission';
+import { AuthManager } from '@/features/auth';
+import { Actions } from '@/features/auth/permission';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -41,9 +41,9 @@ const { Title, Text, Paragraph } = Typography;
  */
 const FellowshipDetailsPage: React.FC = () => {
   // Get data and actions from hook
-  const { 
-    fellowshipState, 
-    membersCount, 
+  const {
+    fellowshipState,
+    membersCount,
     membersCountLoading,
     isDeleting,
     deleteModalVisible,
@@ -54,13 +54,13 @@ const FellowshipDetailsPage: React.FC = () => {
   const canEdit = AuthManager.instance.hasPermission(Actions.FELLOWSHIP_UPDATE);
   const canDelete = AuthManager.instance.hasPermission(Actions.FELLOWSHIP_DELETE_BY_ID);
   const canAddMembers = AuthManager.instance.hasPermission(Actions.MEMBER_CREATE);
-  
+
   // Render fellowship details when data is loaded
   const renderFellowshipDetails = () => {
     if (!isSuccessState(fellowshipState)) return null;
 
     const fellowship = fellowshipState.data;
-    
+
     return (
       <div className="fellowship-details-page">
         {/* Main Details Card */}
@@ -74,22 +74,22 @@ const FellowshipDetailsPage: React.FC = () => {
                 </Col>
                 <Col>
                   <Space>
-                    <Button 
+                    <Button
                       icon={<ArrowLeftOutlined />}
                       onClick={actions.back}
                     >
                       Back to List
                     </Button>
-                    
+
                     <Button
                       icon={<ReloadOutlined />}
                       onClick={actions.refresh}
                     >
                       Refresh
                     </Button>
-                    
+
                     {canEdit && (
-                      <Button 
+                      <Button
                         type="primary"
                         icon={<EditOutlined />}
                         onClick={actions.edit}
@@ -97,9 +97,9 @@ const FellowshipDetailsPage: React.FC = () => {
                         Edit Fellowship
                       </Button>
                     )}
-                    
+
                     {canDelete && (
-                      <Button 
+                      <Button
                         danger
                         icon={<DeleteOutlined />}
                         onClick={actions.confirmDelete}
@@ -112,7 +112,7 @@ const FellowshipDetailsPage: React.FC = () => {
                 </Col>
               </Row>
             </Col>
-            
+
             {/* Basic Details Section */}
             <Col span={24}>
               <Divider orientation="left">Details</Divider>
@@ -146,7 +146,7 @@ const FellowshipDetailsPage: React.FC = () => {
                 </Descriptions.Item>
               </Descriptions>
             </Col>
-            
+
             {/* Notes Section */}
             {fellowship.notes && (
               <Col span={24}>
@@ -154,7 +154,7 @@ const FellowshipDetailsPage: React.FC = () => {
                 <Paragraph>{fellowship.notes}</Paragraph>
               </Col>
             )}
-            
+
             {/* Leadership Section */}
             <Col span={24}>
               <Divider orientation="left">
@@ -163,7 +163,7 @@ const FellowshipDetailsPage: React.FC = () => {
                   Leadership
                 </Space>
               </Divider>
-              
+
               {!fellowship.hasLeadership() ? (
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -198,7 +198,7 @@ const FellowshipDetailsPage: React.FC = () => {
                       </Card>
                     </Col>
                   )}
-                  
+
                   {/* Deputy Chairman */}
                   {fellowship.deputyChairman && (
                     <Col xs={24} sm={12} md={6}>
@@ -215,7 +215,7 @@ const FellowshipDetailsPage: React.FC = () => {
                       </Card>
                     </Col>
                   )}
-                  
+
                   {/* Secretary */}
                   {fellowship.secretary && (
                     <Col xs={24} sm={12} md={6}>
@@ -232,7 +232,7 @@ const FellowshipDetailsPage: React.FC = () => {
                       </Card>
                     </Col>
                   )}
-                  
+
                   {/* Treasurer */}
                   {fellowship.treasurer && (
                     <Col xs={24} sm={12} md={6}>
@@ -252,7 +252,7 @@ const FellowshipDetailsPage: React.FC = () => {
                 </Row>
               )}
             </Col>
-            
+
             {/* Members Section */}
             <Col span={24}>
               <Divider orientation="left">
@@ -261,7 +261,7 @@ const FellowshipDetailsPage: React.FC = () => {
                   Members
                 </Space>
               </Divider>
-              
+
               <Row gutter={[16, 16]}>
                 <Col span={24}>
                   <Card variant="borderless" className="stats-card">
@@ -278,7 +278,7 @@ const FellowshipDetailsPage: React.FC = () => {
                         <Space>
                           {canAddMembers && (
                             <Tooltip title="Add a new member to this fellowship">
-                              <Button 
+                              <Button
                                 type="primary"
                                 icon={<UserAddOutlined />}
                                 onClick={actions.addMember}
@@ -287,7 +287,7 @@ const FellowshipDetailsPage: React.FC = () => {
                               </Button>
                             </Tooltip>
                           )}
-                          
+
                           <Tooltip title="View all members in this fellowship">
                             <Button
                               icon={<TeamOutlined />}
@@ -305,7 +305,7 @@ const FellowshipDetailsPage: React.FC = () => {
             </Col>
           </Row>
         </Card>
-        
+
         {/* Delete Confirmation Modal */}
         <Modal
           title={
@@ -325,7 +325,7 @@ const FellowshipDetailsPage: React.FC = () => {
             <Paragraph>
               Are you sure you want to delete the fellowship <Text strong>{fellowship.name}</Text>?
             </Paragraph>
-            
+
             <Paragraph type="warning">
               <InfoCircleOutlined /> This action cannot be undone. Members will remain in the system but will no longer be associated with this fellowship.
             </Paragraph>

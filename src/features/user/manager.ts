@@ -1,11 +1,11 @@
 import {
     CreateUserDTO,
+    UpdateUserDTO,
     UserQueryParams,
     UserRepository,
-    UpdateUserDTO,
 } from "@/data/user";
 import { PermissionError } from "@/lib/error";
-import { Actions, PermissionsManager } from "@/managers/auth/permission";
+import { Actions, PermissionsManager } from "@/features/auth/permission";
 import { User } from "@/models";
 
 /**
@@ -53,7 +53,7 @@ export class UserManager {
         if (!UserManager._instance) {
             UserManager._instance = new UserManager(
                 new UserRepository(),
-                PermissionsManager.instance,
+                PermissionsManager.getInstance(),
             );
         }
         return UserManager._instance;
@@ -72,7 +72,7 @@ export class UserManager {
         queryParams?: UserQueryParams,
     ): Promise<number> {
         // Check if the user has permission to find users
-        if (!this._permissionsManager.hasPermission(Actions.USER_FIND_ALL)) {
+        if (!this._permissionsManager.canPerformAction(Actions.USER_FIND_ALL)) {
             throw PermissionError.fromAction(Actions.USER_FIND_ALL);
         }
 
@@ -83,10 +83,10 @@ export class UserManager {
                 rangeStart: 0,
                 rangeEnd: 1,
             };
-            
+
             // Call the repository with the combined parameters
             const response = await this._repo.getAll(updatedQueryParams);
-            
+
             // Return the total count from the repository response
             return response.total;
         } catch (error) {
@@ -108,17 +108,17 @@ export class UserManager {
     public async getUsers(
         queryParams?: UserQueryParams,
     ): Promise<GetUsersResponse> {
-        if (!this._permissionsManager.hasPermission(Actions.USER_FIND_ALL)) {
+        if (!this._permissionsManager.canPerformAction(Actions.USER_FIND_ALL)) {
             throw PermissionError.fromAction(Actions.USER_FIND_ALL);
         }
 
         try {
             // Delegate fetching to the repository
             const response = await this._repo.getAll(queryParams);
-            
+
             // Convert DTOs returned by the repo into User model instances
             const users = response.results.map(User.fromDTO);
-            
+
             // Return the users for the current page and the total count
             return { users, total: response.total };
         } catch (error) {
@@ -137,19 +137,19 @@ export class UserManager {
      * @throws {Error} If creation fails or the user cannot be found immediately after creation.
      */
     public async createUser(user: CreateUserDTO): Promise<User> {
-        if (!this._permissionsManager.hasPermission(Actions.USER_CREATE)) {
+        if (!this._permissionsManager.canPerformAction(Actions.USER_CREATE)) {
             throw PermissionError.fromAction(Actions.USER_CREATE);
         }
-        
+
         // Create the user via the repository
         const response = await this._repo.create(user);
-        
+
         // Fetch the full DTO of the newly created user to ensure we have complete data
         const dto = await this._repo.getById(response.id ?? "");
         if (!dto) {
             throw new Error("User not found immediately after creation!");
         }
-        
+
         // Convert DTO to User model instance
         return User.fromDTO(dto);
     }
@@ -164,7 +164,7 @@ export class UserManager {
      */
     public async getUserById(userId: string): Promise<User | undefined> {
         if (
-            !this._permissionsManager.hasPermission(Actions.USER_FIND_BY_ID)
+            !this._permissionsManager.canPerformAction(Actions.USER_FIND_BY_ID)
         ) {
             throw PermissionError.fromAction(Actions.USER_FIND_BY_ID);
         }
@@ -172,7 +172,7 @@ export class UserManager {
         try {
             // Fetch the user DTO by ID from the repository
             const dto = await this._repo.getById(userId);
-            
+
             // If found, convert DTO to User model instance, otherwise return undefined
             return dto ? User.fromDTO(dto) : undefined;
         } catch (error) {
@@ -198,7 +198,7 @@ export class UserManager {
         data: UpdateUserDTO,
     ): Promise<User> {
         if (
-            !this._permissionsManager.hasPermission(Actions.USER_UPDATE)
+            !this._permissionsManager.canPerformAction(Actions.USER_UPDATE)
         ) {
             throw PermissionError.fromAction(Actions.USER_UPDATE);
         }
@@ -206,7 +206,7 @@ export class UserManager {
         try {
             // Perform the update via the repository
             const dto = await this._repo.update(userId, data);
-            
+
             // Convert the returned (updated) DTO to a User model instance
             return User.fromDTO(dto);
         } catch (error) {
@@ -225,7 +225,7 @@ export class UserManager {
      */
     public async deleteUser(userId: string): Promise<void> {
         if (
-            !this._permissionsManager.hasPermission(Actions.USER_DELETE)
+            !this._permissionsManager.canPerformAction(Actions.USER_DELETE)
         ) {
             throw PermissionError.fromAction(Actions.USER_DELETE);
         }

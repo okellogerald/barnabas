@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, message } from 'antd';
 import { useParams } from 'react-router-dom';
-import { FellowshipQueries } from '@/features/fellowship/fellowship.queries';
+import { FellowshipQueries } from '@/features/fellowship/queries';
 import { UpdateFellowshipDTO } from '@/data/fellowship';
 import { Navigation } from '@/app';
 import { mapQueryToAsyncState } from '@/lib/state';
@@ -119,7 +119,7 @@ export const useFellowshipEdit = () => {
     });
 
     // Map members query to members list
-    const members = fellowshipMembersQuery.data?.results || [];
+    const members = fellowshipMembersQuery.data?.members || [];
     const membersLoading = fellowshipMembersQuery.isLoading;
 
     return {

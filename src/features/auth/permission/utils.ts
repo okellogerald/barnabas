@@ -1,4 +1,4 @@
-import { ActionPermission } from "./constants";
+import { ActionPermission, Actions } from "./constants";
 import { PermissionsManager } from "./manager";
 
 /**
@@ -13,9 +13,9 @@ export function withPermissionCheck<T extends (...args: any[]) => any>(
     fallback?: () => any,
 ): (...args: Parameters<T>) => ReturnType<T> | undefined {
     return (...args: Parameters<T>): ReturnType<T> | undefined => {
-        const permManager = PermissionsManager.instance;
+        const permManager = PermissionsManager.getInstance();
 
-        if (permManager.hasPermission(permission)) {
+        if (permManager.canPerformAction(permission)) {
             return fn(...args);
         }
 
@@ -59,4 +59,14 @@ export function formatPermission(permission: string): string {
     return `${resource.charAt(0).toUpperCase() + resource.slice(1)} - ${
         action.charAt(0).toUpperCase() + action.slice(1)
     }`;
+}
+
+/**
+ * Type Guard to check if a value is a valid ActionPermission.
+ *
+ * @param value - The value to check.
+ * @returns `true` if the value is a valid ActionPermission, otherwise `false`.
+ */
+export function isActionPermission(value: any): value is ActionPermission {
+    return Object.values(Actions).includes(value);
 }

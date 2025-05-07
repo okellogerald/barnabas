@@ -1,10 +1,11 @@
 import {
     EnvelopeBlockDTO,
-    EnvelopeQueryParams,
+    EnvelopeQueryBuilder,
+    EnvelopeQueryCriteria,
     EnvelopeRepository,
 } from "@/data/envelope";
 import { Envelope, EnvelopeHistory } from "@/models";
-import { Actions, PermissionsManager } from "@/managers/auth/permission";
+import { Actions, PermissionsManager } from "@/features/auth/permission";
 import { PermissionError } from "@/lib/error";
 
 /**
@@ -27,7 +28,7 @@ type GetEnvelopesResponse = {
 export class EnvelopeManager {
     private static _instance: EnvelopeManager;
     private _repo: EnvelopeRepository;
-    private _permissionsManager: PermissionsManager;
+    private _permManager: PermissionsManager;
 
     /**
      * Private constructor to enforce singleton pattern.
@@ -37,7 +38,7 @@ export class EnvelopeManager {
         permissionsManager: PermissionsManager,
     ) {
         this._repo = repo;
-        this._permissionsManager = permissionsManager;
+        this._permManager = permissionsManager;
     }
 
     /**
@@ -47,29 +48,26 @@ export class EnvelopeManager {
         if (!EnvelopeManager._instance) {
             EnvelopeManager._instance = new EnvelopeManager(
                 new EnvelopeRepository(),
-                PermissionsManager.instance,
+                PermissionsManager.getInstance(),
             );
         }
         return EnvelopeManager._instance;
     }
 
     /**
-     * Retrieves a filtered count of envelopes.
+     * Retrieves a filtered count of envelopes
      */
     public async getEnvelopesCount(
-        queryParams?: EnvelopeQueryParams,
+        options: EnvelopeQueryCriteria | EnvelopeQueryBuilder,
     ): Promise<number> {
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_CREATE)) {
-            throw PermissionError.fromAction(Actions.MEMBER_CREATE);
+        if (!this._permManager.canPerformAction(Actions.ENVELOPE_FIND_ALL)) {
+            throw PermissionError.fromAction(Actions.ENVELOPE_FIND_ALL);
         }
 
         try {
-            const updatedQueryParams: EnvelopeQueryParams = {
-                ...queryParams,
-                rangeStart: 0,
-                rangeEnd: 1,
-            };
-            const response = await this._repo.getAll(updatedQueryParams);
+            const builder = EnvelopeQueryBuilder.from(options)
+                .configureForCount();
+            const response = await this._repo.getAll(builder);
             return response.total;
         } catch (error) {
             console.error("Error retrieving filtered envelopes count:", error);
@@ -81,14 +79,17 @@ export class EnvelopeManager {
      * Retrieves all envelopes with optional filtering and pagination.
      */
     public async getEnvelopes(
-        queryParams?: EnvelopeQueryParams,
+        options?: EnvelopeQueryCriteria | EnvelopeQueryBuilder,
     ): Promise<GetEnvelopesResponse> {
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_CREATE)) {
-            throw PermissionError.fromAction(Actions.MEMBER_CREATE);
+        if (!this._permManager.canPerformAction(Actions.ENVELOPE_FIND_ALL)) {
+            throw PermissionError.fromAction(Actions.ENVELOPE_FIND_ALL);
         }
 
         try {
-            const response = await this._repo.getAll(queryParams);
+            const builder = EnvelopeQueryBuilder.from(options);
+            const response = await this._repo.getAll(builder);
+            console.log("response: ", response);
+
             const envelopes = response.results.map(Envelope.fromDTO);
             return { envelopes, total: response.total };
         } catch (error) {
@@ -101,8 +102,8 @@ export class EnvelopeManager {
      * Retrieves available envelopes.
      */
     public async getAvailableEnvelopes(): Promise<Envelope[]> {
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_CREATE)) {
-            throw PermissionError.fromAction(Actions.MEMBER_CREATE);
+        if (!this._permManager.canPerformAction(Actions.ENVELOPE_FIND_ALL)) {
+            throw PermissionError.fromAction(Actions.ENVELOPE_FIND_ALL);
         }
 
         try {
@@ -120,8 +121,8 @@ export class EnvelopeManager {
     public async getEnvelopeById(
         envelopeId: string,
     ): Promise<Envelope | undefined> {
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_CREATE)) {
-            throw PermissionError.fromAction(Actions.MEMBER_CREATE);
+        if (!this._permManager.canPerformAction(Actions.ENVELOPE_FIND_BY_ID)) {
+            throw PermissionError.fromAction(Actions.ENVELOPE_FIND_BY_ID);
         }
 
         try {
@@ -142,8 +143,8 @@ export class EnvelopeManager {
     public async getEnvelopeByNumber(
         number: number,
     ): Promise<Envelope | undefined> {
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_CREATE)) {
-            throw PermissionError.fromAction(Actions.MEMBER_CREATE);
+        if (!this._permManager.canPerformAction(Actions.ENVELOPE_FIND_ALL)) {
+            throw PermissionError.fromAction(Actions.ENVELOPE_FIND_ALL);
         }
 
         try {
@@ -164,8 +165,8 @@ export class EnvelopeManager {
     public async getEnvelopeHistory(
         envelopeId: string,
     ): Promise<EnvelopeHistory[]> {
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_CREATE)) {
-            throw PermissionError.fromAction(Actions.MEMBER_CREATE);
+        if (!this._permManager.canPerformAction(Actions.ENVELOPE_GET_HISTORY)) {
+            throw PermissionError.fromAction(Actions.ENVELOPE_GET_HISTORY);
         }
 
         try {
@@ -186,8 +187,8 @@ export class EnvelopeManager {
     public async createEnvelopeBlock(
         data: EnvelopeBlockDTO,
     ): Promise<{ count: number; startNumber: number; endNumber: number }> {
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_CREATE)) {
-            throw PermissionError.fromAction(Actions.MEMBER_CREATE);
+        if (!this._permManager.canPerformAction(Actions.ENVELOPE_CREATE)) {
+            throw PermissionError.fromAction(Actions.ENVELOPE_CREATE);
         }
 
         try {
@@ -204,8 +205,8 @@ export class EnvelopeManager {
     public async deleteEnvelopeBlock(
         data: EnvelopeBlockDTO,
     ): Promise<{ count: number; startNumber: number; endNumber: number }> {
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_CREATE)) {
-            throw PermissionError.fromAction(Actions.MEMBER_CREATE);
+        if (!this._permManager.canPerformAction(Actions.ENVELOPE_DELETE)) {
+            throw PermissionError.fromAction(Actions.ENVELOPE_DELETE);
         }
 
         try {
@@ -223,8 +224,8 @@ export class EnvelopeManager {
         envelopeId: string,
         memberId: string,
     ): Promise<Envelope> {
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_CREATE)) {
-            throw PermissionError.fromAction(Actions.MEMBER_CREATE);
+        if (!this._permManager.canPerformAction(Actions.ENVELOPE_ASSIGN)) {
+            throw PermissionError.fromAction(Actions.ENVELOPE_ASSIGN);
         }
 
         try {
@@ -240,8 +241,8 @@ export class EnvelopeManager {
      * Releases an envelope from a member.
      */
     public async releaseEnvelope(envelopeId: string): Promise<Envelope> {
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_CREATE)) {
-            throw PermissionError.fromAction(Actions.MEMBER_CREATE);
+        if (!this._permManager.canPerformAction(Actions.ENVELOPE_RELEASE)) {
+            throw PermissionError.fromAction(Actions.ENVELOPE_RELEASE);
         }
 
         try {

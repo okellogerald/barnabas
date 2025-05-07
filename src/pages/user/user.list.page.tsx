@@ -31,9 +31,9 @@ import {
 } from '@ant-design/icons';
 import { AsyncStateMatcher } from '@/lib/state/async_state.matcher';
 import { Navigation } from '@/app';
-import { AuthManager } from '@/managers/auth';
+import { AuthManager } from '@/features/auth';
 import { User } from '@/models';
-import { Actions } from '@/managers/auth/permission';
+import { Actions } from '@/features/auth/permission';
 import { UserFilterState, UsersListSuccessState, useUserFilterStore, useUsersList } from '@/features/user';
 import { SORT_DIRECTION } from '@/constants';
 
@@ -48,10 +48,10 @@ const UserListPage: React.FC = () => {
   // ======== STATE MANAGEMENT ========
   // Get the user list state
   const usersState = useUsersList();
-  
+
   // Filter and sort state from store
   const filterStore = useUserFilterStore();
-  
+
   // Local state for UI controls
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
@@ -65,14 +65,14 @@ const UserListPage: React.FC = () => {
   useEffect(() => {
     // Count non-empty filter values, ignoring sortBy and sortDirection
     const count = Object.entries(filterStore.filters)
-      .filter(([key, value]) => 
-        key !== 'sortBy' && 
-        key !== 'sortDirection' && 
-        value !== undefined && 
-        value !== null && 
+      .filter(([key, value]) =>
+        key !== 'sortBy' &&
+        key !== 'sortDirection' &&
+        value !== undefined &&
+        value !== null &&
         value !== ''
       ).length;
-      
+
     setActiveFiltersCount(count);
   }, [filterStore.filters]);
 
@@ -96,26 +96,26 @@ const UserListPage: React.FC = () => {
   const handleSortChange = (field: string) => {
     // Keep the same direction for a new field
     const currentDirection = filterStore.filters.sortDirection || SORT_DIRECTION.ASC;
-    
+
     filterStore.setFilters({
       ...filterStore.filters,
       sortBy: field,
       sortDirection: currentDirection
     });
   };
-  
+
   // Toggle sort direction
   const toggleSortDirection = () => {
     const currentField = filterStore.filters.sortBy || 'name';
     const newDirection = filterStore.filters.sortDirection === SORT_DIRECTION.ASC ? SORT_DIRECTION.DESC : SORT_DIRECTION.ASC;
-    
+
     filterStore.setFilters({
       ...filterStore.filters,
       sortBy: currentField,
       sortDirection: newDirection
     });
   };
-  
+
   // Reset filters
   const handleResetFilters = () => {
     filterStore.resetFilters();
@@ -207,7 +207,7 @@ const UserListPage: React.FC = () => {
                               <Space>
                                 {(() => {
                                   const sortBy = filterStore.filters.sortBy || 'name';
-                                  switch(sortBy) {
+                                  switch (sortBy) {
                                     case 'name': return 'Name';
                                     case 'email': return 'Email';
                                     case 'createdAt': return 'Date Created';
@@ -296,8 +296,8 @@ const UserListPage: React.FC = () => {
                             if (user.isDeleted) {
                               return <Tag color="red" icon={<LockOutlined />}>Deleted</Tag>;
                             }
-                            return user.isActive ? 
-                              <Tag color="green" icon={<UnlockOutlined />}>Active</Tag> : 
+                            return user.isActive ?
+                              <Tag color="green" icon={<UnlockOutlined />}>Active</Tag> :
                               <Tag color="orange" icon={<LockOutlined />}>Inactive</Tag>;
                           },
                         },
@@ -337,7 +337,7 @@ const UserListPage: React.FC = () => {
                   </Card>
 
                   {/* Filter Drawer */}
-                  <FilterDrawer 
+                  <FilterDrawer
                     open={filterDrawerOpen}
                     initialValues={filterStore.filters}
                     onClose={() => setFilterDrawerOpen(false)}
@@ -370,11 +370,11 @@ interface FilterDrawerProps {
   roles: { id: string; name: string }[];
 }
 
-const FilterDrawer: React.FC<FilterDrawerProps> = ({ 
-  open, 
-  initialValues, 
-  onClose, 
-  onApply, 
+const FilterDrawer: React.FC<FilterDrawerProps> = ({
+  open,
+  initialValues,
+  onClose,
+  onApply,
   onReset,
   roles
 }) => {

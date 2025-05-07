@@ -4,7 +4,7 @@ import {
     MemberCreateFormValues,
 } from "./schemas/schemas.member";
 import { MEMBER_NOTIFICATIONS } from "@/constants/member";
-import { MemberManager } from "@/managers/member";
+import { MemberManager } from "@/features/member";
 import { Navigation } from "@/app";
 
 export const memnberCreateService = {

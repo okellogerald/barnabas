@@ -8,7 +8,7 @@ import {
   FellowshipRepository,
   UpdateFellowshipDTO
 } from "@/data/fellowship";
-import { FellowshipManager } from "@/managers/fellowship";
+import { FellowshipManager } from "./manager";
 
 // Create a repository instance
 const fellowshipManager = FellowshipManager.instance;
@@ -99,7 +99,7 @@ export const FellowshipQueries = {
       queryKey: [QueryKeys.Fellowships.members(fellowshipId)],
       queryFn: async () => {
         // Assuming you have a MemberRepository with similar methods
-        const MemberManager = (await import('@/managers/member')).MemberManager;
+        const MemberManager = (await import('@/features/member')).MemberManager;
         const manager = MemberManager.instance;
 
         const response = await manager.getMembersCount({

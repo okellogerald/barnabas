@@ -1,6 +1,6 @@
 import React, { PropsWithChildren } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { AuthManager } from '@/managers/auth/auth.manager';
+import { AuthManager } from '@/features/auth/auth.manager';
 import { ROUTES } from './constants';
 
 /**

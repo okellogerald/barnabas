@@ -1,7 +1,7 @@
 import React from 'react';
 import { SelectProps } from 'antd';
 import { VolunteerOpportunity } from '@/models';
-import { VolunteerOpportunityManager } from '@/managers/volunteer';
+import { VolunteerOpportunityManager } from '@/features/volunteer';
 import { AsyncSelect } from './async_select';
 
 interface OpportunityOption {

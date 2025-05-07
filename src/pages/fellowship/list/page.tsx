@@ -30,10 +30,10 @@ import {
 import { useFellowshipsList, FellowshipsListSuccessState } from '@/features/fellowship/fellowship-list';
 import { AsyncStateMatcher } from '@/lib/state/async_state.matcher';
 import { Navigation } from '@/app';
-import { AuthManager } from '@/managers/auth';
+import { AuthManager } from '@/features/auth';
 import { Fellowship } from '@/models';
 import { FellowshipFilterState, useFellowshipFilterStore } from '@/features/fellowship/fellowship-list';
-import { Actions } from '@/managers/auth/permission';
+import { Actions } from '@/features/auth/permission';
 
 const { Title, Text } = Typography;
 
@@ -46,10 +46,10 @@ const FellowshipListPage: React.FC = () => {
   // ======== STATE MANAGEMENT ========
   // Get the fellowship list state
   const fellowshipsState = useFellowshipsList();
-  
+
   // Filter and sort state from store
   const filterStore = useFellowshipFilterStore();
-  
+
   // Local state for UI controls
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
@@ -63,14 +63,14 @@ const FellowshipListPage: React.FC = () => {
   useEffect(() => {
     // Count non-empty filter values, ignoring sortBy and sortDirection
     const count = Object.entries(filterStore.filters)
-      .filter(([key, value]) => 
-        key !== 'sortBy' && 
-        key !== 'sortDirection' && 
-        value !== undefined && 
-        value !== null && 
+      .filter(([key, value]) =>
+        key !== 'sortBy' &&
+        key !== 'sortDirection' &&
+        value !== undefined &&
+        value !== null &&
         value !== ''
       ).length;
-      
+
     setActiveFiltersCount(count);
   }, [filterStore.filters]);
 
@@ -94,26 +94,26 @@ const FellowshipListPage: React.FC = () => {
   const handleSortChange = (field: string) => {
     // Keep the same direction for a new field
     const currentDirection = filterStore.filters.sortDirection || 'asc';
-    
+
     filterStore.setFilters({
       ...filterStore.filters,
       sortBy: field,
       sortDirection: currentDirection
     });
   };
-  
+
   // Toggle sort direction
   const toggleSortDirection = () => {
     const currentField = filterStore.filters.sortBy || 'name';
     const newDirection = filterStore.filters.sortDirection === 'asc' ? 'desc' : 'asc';
-    
+
     filterStore.setFilters({
       ...filterStore.filters,
       sortBy: currentField,
       sortDirection: newDirection
     });
   };
-  
+
   // Reset filters
   const handleResetFilters = () => {
     filterStore.resetFilters();
@@ -204,7 +204,7 @@ const FellowshipListPage: React.FC = () => {
                               <Space>
                                 {(() => {
                                   const sortBy = filterStore.filters.sortBy || 'name';
-                                  switch(sortBy) {
+                                  switch (sortBy) {
                                     case 'name': return 'Name';
                                     case 'createdAt': return 'Date Created';
                                     case 'updatedAt': return 'Last Updated';
@@ -268,7 +268,7 @@ const FellowshipListPage: React.FC = () => {
                             if (!fellowship.hasLeadership()) {
                               return <Text type="secondary">Not assigned</Text>;
                             }
-                            
+
                             const chairmanName = fellowship.chairman?.getFullName?.() || "N/A";
                             return (
                               <Space direction="vertical" size="small">
@@ -329,7 +329,7 @@ const FellowshipListPage: React.FC = () => {
                   </Card>
 
                   {/* Filter Drawer */}
-                  <FilterDrawer 
+                  <FilterDrawer
                     open={filterDrawerOpen}
                     initialValues={filterStore.filters}
                     onClose={() => setFilterDrawerOpen(false)}
@@ -360,12 +360,12 @@ interface FilterDrawerProps {
   onReset: () => void;
 }
 
-const FilterDrawer: React.FC<FilterDrawerProps> = ({ 
-  open, 
-  initialValues, 
-  onClose, 
-  onApply, 
-  onReset 
+const FilterDrawer: React.FC<FilterDrawerProps> = ({
+  open,
+  initialValues,
+  onClose,
+  onApply,
+  onReset
 }) => {
   const [form] = Form.useForm();
 

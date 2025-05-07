@@ -1,5 +1,5 @@
 import { Fellowship } from "@/models";
-import { FellowshipManager } from "@/managers/fellowship";
+import { FellowshipManager } from "@/features/fellowship";
 import { notifyUtils } from "@/utilities/notification.utils";
 import { fellowshipTableStore } from "./store.table";
 import { fellowshipFilterStore, getFilterParams } from "./store.filters";

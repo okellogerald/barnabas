@@ -1,4 +1,4 @@
-import { ActionPermission } from "@/managers/auth/permission";
+import { ActionPermission } from "@/features/auth/permission";
 
 /**
  * Represents an error thrown when a user lacks the necessary permissions.

@@ -1,5 +1,5 @@
 import { LoginRequest, loginRequestSchema } from "@/data/auth";
-import { AuthManager } from "@/managers/auth";
+import { AuthManager } from "@/features/auth";
 import { useMutation } from "@tanstack/react-query";
 import { Form } from "antd";
 import { LogInPageState } from "./types";

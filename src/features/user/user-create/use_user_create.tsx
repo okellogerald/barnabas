@@ -4,9 +4,9 @@ import { CreateUserDTO } from '@/data/user';
 import { Navigation } from '@/app';
 import { useQuery } from '@tanstack/react-query';
 import { QueryKeys } from '@/lib/query';
-import { ChurchManager } from '@/managers/church/church.manager';
+import { ChurchManager } from '@/features/church/manager';
 import { RoleQueries } from '@/features/role';
-import { UserQueries } from '../user.queries';
+import { UserQueries } from '../queries';
 import { notifyUtils } from '@/utilities';
 
 /**
@@ -30,22 +30,22 @@ export interface UserFormValues {
 export const useUserCreate = () => {
   // Form instance
   const [form] = Form.useForm<UserFormValues>();
-  
+
   // Loading states
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Use mutation hook for creating user
   const createMutation = UserQueries.useCreate();
-  
+
   // Fetch available roles for the dropdown
   const rolesQuery = RoleQueries.useList();
-  
+
   // Fetch current church for contextual information
   const churchQuery = useQuery({
     queryKey: QueryKeys.Churches.current(),
     queryFn: async () => ChurchManager.instance.getUserChurch()
   });
-  
+
   // Handle form submission
   const handleSubmit = async (values: UserFormValues) => {
     try {
@@ -54,9 +54,9 @@ export const useUserCreate = () => {
         notifyUtils.error('Passwords do not match');
         return;
       }
-      
+
       setIsSubmitting(true);
-      
+
       // Prepare data for API
       const createDto: CreateUserDTO = {
         name: values.name.trim(),
@@ -67,13 +67,13 @@ export const useUserCreate = () => {
         // isActive: values.isActive,
         // churchId: AuthManager.instance.getUser()?.churchId ?? "",
       };
-      
+
       // Call API to create user
       await createMutation.mutateAsync(createDto);
-      
+
       // Show success message
       notifyUtils.success('User created successfully');
-      
+
       // Navigate to user list
       Navigation.Users.toList();
     } catch (error) {
@@ -83,17 +83,17 @@ export const useUserCreate = () => {
       setIsSubmitting(false);
     }
   };
-  
+
   // Handle form cancellation
   const handleCancel = () => {
     Navigation.Users.toList();
   };
-  
+
   // Reset form to initial values
   const handleReset = () => {
     form.resetFields();
   };
-  
+
   // Form initialization
   useEffect(() => {
     form.setFieldsValue({
@@ -101,7 +101,7 @@ export const useUserCreate = () => {
       // Set other default values as needed
     });
   }, [form]);
-  
+
   return {
     form,
     isSubmitting,

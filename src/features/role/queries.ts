@@ -3,7 +3,7 @@ import { UseQueryResult } from "@tanstack/react-query";
 import { queryClient, QueryKeys } from "@/lib/query";
 import { RoleQueryParams } from "@/data/role";
 import { Role, RoleAction } from "@/models";
-import { RoleManager } from "@/managers/role";
+import { RoleManager } from "@/features/role";
 
 // Create a repository instance
 const roleManager = RoleManager.instance;

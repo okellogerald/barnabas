@@ -6,7 +6,7 @@ import {
     ActionPermission,
     PermissionsManager,
     ResourceType,
-} from "@/managers/auth/permission";
+} from "@/features/auth/permission";
 
 /**
  * Auth Manager
@@ -24,7 +24,7 @@ export class AuthManager {
      */
     private constructor() {
         this._repo = new AuthRepository();
-        this._permissionsManager = PermissionsManager.instance;
+        this._permissionsManager = PermissionsManager.getInstance();
     }
 
     /**
@@ -80,21 +80,21 @@ export class AuthManager {
      * Checks if the user is authenticated
      */
     public get isAuthenticated(): boolean {
-        return this._permissionsManager.isAuthenticated;
+        return this._permissionsManager.isUserAuthenticated;
     }
 
     /**
      * Gets the current user
      */
     public getUser(): User | null {
-        return this._permissionsManager.getCurrentUser();
+        return this._permissionsManager.fetchCurrentUser();
     }
 
     /**
      * Gets the current user using hooks (for React components)
      */
     public useCurrentUser(): User | null {
-        return this._permissionsManager.useCurrentUser();
+        return this._permissionsManager.useAuthUser();
     }
 
     /**
@@ -116,7 +116,7 @@ export class AuthManager {
      * @param action The action to check
      */
     public hasPermission(action: ActionPermission | string): boolean {
-        return this._permissionsManager.hasPermission(action);
+        return this._permissionsManager.canPerformAction(action);
     }
 
     /**
@@ -124,7 +124,7 @@ export class AuthManager {
      * @param resource The resource type to check
      */
     public hasResourcePermission(resource: ResourceType): boolean {
-        return this._permissionsManager.hasResourcePermission(resource);
+        return this._permissionsManager.canAccessResource(resource);
     }
 
     /**
@@ -132,14 +132,14 @@ export class AuthManager {
      * @param resource The resource type to get permissions for
      */
     public getResourcePermissions(resource: ResourceType): string[] {
-        return this._permissionsManager.getResourcePermissions(resource);
+        return this._permissionsManager.fetchResourcePermissions(resource);
     }
 
     /**
      * Checks if the current user is an admin
      */
     public isAdmin(): boolean {
-        return this._permissionsManager.isAdmin();
+        return this._permissionsManager.checkIsAdmin();
     }
 
     /**
@@ -154,6 +154,6 @@ export class AuthManager {
      * Hook to check if the current user is an admin
      */
     public useIsAdmin = (): boolean => {
-        return PermissionsManager.instance.useIsAdmin();
+        return PermissionsManager.getInstance().useAdminStatus();
     };
 }

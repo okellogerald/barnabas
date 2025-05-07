@@ -2,8 +2,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Query, queryClient, QueryKeys } from "@/lib/query";
 import { UseQueryResult, UseMutationResult } from "@tanstack/react-query";
 import { Envelope, EnvelopeHistory } from "@/models";
-import { EnvelopeBlockDTO, EnvelopeQueryParams } from "@/data/envelope";
-import { EnvelopeManager } from "@/managers/envelope";
+import { EnvelopeBlockDTO, EnvelopeQueryBuilder, EnvelopeQueryCriteria } from "@/data/envelope";
+import { EnvelopeManager } from "./manager";
 
 // Create a manager instance
 const envelopeManager = EnvelopeManager.instance;
@@ -15,30 +15,31 @@ export const EnvelopeQueries = {
   /**
    * Hook to fetch a list of envelopes with optional filtering and pagination
    */
-  useList: (params?: EnvelopeQueryParams): UseQueryResult<{ envelopes: Envelope[], total: number }, Error> =>
+  useList: (
+    options?: EnvelopeQueryCriteria | EnvelopeQueryBuilder
+  ): UseQueryResult<{ envelopes: Envelope[], total: number }, Error> =>
     useQuery({
-      queryKey: [QueryKeys.Envelopes.list(), params],
+      queryKey: [QueryKeys.Envelopes.list(), EnvelopeQueryBuilder.is(options) ? options.build() : options],
       queryFn: async () => {
-        const _params: EnvelopeQueryParams = {
-          ...params,
-          rangeStart: params?.rangeStart || 0,
-          rangeEnd: params?.rangeEnd || 9,
-        };
-
-        return await envelopeManager.getEnvelopes(_params);
+        return await envelopeManager.getEnvelopes(options);
       },
     }),
 
   /**
-   * Hook to get the total count of envelopes with optional filters
-   */
-  useCount: (filters?: Partial<EnvelopeQueryParams>): UseQueryResult<number, Error> =>
-    useQuery({
-      queryKey: [QueryKeys.Envelopes.count(), filters],
-      queryFn: async () => {
-        return envelopeManager.getEnvelopesCount(filters);
-      },
-    }),
+     * Hook to fetch envelope count with query criteria or builder
+     */
+  useCount: (options?: EnvelopeQueryCriteria | EnvelopeQueryBuilder) => {
+    const queryKey = [
+      QueryKeys.Envelopes.count(),
+      EnvelopeQueryBuilder.is(options) ? options.build() : options
+    ];
+
+    return useQuery({
+      queryKey,
+      queryFn: () => envelopeManager.getEnvelopesCount(options || {}),
+    });
+  },
+
 
   /**
    * Hook to fetch available envelopes
@@ -161,7 +162,7 @@ export const EnvelopeQueries = {
         Query.Envelopes.invalidateList();
         Query.Envelopes.invalidateAvailable();
         Query.Envelopes.invalidateHistory(updatedEnvelope.id);
-        
+
         // Also invalidate member queries if we have that memberId
         if (updatedEnvelope.memberId) {
           Query.Members.invalidateDetail(updatedEnvelope.memberId);

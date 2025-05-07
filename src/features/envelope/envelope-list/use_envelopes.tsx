@@ -5,6 +5,8 @@ import { Envelope } from "@/models";
 import { EnvelopeQueries } from "../queries";
 import { useEnvelopeFilterStore } from "./filter_store";
 import { Navigation } from "@/app";
+import { EnvelopeQueryCriteria } from "@/data/envelope";
+import { SortDirection } from "@/lib/query";
 
 // Custom success state for the envelopes list
 export class EnvelopesListSuccessState extends SuccessState<{ envelopes: Envelope[], total: number }> {
@@ -77,6 +79,7 @@ export class EnvelopesListSuccessState extends SuccessState<{ envelopes: Envelop
     }
 }
 
+
 // Create table columns for envelopes
 const createTableColumns = () => {
     return [
@@ -112,41 +115,26 @@ export const useEnvelopesList = () => {
         setCurrentPage
     } = useEnvelopeFilterStore();
 
-    const queryParams = useMemo(() => {
-        // Create base query params for pagination
-        const params: Record<string, any> = {
-            rangeStart: (currentPage - 1) * pageSize,
-            rangeEnd: currentPage * pageSize - 1,
+    // Create the query criteria from filter state
+    const queryCriteria = useMemo((): EnvelopeQueryCriteria => {
+        return {
+            // Pagination
+            page: currentPage,
+            pageSize,
+
+            // Filters
+            number: filters.number,
+            isAssigned: filters.isAssigned,
+            memberId: filters.memberId,
+
+            // Sorting
+            sortBy: filters.sortBy || 'envelopeNumber',
+            sortDirection: filters.sortDirection || SortDirection.ASC,
         };
-
-        // Add filters based on the filter state
-        if (filters.number !== undefined) {
-            params.envelopeNumber = filters.number;
-        }
-
-        if (filters.isAssigned !== undefined) {
-            params.assigned = filters.isAssigned;
-        }
-
-        if (filters.memberId) {
-            params.memberId = filters.memberId;
-        }
-
-        // Add sorting
-        if (filters.sortBy) {
-            params.sort = [];
-            const direction = filters.sortDirection === 'desc' ? '-' : '';
-            params.sort.push(`${direction}${filters.sortBy}`);
-        } else {
-            // Default sorting by envelope number
-            params.sort = ['envelopeNumber'];
-        }
-
-        return params;
     }, [filters, currentPage, pageSize]);
 
-    // Use the EnvelopeQueries hook for data fetching
-    const envelopesQuery = EnvelopeQueries.useList(queryParams);
+    // Use the EnvelopeQueries hook with our query criteria
+    const envelopesQuery = EnvelopeQueries.useList(queryCriteria);
 
     // Memoize table columns
     const columns = useMemo(() => createTableColumns(), []);

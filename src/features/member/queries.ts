@@ -8,7 +8,7 @@ import {
     MemberRepository,
     UpdateMemberDTO,
 } from "@/data/member";
-import { MemberManager } from "@/managers/member";
+import { MemberManager } from "./manager";
 
 // Create a repository instance
 const memberManager = MemberManager.instance;

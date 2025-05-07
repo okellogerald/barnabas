@@ -14,7 +14,7 @@ import { useInterestFields } from "./_field_hooks/use_interests_fields";
 import { STEPS } from "./stores/store.ui";
 import { useMemberEditUIStore } from "./stores/store.ui";
 import { useStore } from "zustand";
-import { MemberManager } from "@/managers/member";
+import { MemberManager } from "@/features/member";
 import { MEMBER_NOTIFICATIONS } from "@/constants/member";
 import { FormSectionKey } from "./types";
 import { MemberEditFormValues, validateSection } from "./schemas/schemas.member";

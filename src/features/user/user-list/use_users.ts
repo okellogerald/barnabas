@@ -6,10 +6,11 @@ import { Navigation } from "@/app";
 import { SORT_DIRECTION } from "@/constants";
 import { useUserFilterStore } from "./use_filter_store";
 import { RoleQueries } from "@/features/role";
-import { UserQueries } from "../user.queries";
+import { UserQueries } from "../queries";
 
 // Custom success state for the users list
-export class UsersListSuccessState extends SuccessState<{ users: User[], total: number }> {
+export class UsersListSuccessState
+    extends SuccessState<{ users: User[]; total: number }> {
     readonly tableProps: TableProps<User>;
     readonly filters: {
         name?: string;
@@ -29,7 +30,7 @@ export class UsersListSuccessState extends SuccessState<{ users: User[], total: 
     readonly roles: { id: string; name: string }[];
 
     constructor(args: {
-        data: { users: User[], total: number };
+        data: { users: User[]; total: number };
         tableProps: TableProps<User>;
         filters: {
             name?: string;
@@ -124,12 +125,12 @@ export const useUsersList = () => {
         currentPage,
         setFilters,
         resetFilters,
-        setCurrentPage
+        setCurrentPage,
     } = useUserFilterStore();
 
     // Fetch roles for filtering
     const rolesQuery = RoleQueries.useList({
-        orderBy: 'name'
+        orderBy: "name",
     });
 
     // Convert filters to API query params
@@ -141,12 +142,12 @@ export const useUsersList = () => {
 
         // Name search
         if (filters.name) {
-            params['name:like'] = `%${filters.name}%`;
+            params["name:like"] = `%${filters.name}%`;
         }
 
         // Email search
         if (filters.email) {
-            params['email:like'] = `%${filters.email}%`;
+            params["email:like"] = `%${filters.email}%`;
         }
 
         // Role filter
@@ -164,11 +165,11 @@ export const useUsersList = () => {
             if (filters.sortDirection === SORT_DIRECTION.ASC) {
                 params.orderBy = filters.sortBy;
             } else {
-                params.orderByDesc = filters.sortBy
+                params.orderByDesc = filters.sortBy;
             }
         } else {
             // Default sorting
-            params.orderBy = 'name';
+            params.orderBy = "name";
         }
 
         return params;
@@ -182,9 +183,9 @@ export const useUsersList = () => {
         name: filters.name,
         email: filters.email,
         roleId: filters.roleId,
-        isActive: filters.isActive !== undefined 
-            ? filters.isActive ? 1 : 0 
-            : undefined
+        isActive: filters.isActive !== undefined
+            ? filters.isActive ? 1 : 0
+            : undefined,
     });
 
     // Memoize table columns
@@ -225,16 +226,16 @@ export const useUsersList = () => {
     // Extract roles data for filtering
     const roles = useMemo(() => {
         if (!rolesQuery.data?.roles) return [];
-        return rolesQuery.data.roles.map(role => ({
+        return rolesQuery.data.roles.map((role) => ({
             id: role.id,
-            name: role.name
+            name: role.name,
         }));
     }, [rolesQuery.data?.roles]);
 
     // Default empty data for type safety
     const defaultData = {
         users: [] as User[],
-        total: 0
+        total: 0,
     };
 
     // Map the query to our AsyncState pattern
@@ -253,7 +254,8 @@ export const useUsersList = () => {
                     total: data.total || 0,
                     onChange: handlePageChange,
                 },
-                loading: usersQuery.isRefetching || countQuery.isRefetching || rolesQuery.isLoading,
+                loading: usersQuery.isRefetching || countQuery.isRefetching ||
+                    rolesQuery.isLoading,
                 roles,
                 actions: {
                     refresh: () => {
@@ -263,8 +265,8 @@ export const useUsersList = () => {
                     },
                     updateFilters,
                     clearFilters,
-                }
+                },
             });
-        }
+        },
     });
 };

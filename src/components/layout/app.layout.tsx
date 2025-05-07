@@ -12,11 +12,11 @@ import {
     HeartOutlined
 } from '@ant-design/icons';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { AuthManager } from '@/managers/auth/auth.manager';
+import { AuthManager } from '@/features/auth/auth.manager';
 import { User } from '@/models';
 import { ItemType, MenuItemType } from 'antd/es/menu/interface';
 import { DesignTokens } from '@/app';
-import { Actions } from '@/managers/auth/permission';
+import { Actions } from '@/features/auth/permission';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;

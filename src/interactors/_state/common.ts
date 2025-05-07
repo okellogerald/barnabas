@@ -11,7 +11,7 @@
  * - Generic state determination function
  */
 
-import { ActionPermission } from "@/managers/auth/permission";
+import { ActionPermission } from "@/features/auth/permission";
 import { PermissionError } from "@/lib/error";
 
 /**

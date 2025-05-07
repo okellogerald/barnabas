@@ -15,7 +15,7 @@ import { useInterestFields } from "./_field_hooks/use_interests_fields";
 import { MemberCreateContext, STEPS } from "./stores/store.ui";
 import { useMemberCreateUIStore } from "./stores/store.ui";
 import { useStore } from "zustand";
-import { FellowshipManager } from "@/managers/fellowship";
+import { FellowshipManager } from "@/features/fellowship";
 import { FormSectionKey } from "./types";
 
 /**

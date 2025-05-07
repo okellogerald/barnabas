@@ -1,3 +1,4 @@
+import { SortDirection } from "@/lib/query";
 import { create } from "zustand";
 
 export interface EnvelopeFilters {
@@ -5,7 +6,7 @@ export interface EnvelopeFilters {
     isAssigned?: boolean;
     memberId?: string;
     sortBy?: string;
-    sortDirection?: 'asc' | 'desc';
+    sortDirection?: SortDirection.ASC | SortDirection.DESC;
 }
 
 export interface EnvelopeFilterState {

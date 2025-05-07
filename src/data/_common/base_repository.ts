@@ -1,5 +1,5 @@
 import { type AppRouter, initClient } from "@ts-rest/core";
-import { AuthManager } from "@/managers/auth/auth.manager";
+import { AuthManager } from "@/features/auth/auth.manager";
 import { v4 as uuidv4 } from "uuid";
 import type { InitClientArgs } from "@ts-rest/core";
 import { ApiError } from "@/data/_common";
@@ -63,7 +63,7 @@ export class BaseRepository<TContract extends AppRouter> {
             ? `${this.root.replace(/\/$/, "")}/${this.endpoint}` // Remove trailing slash from `this.root` and append the endpoint
             : `${AppConfig.API_BASE_URL.replace(/\/$/, "")}/${this.endpoint}`; // Remove trailing slash from `AppConfig.API_BASE_URL` and append the endpoint
 
-            console.log("Base URL: ", baseUrl)
+        console.log("Base URL: ", baseUrl);
 
         // Get token from auth manager
         const token = AuthManager.instance.getToken() || "";

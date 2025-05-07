@@ -3,7 +3,7 @@ import { Form, message } from 'antd';
 import { UpdateUserDTO } from '@/data/user';
 import { Navigation } from '@/app';
 import { useParams } from 'react-router-dom';
-import { UserQueries } from '../user.queries';
+import { UserQueries } from '../queries';
 import { RoleQueries } from '@/features/role';
 
 /**
@@ -27,28 +27,28 @@ export interface UserEditFormValues {
 export const useUserEdit = () => {
   // Get user ID from URL params
   const { id: userId = '' } = useParams<{ id: string }>();
-  
+
   // Form instance
   const [form] = Form.useForm<UserEditFormValues>();
-  
+
   // Loading states
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [changePassword, setChangePassword] = useState(false);
-  
+
   // User data query
   const userQuery = UserQueries.useDetail(userId);
-  
+
   // Update mutation
   const updateMutation = UserQueries.useUpdate();
-  
+
   // Fetch available roles for dropdown
   const rolesQuery = RoleQueries.useList();
-  
+
   // Initialize form with user data when loaded
   useEffect(() => {
     if (userQuery.data) {
       const user = userQuery.data;
-      
+
       form.setFieldsValue({
         name: user.name,
         email: user.email,
@@ -58,7 +58,7 @@ export const useUserEdit = () => {
       });
     }
   }, [form, userQuery.data]);
-  
+
   // Handle form submission
   const handleSubmit = async (values: UserEditFormValues) => {
     try {
@@ -68,38 +68,38 @@ export const useUserEdit = () => {
           message.error('Password is required');
           return;
         }
-        
+
         if (values.password !== values.confirmPassword) {
           message.error('Passwords do not match');
           return;
         }
       }
-      
+
       setIsSubmitting(true);
-      
+
       // Prepare data for API
       const updateDto: UpdateUserDTO = {
         name: values.name.trim(),
         // email: values.email.trim(),
         phoneNumber: values.phoneNumber?.trim() || null,
         roleId: values.roleId,
-        isActive: values.isActive
+        // isActive: values.isActive
       };
-      
+
       // Include password only if being changed
       if (changePassword && values.password) {
         updateDto.password = values.password;
       }
-      
+
       // Call API to update user
       await updateMutation.mutateAsync({
         id: userId,
         data: updateDto
       });
-      
+
       // Show success message
       message.success('User updated successfully');
-      
+
       // Navigate to user details
       Navigation.Users.toDetails(userId);
     } catch (error) {
@@ -109,17 +109,17 @@ export const useUserEdit = () => {
       setIsSubmitting(false);
     }
   };
-  
+
   // Handle cancel
   const handleCancel = () => {
     Navigation.Users.toDetails(userId);
   };
-  
+
   // Reset form to original values
   const handleReset = () => {
     if (userQuery.data) {
       const user = userQuery.data;
-      
+
       form.setFieldsValue({
         name: user.name,
         email: user.email,
@@ -129,15 +129,15 @@ export const useUserEdit = () => {
         password: undefined,
         confirmPassword: undefined
       });
-      
+
       setChangePassword(false);
     }
   };
-  
+
   // Toggle password change option
   const togglePasswordChange = (showPasswordFields: boolean) => {
     setChangePassword(showPasswordFields);
-    
+
     if (!showPasswordFields) {
       form.setFieldsValue({
         password: undefined,
@@ -145,7 +145,7 @@ export const useUserEdit = () => {
       });
     }
   };
-  
+
   return {
     form,
     userId,

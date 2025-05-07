@@ -46,23 +46,9 @@ export const envelopeAssignmentSchema = z.object({
   memberId: CommonSchemas.id,
 });
 
-// Query parameters for envelope listing
-export const envelopeQueryParamsSchema = z.object({
-  rangeStart: z.number().optional(),
-  rangeEnd: z.number().optional(),
-  eager: z.string().optional(),
-  sort: z.array(z.string()).optional(),
-  filter: z.record(z.any()).optional(),
-  assigned: z.boolean().optional(),
-  available: z.boolean().optional(),
-  memberId: CommonSchemas.id.optional(),
-  envelopeNumber: z.number().int().positive().optional(),
-});
-
 // Export types
 export type EnvelopeDTO = z.infer<typeof envelopeSchema>;
 export type EnvelopeHistoryDTO = z.infer<typeof envelopeHistorySchema>;
 export type EnvelopeBlockDTO = z.infer<typeof envelopeBlockSchema>;
 export type EnvelopeAssignmentDTO = z.infer<typeof envelopeAssignmentSchema>;
-export type EnvelopeQueryParams = z.infer<typeof envelopeQueryParamsSchema>;
 export type EnvelopeActivityType = z.infer<typeof envelopeActivityTypeSchema>;

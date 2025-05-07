@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { message, Modal } from 'antd';
 import { useParams } from 'react-router-dom';
-import { FellowshipQueries } from '@/features/fellowship/fellowship.queries';
+import { FellowshipQueries } from '@/features/fellowship/queries';
 import { mapQueryToAsyncState } from '@/lib/state';
 import { Navigation } from '@/app';
 import { ExclamationCircleOutlined } from '@ant-design/icons';

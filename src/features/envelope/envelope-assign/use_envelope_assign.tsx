@@ -4,7 +4,7 @@ import { Envelope, Member } from "@/models";
 import { EnvelopeQueries } from "../queries";
 import { useQueries } from "@tanstack/react-query";
 import { QueryKeys } from "@/lib/query";
-import { MemberManager } from "@/managers/member";
+import { MemberManager } from "@/features/member";
 import { useAppNavigation } from "@/app";
 
 // Custom success state for envelope assignment

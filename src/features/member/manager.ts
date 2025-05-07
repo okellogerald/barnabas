@@ -4,7 +4,7 @@ import {
     MemberRepository,
     UpdateMemberDTO,
 } from "@/data/member";
-import { Actions, PermissionsManager } from "@/managers/auth/permission";
+import { Actions, PermissionsManager } from "@/features/auth/permission";
 import { Member } from "@/models";
 import { PermissionError } from "@/lib/error";
 
@@ -53,7 +53,7 @@ export class MemberManager {
         if (!MemberManager._instance) {
             MemberManager._instance = new MemberManager(
                 new MemberRepository(),
-                PermissionsManager.instance,
+                PermissionsManager.getInstance(),
             );
         }
         return MemberManager._instance;
@@ -81,7 +81,9 @@ export class MemberManager {
         queryParams?: MemberQueryParams,
     ): Promise<number> {
         // Check if the user has permission to find members (as count is derived from finding)
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_FIND_ALL)) {
+        if (
+            !this._permissionsManager.canPerformAction(Actions.MEMBER_FIND_ALL)
+        ) {
             throw PermissionError.fromAction(Actions.MEMBER_FIND_ALL);
         }
 
@@ -119,7 +121,9 @@ export class MemberManager {
     public async getMembers(
         queryParams?: MemberQueryParams,
     ): Promise<GetMembersResponse> {
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_FIND_ALL)) {
+        if (
+            !this._permissionsManager.canPerformAction(Actions.MEMBER_FIND_ALL)
+        ) {
             throw PermissionError.fromAction(Actions.MEMBER_FIND_ALL);
         }
 
@@ -146,7 +150,7 @@ export class MemberManager {
      * @throws {Error} If creation fails or the member cannot be found immediately after creation.
      */
     public async createMember(member: CreateMemberDTO): Promise<Member> {
-        if (!this._permissionsManager.hasPermission(Actions.MEMBER_CREATE)) {
+        if (!this._permissionsManager.canPerformAction(Actions.MEMBER_CREATE)) {
             throw PermissionError.fromAction(Actions.MEMBER_CREATE);
         }
         // Create the member via the repository
@@ -170,7 +174,9 @@ export class MemberManager {
      */
     public async getMemberByID(memberId: string): Promise<Member | undefined> {
         if (
-            !this._permissionsManager.hasPermission(Actions.MEMBER_FIND_BY_ID)
+            !this._permissionsManager.canPerformAction(
+                Actions.MEMBER_FIND_BY_ID,
+            )
         ) {
             throw PermissionError.fromAction(Actions.MEMBER_FIND_BY_ID);
         }
@@ -203,7 +209,7 @@ export class MemberManager {
         data: UpdateMemberDTO,
     ): Promise<Member> {
         if (
-            !this._permissionsManager.hasPermission(Actions.MEMBER_UPDATE)
+            !this._permissionsManager.canPerformAction(Actions.MEMBER_UPDATE)
         ) {
             throw PermissionError.fromAction(Actions.MEMBER_UPDATE);
         }
@@ -230,7 +236,9 @@ export class MemberManager {
      */
     public async deleteMember(memberId: string): Promise<void> {
         if (
-            !this._permissionsManager.hasPermission(Actions.MEMBER_DELETE_BY_ID)
+            !this._permissionsManager.canPerformAction(
+                Actions.MEMBER_DELETE_BY_ID,
+            )
         ) {
             throw PermissionError.fromAction(Actions.MEMBER_DELETE_BY_ID);
         }
