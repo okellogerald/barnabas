@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { mapQueriesToAsyncState, SuccessState, UI_STATE_TYPE } from "@/lib/state";
 import { Envelope, EnvelopeHistory } from "@/models";
-import { EnvelopeQueries } from "../queries";
+import { EnvelopeQueries } from "../envelope.queries";
 import { useNavigate } from "react-router-dom";
 import { useQueries } from "@tanstack/react-query";
 import { QueryKeys } from "@/lib/query";

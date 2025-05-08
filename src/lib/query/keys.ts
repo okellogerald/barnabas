@@ -68,8 +68,8 @@ export const QueryKeys = {
     // Volunteer-related query keys
     Volunteers: {
         all: ["volunteers"] as const,
-        opportunities: () =>
-            [...QueryKeys.Volunteers.all, "opportunities"] as const,
+        count: () => [...QueryKeys.Volunteers.all, "count"] as const,
+        list: () => [...QueryKeys.Volunteers.all, "opportunities"] as const,
         opportunityDetail: (id: string) =>
             [...QueryKeys.Volunteers.all, "opportunityDetail", id] as const,
         interestedMembers: (opportunityId: string) =>

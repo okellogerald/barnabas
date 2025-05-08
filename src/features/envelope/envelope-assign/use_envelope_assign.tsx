@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { mapQueriesToAsyncState, SuccessState, UI_STATE_TYPE } from "@/lib/state";
 import { Envelope, Member } from "@/models";
-import { EnvelopeQueries } from "../queries";
+import { EnvelopeQueries } from "../envelope.queries";
 import { useQueries } from "@tanstack/react-query";
 import { QueryKeys } from "@/lib/query";
 import { MemberManager } from "@/features/member";

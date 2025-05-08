@@ -1,8 +1,7 @@
 import React from 'react';
 import { SelectProps } from 'antd';
-import { VolunteerOpportunity } from '@/models';
-import { VolunteerOpportunityManager } from '@/features/volunteer';
 import { AsyncSelect } from './async_select';
+import { GetOpportunitiesResponse, VolunteerManager } from '@/features/volunteer';
 
 interface OpportunityOption {
     label: string;
@@ -15,8 +14,8 @@ interface OpportunityOption {
  * Supports multiple selection by default
  */
 export const VolunteerOpportunitySelect: React.FC<Omit<SelectProps<string | string[]>, 'options'>> = (props) => {
-    const transformOpportunities = (data: VolunteerOpportunity[]): OpportunityOption[] => {
-        return data.map((opportunity) => ({
+    const transformOpportunities = (results: GetOpportunitiesResponse): OpportunityOption[] => {
+        return results.opportunities.map((opportunity) => ({
             label: opportunity.name,
             value: opportunity.id,
             description: opportunity.description || undefined,
@@ -24,9 +23,9 @@ export const VolunteerOpportunitySelect: React.FC<Omit<SelectProps<string | stri
     };
 
     return (
-        <AsyncSelect<VolunteerOpportunity[], Error, OpportunityOption, string | string[]>
+        <AsyncSelect<GetOpportunitiesResponse, Error, OpportunityOption, string | string[]>
             queryKey={['volunteer-opportunities']}
-            fetchFn={() => VolunteerOpportunityManager.instance.getOpportunities()}
+            fetchFn={() => VolunteerManager.instance.getOpportunities()}
             transformData={transformOpportunities}
             placeholder="Select volunteer opportunities"
             mode="multiple"

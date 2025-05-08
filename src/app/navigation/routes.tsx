@@ -29,6 +29,8 @@ const UserCreatePage = lazy(() => import('@/pages/user/user.create.page'));
 const UserDetailsPage = lazy(() => import('@/pages/user/user.details.page'));
 const UserEditPage = lazy(() => import('@/pages/user/user.edit.page'));
 
+const VolunteerListPage = lazy(() => import('@/pages/volunteer/volunteer_list.page'));
+
 const RoleListPage = lazy(() => import('@/pages/role/role_list.page'));
 const RoleDetailsPage = lazy(() => import('@/pages/role/role_details.page'));
 
@@ -90,8 +92,6 @@ const AppRoutes: React.FC = () => {
           <Route path={ROUTES.FELLOWSHIPS.CREATE} element={<FellowshipCreatePage />} />
           <Route path={ROUTES.FELLOWSHIPS.EDIT} element={<FellowshipEditPage />} />
 
-          <Route path={ROUTES.OPPORTUNITIES.LIST} element={"Opportunities page not currently implemented"} />
-
           <Route path={ROUTES.ROLES.LIST} element={<RoleListPage />} />
           <Route path={ROUTES.ROLES.DETAILS} element={<RoleDetailsPage />} />
 
@@ -103,6 +103,8 @@ const AppRoutes: React.FC = () => {
           <Route path={ROUTES.ENVELOPES.LIST} element={<EnvelopeListPage />} />
           <Route path={ROUTES.ENVELOPES.DETAILS} element={<EnvelopeDetailPage />} />
           <Route path={ROUTES.ENVELOPES.ASSIGN} element={<EnvelopeAssignPage />} />
+
+          <Route path={ROUTES.OPPORTUNITIES.LIST} element={<VolunteerListPage />} />
 
           {/* 404 catch-all */}
           <Route path="*" element={<NotFoundPage />} />

@@ -4,7 +4,7 @@ import { CreateUserDTO } from '@/data/user';
 import { Navigation } from '@/app';
 import { useQuery } from '@tanstack/react-query';
 import { QueryKeys } from '@/lib/query';
-import { ChurchManager } from '@/features/church/manager';
+import { ChurchManager } from '@/features/church/church.manager';
 import { RoleQueries } from '@/features/role';
 import { UserQueries } from '../queries';
 import { notifyUtils } from '@/utilities';

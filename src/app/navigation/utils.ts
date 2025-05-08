@@ -140,6 +140,24 @@ export const Navigation = {
   },
 
   /**
+   * User-related navigation
+   */
+  Volunteers: {
+    toList: () => {
+      window.location.href = ROUTES.OPPORTUNITIES.LIST;
+    },
+    toDetails: (id: string) => {
+      window.location.href = ROUTES.OPPORTUNITIES.DETAILS.replace(":id", id);
+    },
+    toCreate: () => {
+      window.location.href = ROUTES.OPPORTUNITIES.CREATE;
+    },
+    toEdit: (id: string) => {
+      window.location.href = ROUTES.OPPORTUNITIES.EDIT.replace(":id", id);
+    },
+  },
+
+  /**
    * Envelope-related navigation
    */
   Envelopes: {

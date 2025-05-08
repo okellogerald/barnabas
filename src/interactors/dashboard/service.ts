@@ -1,4 +1,4 @@
-import { ChurchManager } from "@/features/church/manager";
+import { ChurchManager } from "@/features/church/church.manager";
 import { FellowshipManager } from "@/features/fellowship/manager";
 import { MemberManager } from "@/features/member";
 import { PermissionError } from "@/lib/error";

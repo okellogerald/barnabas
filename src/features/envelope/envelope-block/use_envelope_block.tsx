@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { EnvelopeQueries } from "../queries";
+import { EnvelopeQueries } from "../envelope.queries";
 
 export const useEnvelopeBlock = () => {
     const [startNumber, setStartNumber] = useState<number | null>(null);

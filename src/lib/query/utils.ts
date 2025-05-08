@@ -347,9 +347,17 @@ export const QueryUtils = (queryClient: QueryClient) => ({
         /**
          * Invalidate the volunteer opportunities list query
          */
-        invalidateOpportunities: () =>
+        invalidateList: () =>
             queryClient.invalidateQueries({
-                queryKey: QueryKeys.Volunteers.opportunities(),
+                queryKey: QueryKeys.Volunteers.list(),
+            }),
+
+        /**
+         * Invalidate the volunteer opportunities count query
+         */
+        invalidateCount: () =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Volunteers.count(),
             }),
 
         /**

@@ -3,7 +3,7 @@ import { Query, queryClient, QueryKeys } from "@/lib/query";
 import { UseQueryResult, UseMutationResult } from "@tanstack/react-query";
 import { Envelope, EnvelopeHistory } from "@/models";
 import { EnvelopeBlockDTO, EnvelopeQueryBuilder, EnvelopeQueryCriteria } from "@/data/envelope";
-import { EnvelopeManager } from "./manager";
+import { EnvelopeManager } from "./envelope.manager";
 
 // Create a manager instance
 const envelopeManager = EnvelopeManager.instance;

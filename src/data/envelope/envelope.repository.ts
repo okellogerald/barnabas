@@ -1,12 +1,12 @@
 import { BaseRepository } from "@/data/_common";
-import { envelopeContract } from "./contract";
+import { envelopeContract } from "./envelope.contract";
 import {
     EnvelopeAssignmentDTO,
     EnvelopeBlockDTO,
     EnvelopeDTO,
     EnvelopeHistoryDTO,
-} from "./schema";
-import { EnvelopeQueryBuilder } from "./query_builder";
+} from "./envelope.schema";
+import { EnvelopeQueryBuilder } from "./envelope.query_builder";
 
 export class EnvelopeRepository
     extends BaseRepository<typeof envelopeContract> {
@@ -20,7 +20,7 @@ export class EnvelopeRepository
     async getAll(
         queryBuilder: EnvelopeQueryBuilder,
     ): Promise<{ results: EnvelopeDTO[]; total: number }> {
-        console.log(queryBuilder.build())
+        console.log(queryBuilder.build());
         const result = await this.client.getAll({
             query: queryBuilder.build(),
         });

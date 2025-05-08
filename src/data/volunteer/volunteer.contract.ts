@@ -1,8 +1,6 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import {
-    OpportunitySchemas
-} from "./schema";
+import { OpportunitySchemas } from "./volunteer.schema";
 import { CommonSchemas } from "../_common";
 
 const c = initContract();
@@ -11,8 +9,12 @@ export const opportunityContract = c.router({
     getAll: {
         method: "GET",
         path: "/",
+        query: z.object({}),
         responses: {
-            200: OpportunitySchemas.opportunityArray,
+            200: z.object({
+                results: OpportunitySchemas.opportunityArray,
+                total: z.number(),
+            }),
             401: z.null(),
             403: z.null(),
         },

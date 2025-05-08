@@ -5,7 +5,7 @@ import {
   envelopeBlockSchema,
   envelopeHistorySchema,
   envelopeSchema,
-} from "./schema";
+} from "./envelope.schema";
 
 const c = initContract();
 
