@@ -23,7 +23,7 @@ export class SchemaFactory {
      */
     public register(schemaName: string, schema: z.ZodType<any>): void {
         this._schemas[schemaName] = schema;
-        console.log("registered schema", schemaName);
+        // console.log("registered schema", schemaName);
     }
 
     /**

@@ -1,3 +1,4 @@
+import { AppConfig } from "@/app/config";
 import { SortDirection } from "@/lib/query";
 import { create } from "zustand";
 
@@ -28,12 +29,10 @@ export interface EnvelopeFilterActions {
     clearSelection: () => void;
 }
 
-const DEFAULT_PAGE_SIZE = 20;
-
 export const useEnvelopeFilterStore = create<EnvelopeFilterState & EnvelopeFilterActions>((set) => ({
     // Initial state
     filters: {},
-    pageSize: DEFAULT_PAGE_SIZE,
+    pageSize: AppConfig.DEFAULT_PAGE_SIZE,
     currentPage: 1,
     selectedEnvelopes: [],
 

@@ -3,7 +3,7 @@ import { TableProps } from "antd";
 import { mapQueryToAsyncState, SuccessState, UI_STATE_TYPE } from "@/lib/state";
 import { Envelope } from "@/models";
 import { EnvelopeQueries } from "../envelope.queries";
-import { useEnvelopeFilterStore } from "./use_envelope_filter_store";
+import { useEnvelopeFilterStore } from "./use-envelopes-filter-store";
 import { Navigation } from "@/app";
 import { EnvelopeQueryCriteria } from "@/data/envelope";
 import { SortDirection } from "@/lib/query";

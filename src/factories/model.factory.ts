@@ -31,7 +31,7 @@ export class ModelFactory {
    */
   public register(modelName: string, modelClass: any): void {
     this._modelClasses[modelName] = modelClass;
-    console.log("Registered model class: ", modelName);
+    // console.log("Registered model class: ", modelName);
   }
 
   /**
@@ -91,7 +91,6 @@ export class ModelFactory {
    */
   public createVolunteerOpportunity(dto: VolunteerOpportunityDTO): any {
     const OpportunityClass = this.getModelClass("VolunteerOpportunity");
-    console.log("class: ", OpportunityClass)
     if (!OpportunityClass) return null;
     return OpportunityClass.fromDTO(dto);
   }
