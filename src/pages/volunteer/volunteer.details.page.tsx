@@ -23,7 +23,7 @@ import {
   CalendarOutlined
 } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
-import { AsyncStateMatcher, isErrorState, isLoadingState } from '@/lib/state';
+import { AsyncStateMatcher, isErrorState } from '@/lib/state';
 import { notifyUtils } from '@/utilities';
 import { Link } from 'react-router-dom';
 import { useVolunteerDetail, VolunteerDetailSuccessState } from '@/features/volunteer/hooks';
@@ -124,7 +124,7 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
       <AsyncStateMatcher
         state={state}
         views={{
-          LoadingView: ({ state }) => (
+          LoadingView: () => (
             <Card>
               <Button 
                 icon={<ArrowLeftOutlined />} 
