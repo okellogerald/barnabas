@@ -30,6 +30,7 @@ const UserDetailsPage = lazy(() => import('@/pages/user/user.details.page'));
 const UserEditPage = lazy(() => import('@/pages/user/user.edit.page'));
 
 const VolunteerListPage = lazy(() => import('@/pages/volunteer/volunteer.list.page'));
+const VolunteerDetailsPage = lazy(() => import('@/pages/volunteer/volunteer.details.page'));
 
 const RoleListPage = lazy(() => import('@/pages/role/role.list.page'));
 const RoleDetailsPage = lazy(() => import('@/pages/role/role.details.page'));
@@ -105,6 +106,7 @@ const AppRoutes: React.FC = () => {
           <Route path={ROUTES.ENVELOPES.ASSIGN} element={<EnvelopeAssignPage />} />
 
           <Route path={ROUTES.OPPORTUNITIES.LIST} element={<VolunteerListPage />} />
+          <Route path={ROUTES.OPPORTUNITIES.DETAILS} element={<VolunteerDetailsPage />} />
 
           {/* 404 catch-all */}
           <Route path="*" element={<NotFoundPage />} />

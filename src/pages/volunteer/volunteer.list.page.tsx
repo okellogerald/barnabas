@@ -1,281 +1,321 @@
 import React from 'react';
 import {
-    Card,
-    Table,
-    Button,
-    Space,
-    Modal,
-    Form,
-    Input,
-    Pagination,
-    Row,
-    Col,
-    Select,
-    Divider,
-    Typography,
-    Drawer,
-    Badge,
-    Tooltip,
-    Tag
+  Card,
+  Table,
+  Button,
+  Space,
+  Modal,
+  Form,
+  Input,
+  Pagination,
+  Row,
+  Col,
+  Typography,
+  Drawer,
+  Badge,
+  Tooltip,
+  Tag,
+  Empty
 } from 'antd';
 import {
-    PlusOutlined,
-    EditOutlined,
-    DeleteOutlined,
-    FilterOutlined,
-    ReloadOutlined,
-    SortAscendingOutlined,
-    SortDescendingOutlined,
-    ExclamationCircleOutlined,
+  PlusOutlined,
+  FilterOutlined,
+  ReloadOutlined,
+  SearchOutlined,
+  InfoCircleOutlined
 } from '@ant-design/icons';
+import { VolunteerListSuccessState, useVolunteerList } from '@/features/volunteer/list';
 import { AsyncStateMatcher } from '@/lib/state';
 import { notifyUtils } from '@/utilities';
-import { useAppNavigation } from '@/app';
-import { VolunteerQueries } from '@/features/volunteer/volunteer.queries';
-import { useVolunteersList, VolunteersListSuccessState } from '@/features/volunteer/list';
+import { useVolunteerPageUI } from '@/features/volunteer/list';
+import { useCreateVolunteerOpportunity } from '@/features/volunteer/hooks';
 
-const { Option } = Select;
-const { Title, Text } = Typography;
-const { confirm } = Modal;
+const { Title, Text, Paragraph } = Typography;
+const { TextArea } = Input;
 
 /**
- * Page to list and manage volunteer opportunities
+ * VolunteerOpportunityListPage - Main page component for listing and managing volunteer opportunities
+ * 
+ * This page displays a list of volunteer opportunities with the count of interested members.
+ * It provides functionality to:
+ * - View and filter opportunities
+ * - Create new opportunities
+ * - Navigate to detail views for each opportunity
  */
-const VolunteerListPage: React.FC = () => {
-    // Get all state from the hook
-    const state = useVolunteersList();
-    const navigate = useAppNavigation();
-    const deleteMutation = VolunteerQueries.useDelete();
+const VolunteerOpportunityListPage: React.FC = () => {
+  // Core data handling and state
+  const opportunitiesState = useVolunteerList();
+  const createOpportunity = useCreateVolunteerOpportunity();
+  
+  // UI state management (modals, drawers, etc.)
+  const ui = useVolunteerPageUI();
 
-    // Handle deleting a volunteer opportunity with confirmation
-    const handleDeleteOpportunity = (id: string, name: string) => {
-        confirm({
-            title: 'Are you sure you want to delete this volunteer opportunity?',
-            icon: <ExclamationCircleOutlined />,
-            content: (
-                <div>
-                    <p>You are about to delete the volunteer opportunity:</p>
-                    <strong>{name}</strong>
-                    <p style={{ marginTop: 8 }}>This action cannot be undone.</p>
-                </div>
-            ),
-            okText: 'Yes, Delete',
-            okType: 'danger',
-            cancelText: 'Cancel',
-            onOk: async () => {
-                try {
-                    await deleteMutation.mutateAsync(id);
-                    notifyUtils.success('Volunteer opportunity deleted successfully');
+  // Form for creating new opportunities
+  const [createForm] = Form.useForm();
+  
+  // Handle creation form submission
+  const handleCreateSubmit = async (values: { name: string; description: string }) => {
+    try {
+      await createOpportunity.create({
+        name: values.name,
+        description: values.description
+      });
+      
+      ui.closeCreateModal();
+      createForm.resetFields();
+      
+      // Display success message
+      notifyUtils.success('Volunteer opportunity created successfully');
+    } catch (error) {
+      notifyUtils.apiError(error);
+    }
+  };
 
-                    // Refresh the list
-                    if (VolunteersListSuccessState.is(state)) {
-                        state.refresh();
-                    }
-                } catch (error) {
-                    notifyUtils.apiError(error);
-                    console.error("Failed to delete volunteer opportunity:", error);
-                }
+  // Filter form
+  const [filterForm] = Form.useForm();
+  
+  // Handle filter submission
+  const handleFilterSubmit = (values: { searchTerm: string }) => {
+    if (VolunteerListSuccessState.is(opportunitiesState)) {
+      opportunitiesState.updateFilters({ name: values.searchTerm });
+    }
+    ui.closeFilterDrawer();
+  };
+  
+  // Handle filter reset
+  const handleFilterReset = () => {
+    filterForm.resetFields();
+    if (VolunteerListSuccessState.is(opportunitiesState)) {
+      opportunitiesState.clearFilters();
+    }
+    ui.closeFilterDrawer();
+  };
+
+  return (
+    <div className="volunteer-opportunity-list-page">
+      <AsyncStateMatcher
+        state={opportunitiesState}
+        views={{
+          SuccessView: ({ state }) => {
+            if (!VolunteerListSuccessState.is(state)) {
+              return null;
             }
-        });
-    };
 
-    return (
-        <div className="volunteer-list-page">
-            <AsyncStateMatcher
-                state={state}
-                views={{
-                    SuccessView: ({ state }) => {
-                        if (!VolunteersListSuccessState.is(state)) {
-                            return null;
-                        }
+            // Show empty state if no opportunities exist
+            const isEmpty = state.data.opportunities.length === 0 && !state.filters.name;
 
-                        return (
-                            <>
-                                {/* Header Card with Title and Actions */}
-                                <Card className="page-header-card">
-                                    <Row justify="space-between" align="middle">
-                                        <Col>
-                                            <Title level={3} style={{ margin: 0 }}>
-                                                Volunteer Opportunities
-                                                <Tag color="blue" style={{ marginLeft: 8 }}>
-                                                    {state.pagination.total} total
-                                                </Tag>
-                                            </Title>
-                                            <Text type="secondary">Manage volunteer opportunities and member interests</Text>
-                                        </Col>
-                                        <Col>
-                                            <Space>
-                                                {/* Filter Button with Badge */}
-                                                <Tooltip title="Filter Opportunities">
-                                                    <Badge count={state.filters && Object.keys(state.filters).length > 0 ? Object.keys(state.filters).length : 0} size="small" offset={[5, -3]}>
-                                                        <Button
-                                                            icon={<FilterOutlined />}
-                                                            onClick={() => state.setFilterDrawerOpen(true)}
-                                                            type={state.filters && Object.keys(state.filters).length > 0 ? "primary" : "default"}
-                                                        >
-                                                            Filters
-                                                        </Button>
-                                                    </Badge>
-                                                </Tooltip>
+            return (
+              <>
+                {/* Page Header */}
+                <Card className="page-header-card">
+                  <Row justify="space-between" align="middle">
+                    <Col>
+                      <Title level={3} style={{ margin: 0 }}>
+                        Volunteer Opportunities
+                        <Tag color="blue" style={{ marginLeft: 8 }}>
+                          {state.pagination.total} total
+                        </Tag>
+                      </Title>
+                      <Text type="secondary">Manage church volunteer opportunities</Text>
+                    </Col>
+                    <Col>
+                      <Space>
+                        {/* Search Button with Badge */}
+                        <Tooltip title="Search Opportunities">
+                          <Badge count={state.filters.name ? 1 : 0} size="small" offset={[5, -3]}>
+                            <Button
+                              icon={<FilterOutlined />}
+                              onClick={ui.openFilterDrawer}
+                              type={state.filters.name ? "primary" : "default"}
+                            >
+                              Search
+                            </Button>
+                          </Badge>
+                        </Tooltip>
 
-                                                {/* Refresh Button */}
-                                                <Tooltip title="Refresh List">
-                                                    <Button
-                                                        icon={<ReloadOutlined />}
-                                                        onClick={() => state.refresh()}
-                                                        loading={state.loading}
-                                                    >
-                                                        Refresh
-                                                    </Button>
-                                                </Tooltip>
+                        {/* Refresh Button */}
+                        <Tooltip title="Refresh List">
+                          <Button
+                            icon={<ReloadOutlined />}
+                            onClick={() => state.refresh()}
+                            loading={state.loading}
+                          >
+                            Refresh
+                          </Button>
+                        </Tooltip>
 
-                                                {/* Create Opportunity Button */}
-                                                <Button
-                                                    type="primary"
-                                                    icon={<PlusOutlined />}
-                                                    onClick={() => navigate.Opportunities.toCreate()}
-                                                >
-                                                    Create Opportunity
-                                                </Button>
-                                            </Space>
-                                        </Col>
-                                    </Row>
-                                </Card>
+                        {/* Create Button */}
+                        <Button
+                          type="primary"
+                          icon={<PlusOutlined />}
+                          onClick={ui.openCreateModal}
+                        >
+                          New Opportunity
+                        </Button>
+                      </Space>
+                    </Col>
+                  </Row>
+                </Card>
 
-                                {/* Main Content Card */}
-                                <Card style={{ marginTop: 16 }}>
-                                    {/* Sorting Controls */}
-                                    <Row justify="end" style={{ marginBottom: 16 }}>
-                                        <Col>
-                                            <Space style={{ display: 'flex', alignItems: 'center' }}>
-                                                <span style={{ color: '#8c8c8c' }}>Sort by:</span>
-                                                <Select
-                                                    style={{ width: 180 }}
-                                                    value={state.filters.sortBy || 'name'}
-                                                    onChange={(value) => state.updateSortBy(value)}
-                                                >
-                                                    <Option value="name">Name</Option>
-                                                    <Option value="memberCount">Member Count</Option>
-                                                    <Option value="createdAt">Creation Date</Option>
-                                                </Select>
+                {/* Main Content Card */}
+                <Card style={{ marginTop: 16 }}>
+                  {isEmpty ? (
+                    <Empty
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      description={
+                        <Space direction="vertical" align="center">
+                          <Text strong>No Volunteer Opportunities Found</Text>
+                          <Paragraph type="secondary">
+                            Create volunteer opportunities to track member interests and skills
+                          </Paragraph>
+                          <Button 
+                            type="primary" 
+                            icon={<PlusOutlined />}
+                            onClick={ui.openCreateModal}
+                          >
+                            Create First Opportunity
+                          </Button>
+                        </Space>
+                      }
+                    />
+                  ) : (
+                    <>
+                      {/* Volunteer Opportunities Table */}
+                      <Table
+                        {...state.tableProps}
+                        dataSource={state.data.opportunities}
+                        pagination={false}
+                        loading={state.loading}
+                      />
 
-                                                <Tooltip title={`Switch to ${state.filters.sortDirection === "asc" ? "descending" : "ascending"} order`}>
-                                                    <Button
-                                                        icon={state.filters.sortDirection === "asc" ? <SortAscendingOutlined /> : <SortDescendingOutlined />}
-                                                        onClick={() => state.toggleSortDirection()}
-                                                    />
-                                                </Tooltip>
-                                            </Space>
-                                        </Col>
-                                    </Row>
+                      {/* Pagination */}
+                      <Row justify="end" style={{ marginTop: 16 }}>
+                        <Col>
+                          <Pagination
+                            current={state.pagination.current}
+                            pageSize={state.pagination.pageSize}
+                            total={state.pagination.total}
+                            onChange={(page, pageSize) => state.pagination.onChange(page, pageSize)}
+                            showSizeChanger
+                            showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} opportunities`}
+                          />
+                        </Col>
+                      </Row>
+                    </>
+                  )}
+                </Card>
 
-                                    {/* Opportunities Table */}
-                                    <Table
-                                        {...state.tableProps}
-                                        dataSource={state.data.opportunities}
-                                        columns={[
-                                            ...(state.tableProps.columns || []),
-                                            {
-                                                title: 'Actions',
-                                                key: 'actions',
-                                                width: 120,
-                                                render: (_, record) => (
-                                                    <Space size="small">
-                                                        <Button
-                                                            type="text"
-                                                            icon={<EditOutlined />}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                navigate.Opportunities.toEdit(record.id);
-                                                            }}
-                                                        />
-                                                        <Button
-                                                            type="text"
-                                                            danger
-                                                            icon={<DeleteOutlined />}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleDeleteOpportunity(record.id, record.name);
-                                                            }}
-                                                        />
-                                                    </Space>
-                                                ),
-                                            },
-                                        ]}
-                                        pagination={false}
-                                        loading={state.loading}
-                                    />
+                {/* Filter Drawer */}
+                <Drawer
+                  title={<span><SearchOutlined /> Search Opportunities</span>}
+                  placement="right"
+                  width={320}
+                  onClose={ui.closeFilterDrawer}
+                  open={ui.isFilterDrawerOpen}
+                  styles={{ body: { paddingBottom: 80 } }}
+                >
+                  <Form
+                    form={filterForm}
+                    layout="vertical"
+                    initialValues={{ searchTerm: state.filters.name }}
+                    onFinish={handleFilterSubmit}
+                  >
+                    <Form.Item 
+                      name="searchTerm" 
+                      label="Search Term"
+                      extra="Search by opportunity name"
+                    >
+                      <Input 
+                        placeholder="Enter search term" 
+                        prefix={<SearchOutlined />} 
+                        allowClear
+                      />
+                    </Form.Item>
 
-                                    {/* Pagination */}
-                                    <Row justify="end" style={{ marginTop: 16 }}>
-                                        <Col>
-                                            <Pagination
-                                                current={state.pagination.current}
-                                                pageSize={state.pagination.pageSize}
-                                                total={state.pagination.total}
-                                                onChange={state.pagination.onChange}
-                                                showSizeChanger
-                                                showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} opportunities`}
-                                            />
-                                        </Col>
-                                    </Row>
-                                </Card>
+                    <Row gutter={16}>
+                      <Col span={12}>
+                        <Button block onClick={handleFilterReset}>
+                          Reset
+                        </Button>
+                      </Col>
+                      <Col span={12}>
+                        <Button type="primary" block htmlType="submit">
+                          Search
+                        </Button>
+                      </Col>
+                    </Row>
+                  </Form>
+                </Drawer>
 
-                                {/* Filter Drawer */}
-                                <Drawer
-                                    title={<span><FilterOutlined /> Filter Opportunities</span>}
-                                    placement="right"
-                                    width={320}
-                                    onClose={() => state.setFilterDrawerOpen(false)}
-                                    open={state.filterDrawerOpen}
-                                    styles={{
-                                        body: { paddingBottom: 80 }
-                                    }}
-                                >
-                                    <Form
-                                        form={state.filterForm}
-                                        layout="vertical"
-                                        initialValues={state.filters}
-                                        onFinish={state.applyFilters}
-                                    >
-                                        <Form.Item label="Name" name="name">
-                                            <Input placeholder="Filter by name" />
-                                        </Form.Item>
+                {/* Create Opportunity Modal */}
+                <Modal
+                  title="Create New Volunteer Opportunity"
+                  open={ui.isCreateModalOpen}
+                  onCancel={ui.closeCreateModal}
+                  footer={null}
+                  maskClosable={false}
+                >
+                  <Form
+                    form={createForm}
+                    layout="vertical"
+                    onFinish={handleCreateSubmit}
+                  >
+                    <Form.Item
+                      name="name"
+                      label="Opportunity Name"
+                      rules={[
+                        { required: true, message: 'Please enter opportunity name' },
+                        { max: 100, message: 'Name cannot exceed 100 characters' }
+                      ]}
+                    >
+                      <Input placeholder="Enter opportunity name" />
+                    </Form.Item>
 
-                                        <Form.Item label="Description" name="description">
-                                            <Input placeholder="Filter by description" />
-                                        </Form.Item>
+                    <Form.Item
+                      name="description"
+                      label="Description"
+                      extra={
+                        <Space>
+                          <InfoCircleOutlined />
+                          <Text type="secondary">Describe requirements, responsibilities, and expectations</Text>
+                        </Space>
+                      }
+                    >
+                      <TextArea
+                        rows={4}
+                        placeholder="Enter opportunity description"
+                        maxLength={500}
+                        showCount
+                      />
+                    </Form.Item>
 
-                                        <Form.Item label="Member Status" name="hasMembers">
-                                            <Select placeholder="Filter by member interest" allowClear>
-                                                <Option value="true">Has Interested Members</Option>
-                                                <Option value="false">No Interested Members</Option>
-                                            </Select>
-                                        </Form.Item>
-
-                                        <Divider />
-
-                                        <Row gutter={16}>
-                                            <Col span={12}>
-                                                <Button block onClick={state.clearFilters}>
-                                                    Reset
-                                                </Button>
-                                            </Col>
-                                            <Col span={12}>
-                                                <Button type="primary" block htmlType="submit">
-                                                    Apply Filters
-                                                </Button>
-                                            </Col>
-                                        </Row>
-                                    </Form>
-                                </Drawer>
-                            </>
-                        );
-                    }
-                }}
-            />
-        </div>
-    );
+                    <Form.Item style={{ marginBottom: 0, marginTop: 24 }}>
+                      <Row gutter={16} justify="end">
+                        <Col>
+                          <Button onClick={ui.closeCreateModal}>
+                            Cancel
+                          </Button>
+                        </Col>
+                        <Col>
+                          <Button
+                            type="primary"
+                            htmlType="submit"
+                            loading={createOpportunity.isCreating}
+                          >
+                            Create
+                          </Button>
+                        </Col>
+                      </Row>
+                    </Form.Item>
+                  </Form>
+                </Modal>
+              </>
+            );
+          }
+        }}
+      />
+    </div>
+  );
 };
 
-export default VolunteerListPage;
+export default VolunteerOpportunityListPage;
