@@ -8,6 +8,7 @@ export enum ResourceType {
     MEMBER = "member",
     OPPORTUNITY = "opportunity",
     ENVELOPE = "envelope",
+    INTEREST = "interest",
 }
 
 /**
@@ -66,6 +67,9 @@ export const Actions = {
     OPPORTUNITY_DELETE_BY_ID: `${ResourceType.OPPORTUNITY}.${ActionType.DELETE_BY_ID}`,
     OPPORTUNITY_FIND_ALL: `${ResourceType.OPPORTUNITY}.${ActionType.FIND_ALL}`,
     OPPORTUNITY_FIND_BY_ID: `${ResourceType.OPPORTUNITY}.${ActionType.FIND_BY_ID}`,
+
+    // Interest actions
+    INTEREST_FIND_ALL: `${ResourceType.INTEREST}.${ActionType.FIND_ALL}`,
 
     // Envelope actions (including custom ones)
     ENVELOPE_CREATE: `${ResourceType.ENVELOPE}.${ActionType.CREATE}`,

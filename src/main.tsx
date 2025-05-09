@@ -1,7 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { AppProvider } from '@/app';
+
 import './index.css'
-import App from './app/app'
 
 // // Run the sample data generator
 // import { ChurchApiClient } from './_dev/script';
@@ -13,6 +14,6 @@ import App from './app/app'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <AppProvider />
   </StrictMode>,
 )

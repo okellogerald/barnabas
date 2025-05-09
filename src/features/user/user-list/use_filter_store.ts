@@ -1,4 +1,4 @@
-import { SORT_DIRECTION } from "@/constants";
+import { SortDirection } from "@/lib/query";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -17,7 +17,7 @@ export interface UserFilterState {
         roleId?: string;
         isActive?: boolean;
         sortBy?: string;
-        sortDirection?: SORT_DIRECTION;
+        sortDirection?: SortDirection;
     };
 
     // Actions
@@ -36,7 +36,7 @@ const DEFAULT_FILTERS: UserFilterState["filters"] = {
     roleId: undefined,
     isActive: undefined,
     sortBy: "name",
-    sortDirection: SORT_DIRECTION.ASC,
+    sortDirection: SortDirection.ASC,
 };
 
 /**

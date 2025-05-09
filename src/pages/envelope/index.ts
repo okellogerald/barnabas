@@ -1,3 +1,3 @@
-export { default as EnvolopeAssignPage } from "./envelope_assign.page";
-export { default as EnvelopeDetailsPage } from "./envelope_details.page";
-export { default as EnvelopeListPage } from "./envelope_list.page";
+export { default as EnvolopeAssignPage } from "./envelope.assign.page";
+export { default as EnvelopeDetailsPage } from "./envelope.details.page";
+export { default as EnvelopeListPage } from "./envelope.list.page";

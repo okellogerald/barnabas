@@ -4,7 +4,8 @@ import { notifyUtils } from "@/utilities/notification.utils";
 import { memberTableStore } from "./store.table";
 import { getFilterParams, memberFilterStore } from "./store.filters";
 import { ErrorCategory, handleApiError } from "@/lib/error";
-import { MEMBER_API, MEMBER_NOTIFICATIONS, PAGINATION } from "@/constants";
+import { MEMBER_API, MEMBER_NOTIFICATIONS } from "@/constants";
+import { AppConfig } from "@/app";
 
 /**
  * Member service containing all member-related API operations.
@@ -26,8 +27,8 @@ export const memberService = {
             ...params,
             eager: MEMBER_API.EAGER_LOADING,
             // Pagination using range
-            rangeStart: PAGINATION.DEFAULT_RANGE_START,
-            rangeEnd: PAGINATION.DEFAULT_PAGE_SIZE - 1,
+            rangeStart: 0,
+            rangeEnd: AppConfig.DEFAULT_PAGE_SIZE - 1,
         };
 
         try {
@@ -83,8 +84,8 @@ export const memberService = {
         },
     ): Promise<Member[]> => {
         // Calculate range parameters for objection-find
-        let rangeStart = params.currPage * PAGINATION.DEFAULT_PAGE_SIZE;
-        let rangeEnd = (params.nextPage * PAGINATION.DEFAULT_PAGE_SIZE) - 1;
+        let rangeStart = params.currPage * AppConfig.DEFAULT_PAGE_SIZE;
+        let rangeEnd = (params.nextPage * AppConfig.DEFAULT_PAGE_SIZE) - 1;
 
         // Check if we're already past the end of the list
         if (rangeStart > (params.total - 1)) {

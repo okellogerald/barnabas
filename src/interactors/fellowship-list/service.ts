@@ -6,7 +6,7 @@ import { fellowshipFilterStore, getFilterParams } from "./store.filters";
 import { ErrorCategory, handleApiError } from "@/lib/error";
 import { FELLOWSHIP_API, FELLOWSHIP_NOTIFICATIONS } from "./constants";
 import { FellowshipQueryParams } from "@/data/fellowship";
-import { PAGINATION } from "@/constants";
+import { AppConfig } from "@/app";
 
 /**
  * @typedef {object} FellowshipsQueryResult
@@ -38,8 +38,8 @@ export const fellowshipService = {
             ...params,
             eager: FELLOWSHIP_API.EAGER_LOADING, // Use fellowship specific eager loading
             // Pagination using range
-            rangeStart: PAGINATION.DEFAULT_RANGE_START,
-            rangeEnd: PAGINATION.DEFAULT_PAGE_SIZE - 1,
+            rangeStart: 0,
+            rangeEnd: AppConfig.DEFAULT_PAGE_SIZE - 1,
         };
 
         try {
@@ -96,8 +96,8 @@ export const fellowshipService = {
         },
     ): Promise<Fellowship[]> => {
         // Calculate range parameters for objection-find
-        let rangeStart = params.currPage * PAGINATION.DEFAULT_PAGE_SIZE;
-        let rangeEnd = (params.nextPage * PAGINATION.DEFAULT_PAGE_SIZE) - 1;
+        let rangeStart = params.currPage * AppConfig.DEFAULT_PAGE_SIZE;
+        let rangeEnd = (params.nextPage * AppConfig.DEFAULT_PAGE_SIZE) - 1;
 
         // Check if we're already past the end of the list
         if (rangeStart > (params.total - 1)) {

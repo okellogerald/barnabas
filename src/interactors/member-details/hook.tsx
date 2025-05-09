@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { QueryKeys } from '../_queries';
 import { MemberDetailsService } from './service';
 import { determineQueryState } from '../_new_state/query_matcher';
 import { AsyncState, AsyncStateFactory } from '../_new_state/types';
@@ -11,6 +10,7 @@ import { useParams } from 'react-router-dom';
 import { notifyUtils } from '@/utilities/notification.utils';
 import NiceModal from '@ebay/nice-modal-react';
 import DeleteMemberModal from '@/components/member/modal_delete_confirm';
+import { QueryKeys } from '@/lib/query';
 
 /**
  * Custom hook for managing member details
@@ -19,7 +19,7 @@ export const useMemberDetails = (): AsyncState => {
   const { id: memberId } = useParams<{ id: string }>();
   
   const loadMemberQuery = useQuery({
-    queryKey: [QueryKeys.members.detail, memberId],
+    queryKey: [QueryKeys.Members.detail, memberId],
     queryFn: () => MemberDetailsService.loadMember(memberId),
   });
   

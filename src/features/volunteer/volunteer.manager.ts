@@ -1,9 +1,9 @@
 import {
-    CreateOpportunityDTO,
-    UpdateOpportunityDTO,
-    VolunteerQueryBuilder,
-    VolunteerQueryCriteria,
-    VolunteerRepository,
+    CreateVolunteerOpportunityDTO,
+    UpdateVolunteerOpportunityDTO,
+    VolunteerOpportunityQueryBuilder,
+    VolunteerOpportunityQueryCriteria,
+    VolunteerOpportunityRepository,
 } from "@/data/volunteer";
 import { VolunteerOpportunity } from "@/models";
 import { Actions, PermissionsManager } from "@/features/auth/permission";
@@ -28,14 +28,14 @@ export type GetOpportunitiesResponse = {
  */
 export class VolunteerManager {
     private static _instance: VolunteerManager;
-    private _repo: VolunteerRepository;
+    private _repo: VolunteerOpportunityRepository;
     private _permManager: PermissionsManager;
 
     /**
      * Private constructor to enforce singleton pattern.
      */
     private constructor(
-        repo: VolunteerRepository,
+        repo: VolunteerOpportunityRepository,
         permissionsManager: PermissionsManager,
     ) {
         this._repo = repo;
@@ -48,7 +48,7 @@ export class VolunteerManager {
     public static get instance(): VolunteerManager {
         if (!VolunteerManager._instance) {
             VolunteerManager._instance = new VolunteerManager(
-                new VolunteerRepository(),
+                new VolunteerOpportunityRepository(),
                 PermissionsManager.getInstance(),
             );
         }
@@ -59,20 +59,27 @@ export class VolunteerManager {
      * Retrieves a filtered count of volunteer opportunities
      */
     public async getOpportunitiesCount(
-        options: VolunteerQueryCriteria | VolunteerQueryBuilder = {},
+        options:
+            | VolunteerOpportunityQueryCriteria
+            | VolunteerOpportunityQueryBuilder = {},
     ): Promise<number> {
         if (!this._permManager.canPerformAction(Actions.OPPORTUNITY_FIND_ALL)) {
             throw PermissionError.fromAction(Actions.OPPORTUNITY_FIND_ALL);
         }
 
         try {
-            const builder = VolunteerQueryBuilder.from(options)
+            const builder = VolunteerOpportunityQueryBuilder.from(options)
                 .configureForCount();
             const response = await this._repo.getCount(builder);
             return response;
         } catch (error) {
-            console.error("Error retrieving volunteer opportunities count:", error);
-            throw new Error("Failed to retrieve volunteer opportunities count.");
+            console.error(
+                "Error retrieving volunteer opportunities count:",
+                error,
+            );
+            throw new Error(
+                "Failed to retrieve volunteer opportunities count.",
+            );
         }
     }
 
@@ -80,17 +87,21 @@ export class VolunteerManager {
      * Retrieves all volunteer opportunities with optional filtering and pagination.
      */
     public async getOpportunities(
-        options?: VolunteerQueryCriteria | VolunteerQueryBuilder,
+        options?:
+            | VolunteerOpportunityQueryCriteria
+            | VolunteerOpportunityQueryBuilder,
     ): Promise<GetOpportunitiesResponse> {
         if (!this._permManager.canPerformAction(Actions.OPPORTUNITY_FIND_ALL)) {
             throw PermissionError.fromAction(Actions.OPPORTUNITY_FIND_ALL);
         }
 
         try {
-            const builder = VolunteerQueryBuilder.from(options);
+            const builder = VolunteerOpportunityQueryBuilder.from(options);
             const response = await this._repo.getAll(builder);
 
-            const opportunities = response.results.map(VolunteerOpportunity.fromDTO);
+            const opportunities = response.results.map(
+                VolunteerOpportunity.fromDTO,
+            );
             return { opportunities, total: response.total };
         } catch (error) {
             console.error("Error retrieving volunteer opportunities:", error);
@@ -104,7 +115,9 @@ export class VolunteerManager {
     public async getOpportunityById(
         opportunityId: string,
     ): Promise<VolunteerOpportunity | undefined> {
-        if (!this._permManager.canPerformAction(Actions.OPPORTUNITY_FIND_BY_ID)) {
+        if (
+            !this._permManager.canPerformAction(Actions.OPPORTUNITY_FIND_BY_ID)
+        ) {
             throw PermissionError.fromAction(Actions.OPPORTUNITY_FIND_BY_ID);
         }
 
@@ -124,7 +137,7 @@ export class VolunteerManager {
      * Creates a new volunteer opportunity.
      */
     public async createOpportunity(
-        data: CreateOpportunityDTO,
+        data: CreateVolunteerOpportunityDTO,
     ): Promise<VolunteerOpportunity> {
         if (!this._permManager.canPerformAction(Actions.OPPORTUNITY_CREATE)) {
             throw PermissionError.fromAction(Actions.OPPORTUNITY_CREATE);
@@ -144,7 +157,7 @@ export class VolunteerManager {
      */
     public async updateOpportunity(
         opportunityId: string,
-        data: UpdateOpportunityDTO,
+        data: UpdateVolunteerOpportunityDTO,
     ): Promise<VolunteerOpportunity> {
         if (!this._permManager.canPerformAction(Actions.OPPORTUNITY_UPDATE)) {
             throw PermissionError.fromAction(Actions.OPPORTUNITY_UPDATE);
@@ -165,8 +178,14 @@ export class VolunteerManager {
     /**
      * Deletes a volunteer opportunity.
      */
-    public async deleteOpportunity(opportunityId: string): Promise<VolunteerOpportunity> {
-        if (!this._permManager.canPerformAction(Actions.OPPORTUNITY_DELETE_BY_ID)) {
+    public async deleteOpportunity(
+        opportunityId: string,
+    ): Promise<VolunteerOpportunity> {
+        if (
+            !this._permManager.canPerformAction(
+                Actions.OPPORTUNITY_DELETE_BY_ID,
+            )
+        ) {
             throw PermissionError.fromAction(Actions.OPPORTUNITY_DELETE_BY_ID);
         }
 

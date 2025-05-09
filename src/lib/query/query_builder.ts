@@ -210,7 +210,7 @@ export class QueryBuilder {
                         result[`${filter.field}:isNull`] = 1;
                         break;
                     case FilterOperator.IS_NOT_NULL:
-                        result[`${filter.field}:isNotNull`] = 1;
+                        result[`${filter.field}:notNull`] = 1;
                         break;
                     case FilterOperator.IN:
                         result[`${filter.field}:in`] =

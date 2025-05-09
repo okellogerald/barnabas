@@ -35,7 +35,7 @@ import { AuthManager } from '@/features/auth';
 import { User } from '@/models';
 import { Actions } from '@/features/auth/permission';
 import { UserFilterState, UsersListSuccessState, useUserFilterStore, useUsersList } from '@/features/user';
-import { SORT_DIRECTION } from '@/constants';
+import { SortDirection } from '@/lib/query';
 
 const { Title, Text } = Typography;
 
@@ -95,7 +95,7 @@ const UserListPage: React.FC = () => {
   // Handle sorting change
   const handleSortChange = (field: string) => {
     // Keep the same direction for a new field
-    const currentDirection = filterStore.filters.sortDirection || SORT_DIRECTION.ASC;
+    const currentDirection = filterStore.filters.sortDirection || SortDirection.ASC;
 
     filterStore.setFilters({
       ...filterStore.filters,
@@ -107,7 +107,7 @@ const UserListPage: React.FC = () => {
   // Toggle sort direction
   const toggleSortDirection = () => {
     const currentField = filterStore.filters.sortBy || 'name';
-    const newDirection = filterStore.filters.sortDirection === SORT_DIRECTION.ASC ? SORT_DIRECTION.DESC : SORT_DIRECTION.ASC;
+    const newDirection = filterStore.filters.sortDirection === SortDirection.ASC ? SortDirection.DESC : SortDirection.ASC;
 
     filterStore.setFilters({
       ...filterStore.filters,

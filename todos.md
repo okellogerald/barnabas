@@ -1,0 +1,4 @@
+-member-count on fellowship endpoints: "GET /fellowship" & "GET /fellowship/{id}"
+-when envelope is assigned to a member through envelopes endpoints, the member envelope-number is not updated
+-member_volunteer_interests api endpoints may need to be exposed to identify what members are interested in what opportunities
+-Statistics for the dashboard. You talked about implementing sth with cube.js

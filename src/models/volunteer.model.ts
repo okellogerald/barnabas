@@ -1,9 +1,8 @@
 import {
-    CreateOpportunityDTO,
-    OpportunityDTO,
-    UpdateOpportunityDTO,
+    CreateVolunteerOpportunityDTO,
+    UpdateVolunteerOpportunityDTO,
+    VolunteerOpportunityDTO,
 } from "@/data/volunteer";
-import { modelFactory } from "./model.factory";
 
 /**
  * Volunteer Opportunity model
@@ -18,28 +17,13 @@ export class VolunteerOpportunity {
     createdAt: Date;
     updatedAt: Date;
 
-    // Transient properties
-    interestedMembers?: any[]; // Will be Member[] at runtime
-    memberCount?: number;
-
-    constructor(dto: OpportunityDTO) {
+    constructor(dto: VolunteerOpportunityDTO) {
         this.id = dto.id;
         this.churchId = dto.churchId;
         this.name = dto.name;
         this.description = dto.description;
         this.createdAt = new Date(dto.createdAt);
         this.updatedAt = new Date(dto.updatedAt);
-
-        // Handle related entities if present in the DTO
-        if ((dto as any).interestedMembers) {
-            this.interestedMembers = ((dto as any).interestedMembers).map(
-                (member: any) => modelFactory.createMember(member)
-            );
-        }
-
-        if ((dto as any).memberCount !== undefined) {
-            this.memberCount = (dto as any).memberCount;
-        }
     }
 
     /**
@@ -57,29 +41,16 @@ export class VolunteerOpportunity {
     }
 
     /**
-     * Gets a summary of the member interest count
-     */
-    getInterestSummary(): string {
-        if (this.memberCount === undefined) {
-            return "Unknown interest count";
-        }
-
-        return `${this.memberCount} interested member${
-            this.memberCount !== 1 ? "s" : ""
-        }`;
-    }
-
-    /**
      * Factory method to create an Opportunity from a DTO
      */
-    static fromDTO(dto: OpportunityDTO): VolunteerOpportunity {
+    static fromDTO(dto: VolunteerOpportunityDTO): VolunteerOpportunity {
         return new VolunteerOpportunity(dto);
     }
 
     /**
      * Converts the model back to a DTO
      */
-    toDTO(): OpportunityDTO {
+    toDTO(): VolunteerOpportunityDTO {
         return {
             id: this.id,
             churchId: this.churchId,
@@ -93,7 +64,7 @@ export class VolunteerOpportunity {
     /**
      * Converts to a DTO for creation
      */
-    toCreateDTO(): CreateOpportunityDTO {
+    toCreateDTO(): CreateVolunteerOpportunityDTO {
         return {
             name: this.name,
             description: this.description,
@@ -103,13 +74,10 @@ export class VolunteerOpportunity {
     /**
      * Converts to a DTO for updating
      */
-    toUpdateDTO(): UpdateOpportunityDTO {
+    toUpdateDTO(): UpdateVolunteerOpportunityDTO {
         return {
             name: this.name,
             description: this.description,
         };
     }
 }
-
-// Register the VolunteerOpportunity class with the factory
-modelFactory.register('VolunteerOpportunity', VolunteerOpportunity);

@@ -1,14 +1,14 @@
 import { QueryBuilder, SortDirection } from "@/lib/query";
 
 // Symbol for volunteer opportunity query builder type
-export const VOLUNTEER_QUERY_BUILDER_TYPE = Symbol(
+export const VOLUNTEER_OPPORTUNITY_QUERY_BUILDER_TYPE = Symbol(
     "volunteer-query-builder-type",
 );
 
 /**
  * Structured criteria for querying volunteer opportunities
  */
-export interface VolunteerQueryCriteria {
+export interface VolunteerOpportunityQueryCriteria {
     // Pagination
     page?: number;
     pageSize?: number;
@@ -26,19 +26,20 @@ export interface VolunteerQueryCriteria {
  * Query builder for Volunteer Opportunity queries with typed filter methods,
  * eager loading, and query criteria application.
  */
-export class VolunteerQueryBuilder extends QueryBuilder {
+export class VolunteerOpportunityQueryBuilder extends QueryBuilder {
     /**
      * Type tag to identify VolunteerQueryBuilder instances
      */
-    [VOLUNTEER_QUERY_BUILDER_TYPE] = true;
+    [VOLUNTEER_OPPORTUNITY_QUERY_BUILDER_TYPE] = true;
 
     /**
      * Determines if an object is an instance of VolunteerQueryBuilder.
      * @param obj - The object to check.
      * @returns `true` if the object is a VolunteerQueryBuilder, otherwise `false`.
      */
-    static is(obj: any): obj is VolunteerQueryBuilder {
-        return QueryBuilder.is(obj) && VOLUNTEER_QUERY_BUILDER_TYPE in obj;
+    static is(obj: any): obj is VolunteerOpportunityQueryBuilder {
+        return QueryBuilder.is(obj) &&
+            VOLUNTEER_OPPORTUNITY_QUERY_BUILDER_TYPE in obj;
     }
 
     // === 📝 Filter Methods ===
@@ -78,7 +79,7 @@ export class VolunteerQueryBuilder extends QueryBuilder {
      * @param options - The query criteria to apply.
      * @returns The current query builder instance.
      */
-    applyCriteria(options: VolunteerQueryCriteria): this {
+    applyCriteria(options: VolunteerOpportunityQueryCriteria): this {
         // Apply filters
         if (options.name !== undefined) {
             this.filterByName(options.name);
@@ -120,8 +121,8 @@ export class VolunteerQueryBuilder extends QueryBuilder {
      * Creates a new instance of VolunteerQueryBuilder.
      * @returns A new instance of the query builder.
      */
-    static newInstance(): VolunteerQueryBuilder {
-        return new VolunteerQueryBuilder();
+    static newInstance(): VolunteerOpportunityQueryBuilder {
+        return new VolunteerOpportunityQueryBuilder();
     }
 
     /**
@@ -131,14 +132,14 @@ export class VolunteerQueryBuilder extends QueryBuilder {
      * @returns A configured instance of the query builder.
      */
     static createFromCriteria(
-        options?: VolunteerQueryCriteria,
-    ): VolunteerQueryBuilder {
+        options?: VolunteerOpportunityQueryCriteria,
+    ): VolunteerOpportunityQueryBuilder {
         if (!options) {
-            return VolunteerQueryBuilder.newInstance()
+            return VolunteerOpportunityQueryBuilder.newInstance()
                 .includeDefaultRelations();
         }
 
-        return VolunteerQueryBuilder.newInstance()
+        return VolunteerOpportunityQueryBuilder.newInstance()
             .includeDefaultRelations()
             .applyCriteria(options);
     }
@@ -150,13 +151,15 @@ export class VolunteerQueryBuilder extends QueryBuilder {
      * @returns A new instance of VolunteerQueryBuilder.
      */
     static createFromBuilderOrCriteria(
-        options: VolunteerQueryCriteria | VolunteerQueryBuilder,
-    ): VolunteerQueryBuilder {
-        if (VolunteerQueryBuilder.is(options)) {
+        options:
+            | VolunteerOpportunityQueryCriteria
+            | VolunteerOpportunityQueryBuilder,
+    ): VolunteerOpportunityQueryBuilder {
+        if (VolunteerOpportunityQueryBuilder.is(options)) {
             return options.clone();
         }
 
-        return VolunteerQueryBuilder.createFromCriteria(options);
+        return VolunteerOpportunityQueryBuilder.createFromCriteria(options);
     }
 
     /**
@@ -165,13 +168,17 @@ export class VolunteerQueryBuilder extends QueryBuilder {
      * @returns A new instance of VolunteerQueryBuilder.
      */
     static from(
-        options?: VolunteerQueryCriteria | VolunteerQueryBuilder,
-    ): VolunteerQueryBuilder {
+        options?:
+            | VolunteerOpportunityQueryCriteria
+            | VolunteerOpportunityQueryBuilder,
+    ): VolunteerOpportunityQueryBuilder {
         if (!options) {
-            return VolunteerQueryBuilder.newInstance()
+            return VolunteerOpportunityQueryBuilder.newInstance()
                 .includeDefaultRelations();
         }
 
-        return VolunteerQueryBuilder.createFromBuilderOrCriteria(options);
+        return VolunteerOpportunityQueryBuilder.createFromBuilderOrCriteria(
+            options,
+        );
     }
 }

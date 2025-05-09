@@ -1,4 +1,4 @@
-import { PAGINATION } from "@/constants";
+import { AppConfig } from "@/app";
 import { Fellowship } from "@/models";
 import { create } from "zustand";
 
@@ -68,9 +68,9 @@ const initialState: FellowshipsTableState = {
         active: null,
     },
     pagination: {
-        currPage: PAGINATION.INITIAL_PAGE,
+        currPage: 1,
         totalResults: 0,
-        resultsPerPage: PAGINATION.DEFAULT_PAGE_SIZE,
+        resultsPerPage: AppConfig.DEFAULT_PAGE_SIZE,
     },
 };
 
@@ -88,9 +88,9 @@ export const createFellowshipTableStore = () =>
                     selected: [],
                 },
                 pagination: {
-                    currPage: PAGINATION.INITIAL_PAGE,
+                    currPage: 1,
                     totalResults,
-                    resultsPerPage: PAGINATION.DEFAULT_PAGE_SIZE,
+                    resultsPerPage: AppConfig.DEFAULT_PAGE_SIZE,
                 },
             });
         },

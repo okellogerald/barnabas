@@ -3,10 +3,10 @@ import { Query, queryClient, QueryKeys } from "@/lib/query";
 import { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
 import { VolunteerOpportunity } from "@/models";
 import {
-  CreateOpportunityDTO,
-  UpdateOpportunityDTO,
-  VolunteerQueryBuilder,
-  VolunteerQueryCriteria,
+  CreateVolunteerOpportunityDTO,
+  UpdateVolunteerOpportunityDTO,
+  VolunteerOpportunityQueryBuilder,
+  VolunteerOpportunityQueryCriteria,
 } from "@/data/volunteer";
 import { VolunteerManager } from "./volunteer.manager";
 
@@ -21,12 +21,19 @@ export const VolunteerQueries = {
    * Hook to fetch a list of volunteer opportunities with optional filtering and pagination
    */
   useList: (
-    options?: VolunteerQueryCriteria | VolunteerQueryBuilder,
-  ): UseQueryResult<{ opportunities: VolunteerOpportunity[]; total: number }, Error> =>
+    options?:
+      | VolunteerOpportunityQueryCriteria
+      | VolunteerOpportunityQueryBuilder,
+  ): UseQueryResult<
+    { opportunities: VolunteerOpportunity[]; total: number },
+    Error
+  > =>
     useQuery({
       queryKey: [
         QueryKeys.Volunteers.list(),
-        VolunteerQueryBuilder.is(options) ? options.build() : options,
+        VolunteerOpportunityQueryBuilder.is(options)
+          ? options.build()
+          : options,
       ],
       queryFn: async () => {
         return await volunteerManager.getOpportunities(options);
@@ -36,10 +43,14 @@ export const VolunteerQueries = {
   /**
    * Hook to fetch volunteer opportunity count with query criteria or builder
    */
-  useCount: (options?: VolunteerQueryCriteria | VolunteerQueryBuilder) => {
+  useCount: (
+    options?:
+      | VolunteerOpportunityQueryCriteria
+      | VolunteerOpportunityQueryBuilder,
+  ) => {
     const queryKey = [
       QueryKeys.Volunteers.count(),
-      VolunteerQueryBuilder.is(options) ? options.build() : options,
+      VolunteerOpportunityQueryBuilder.is(options) ? options.build() : options,
     ];
 
     return useQuery({
@@ -70,17 +81,17 @@ export const VolunteerQueries = {
   useCreate: (): UseMutationResult<
     VolunteerOpportunity,
     Error,
-    CreateOpportunityDTO,
+    CreateVolunteerOpportunityDTO,
     unknown
   > =>
     useMutation({
-      mutationFn: async (data: CreateOpportunityDTO) => {
+      mutationFn: async (data: CreateVolunteerOpportunityDTO) => {
         return await volunteerManager.createOpportunity(data);
       },
       onSuccess: (newOpportunity) => {
         // Invalidate relevant queries
-        Query.Volunteers.invalidateList();
-        Query.Volunteers.invalidateCount();
+        Query.VolunteerOpportunities.invalidateList();
+        Query.VolunteerOpportunities.invalidateCount();
 
         // Update cache with the new opportunity
         queryClient.setQueryData(
@@ -96,12 +107,12 @@ export const VolunteerQueries = {
   useUpdate: (): UseMutationResult<
     VolunteerOpportunity,
     Error,
-    { id: string; data: UpdateOpportunityDTO },
+    { id: string; data: UpdateVolunteerOpportunityDTO },
     unknown
   > =>
     useMutation({
       mutationFn: async (
-        { id, data }: { id: string; data: UpdateOpportunityDTO },
+        { id, data }: { id: string; data: UpdateVolunteerOpportunityDTO },
       ) => {
         return await volunteerManager.updateOpportunity(id, data);
       },
@@ -113,8 +124,8 @@ export const VolunteerQueries = {
         );
 
         // Invalidate lists
-        Query.Volunteers.invalidateList();
-        Query.Volunteers.invalidateCount();
+        Query.VolunteerOpportunities.invalidateList();
+        Query.VolunteerOpportunities.invalidateCount();
       },
     }),
 
@@ -140,8 +151,8 @@ export const VolunteerQueries = {
         });
 
         // Invalidate lists and counts
-        Query.Volunteers.invalidateList();
-        Query.Volunteers.invalidateCount();
+        Query.VolunteerOpportunities.invalidateList();
+        Query.VolunteerOpportunities.invalidateCount();
       },
     }),
 
@@ -157,7 +168,7 @@ export const VolunteerQueries = {
     useQuery({
       queryKey: [QueryKeys.Volunteers.list(), { search: searchTerm }],
       queryFn: async () => {
-        const builder = VolunteerQueryBuilder.newInstance()
+        const builder = VolunteerOpportunityQueryBuilder.newInstance()
           .filterByName(searchTerm)
           .includeDefaultRelations();
 

@@ -1,6 +1,6 @@
 import { EnvelopeDTO } from "@/data/envelope";
 import { Member } from "./member.model";
-import { modelFactory } from "./model.factory";
+import { modelFactory } from "../factories";
 
 export class Envelope {
     id: string;
@@ -83,6 +83,3 @@ export class Envelope {
         };
     }
 }
-
-// Register the Envelope class with the factory
-modelFactory.register('Envelope', Envelope);

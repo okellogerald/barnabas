@@ -5,10 +5,10 @@ import { fellowshipTableStore } from "./store.table";
 import { fellowshipFilterStore } from "./store.filters";
 import { useStore } from "zustand";
 import { AsyncState, determineQueryState } from "@/interactors/_new_state";
-import { QueryKeys } from "../_queries";
 // Import the updated types
 import { FellowshipListSuccessState } from "./types";
 import { createFellowshipListSuccessState } from "./ui.factory";
+import { QueryKeys } from "@/lib/query";
 
 /**
  * Hook to manage the state and logic for the Fellowship List page.
@@ -24,7 +24,7 @@ export const useFellowshipList = (): AsyncState<FellowshipListSuccessState> => {
     // Fetch initial data using react-query
     const queryResult = useQuery<FellowshipsQueryResult, Error>({
         // Use QueryKeys for consistency
-        queryKey: [QueryKeys.fellowships.all, filterStore.getQueryParams()], // Include filters in query key
+        queryKey: [QueryKeys.Fellowships.all, filterStore.getQueryParams()], // Include filters in query key
         queryFn: () => fellowshipService.fetchInitial(filterStore.getQueryParams()),
         refetchOnWindowFocus: false, // Optional: Prevent refetching on window focus
         retry: false, // Optional: Disable automatic retries on error

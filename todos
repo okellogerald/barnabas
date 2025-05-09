@@ -1,2 +1,0 @@
--member-count on fellowship endpoints: "GET /fellowship" & "GET /fellowship/{id}"
--when envelope is assigned to a member through envelopes endpoints, the member envelope-number is not updated

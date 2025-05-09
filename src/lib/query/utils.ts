@@ -6,424 +6,205 @@ import { QueryKeys } from "./keys";
  * Provides type-safe methods for working with the query cache
  */
 export const QueryUtils = (queryClient: QueryClient) => ({
-    /**
-     * Fellowship-related query utilities
-     */
+    // Fellowship query utilities
     Fellowships: {
-        /**
-         * Invalidate all fellowship-related queries
-         */
-        invalidateAll: () =>
-            queryClient.invalidateQueries({
-                queryKey: QueryKeys.Fellowships.all,
-            }),
-
-        /**
-         * Invalidate the fellowships list query
-         */
         invalidateList: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Fellowships.list(),
             }),
-
-        /**
-         * Invalidate the fellowships count query
-         */
         invalidateCount: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Fellowships.count(),
             }),
-
-        /**
-         * Invalidate a specific fellowship detail query
-         */
         invalidateDetail: (id: string) =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Fellowships.detail(id),
             }),
-
-        /**
-         * Invalidate members list for a specific fellowship
-         */
+        removeDetail: (id: string) =>
+            queryClient.removeQueries({
+                queryKey: QueryKeys.Fellowships.detail(id),
+            }),
         invalidateMembers: (fellowshipId: string) =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Fellowships.members(fellowshipId),
             }),
-
-        /**
-         * Invalidate fellowship leadership queries
-         */
         invalidateLeadership: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Fellowships.leadership(),
             }),
-
-        /**
-         * Prefetch a specific fellowship's details
-         * Useful for improving UX when navigating to a fellowship detail page
-         */
-        prefetchDetail: (id: string, fetchFn: () => Promise<any>) =>
-            queryClient.prefetchQuery({
-                queryKey: QueryKeys.Fellowships.detail(id),
-                queryFn: fetchFn,
-            }),
-
-        /**
-         * Remove a specific fellowship from the cache
-         * Useful after deletion
-         */
-        removeDetail: (id: string) =>
-            queryClient.removeQueries({
-                queryKey: QueryKeys.Fellowships.detail(id),
-            }),
     },
 
-    /**
-     * Church-related query utilities
-     */
+    // Church query utilities
     Churches: {
-        /**
-         * Invalidate all church-related queries
-         */
-        invalidateAll: () =>
-            queryClient.invalidateQueries({ queryKey: QueryKeys.Churches.all }),
-
-        /**
-         * Invalidate the current church query
-         */
         invalidateCurrent: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Churches.current(),
             }),
-
-        /**
-         * Invalidate a specific church detail query
-         */
         invalidateDetail: (id: string) =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Churches.detail(id),
             }),
-
-        /**
-         * Invalidate church statistics query
-         */
         invalidateStats: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Churches.stats(),
             }),
-
-        /**
-         * Prefetch a specific church's details
-         */
-        prefetchDetail: (id: string, fetchFn: () => Promise<any>) =>
-            queryClient.prefetchQuery({
-                queryKey: QueryKeys.Churches.detail(id),
-                queryFn: fetchFn,
-            }),
     },
 
-    /**
-     * Member-related query utilities
-     */
+    // Member query utilities
     Members: {
-        /**
-         * Invalidate all member-related queries
-         */
-        invalidateAll: () =>
-            queryClient.invalidateQueries({ queryKey: QueryKeys.Members.all }),
-
-        /**
-         * Invalidate the members list query with optional filters
-         */
-        invalidateList: (
-            params?: { fellowshipId?: string; searchTerm?: string },
-        ) => {
-            if (params) {
-                queryClient.invalidateQueries({
-                    queryKey: QueryKeys.Members.list(params),
-                });
-            } else {
-                // Invalidate all list queries regardless of parameters
-                queryClient.invalidateQueries({
-                    queryKey: QueryKeys.Members.all,
-                    predicate: (query) => {
-                        if (
-                            Array.isArray(query.queryKey) &&
-                            query.queryKey[0] === "members"
-                        ) {
-                            return query.queryKey.length > 1 &&
-                                query.queryKey[1] === "list";
-                        }
-                        return false;
-                    },
-                });
-            }
-        },
-
-        /**
-         * Invalidate member count query
-         */
+        invalidateList: () =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Members.all,
+                exact: false,
+            }),
         invalidateCount: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Members.count(),
             }),
-
-        /**
-         * Invalidate a specific member detail query
-         */
-        invalidateDetail: (id: string) =>
+        invalidateDetail: (memberId: string) =>
             queryClient.invalidateQueries({
-                queryKey: QueryKeys.Members.detail(id),
+                queryKey: QueryKeys.Members.detail(memberId),
             }),
-
-        /**
-         * Invalidate dependants for a specific member
-         */
+        removeDetail: (memberId: string) =>
+            queryClient.removeQueries({
+                queryKey: QueryKeys.Members.detail(memberId),
+            }),
         invalidateDependants: (memberId: string) =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Members.dependants(memberId),
             }),
-
-        /**
-         * Prefetch a specific member's details
-         */
-        prefetchDetail: (id: string, fetchFn: () => Promise<any>) =>
-            queryClient.prefetchQuery({
-                queryKey: QueryKeys.Members.detail(id),
-                queryFn: fetchFn,
-            }),
-
-        /**
-         * Remove a specific member from the cache
-         * Useful after deletion
-         */
-        removeDetail: (id: string) =>
-            queryClient.removeQueries({
-                queryKey: QueryKeys.Members.detail(id),
-            }),
     },
 
-    /**
-     * User-related query utilities
-     */
+    // User query utilities
     Users: {
-        /**
-         * Invalidate all user-related queries
-         */
-        invalidateAll: () =>
-            queryClient.invalidateQueries({ queryKey: QueryKeys.Users.all }),
-
-        /**
-         * Invalidate the users list query with optional filters
-         */
-        invalidateList: (
-            params?: {
-                searchTerm?: string;
-                roleId?: string;
-                isActive?: boolean;
-            },
-        ) => {
-            if (params) {
-                queryClient.invalidateQueries({
-                    queryKey: QueryKeys.Users.list(params),
-                });
-            } else {
-                // Invalidate all list queries regardless of parameters
-                queryClient.invalidateQueries({
-                    queryKey: QueryKeys.Users.all,
-                    predicate: (query) => {
-                        if (
-                            Array.isArray(query.queryKey) &&
-                            query.queryKey[0] === "users"
-                        ) {
-                            return query.queryKey.length > 1 &&
-                                query.queryKey[1] === "list";
-                        }
-                        return false;
-                    },
-                });
-            }
-        },
-
-        /**
-         * Invalidate user count query
-         */
+        invalidateList: () =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Users.all,
+                exact: false,
+            }),
         invalidateCount: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Users.count(),
             }),
-
-        /**
-         * Invalidate a specific user detail query
-         */
-        invalidateDetail: (id: string) =>
+        invalidateDetail: (userId: string) =>
             queryClient.invalidateQueries({
-                queryKey: QueryKeys.Users.detail(id),
+                queryKey: QueryKeys.Users.detail(userId),
             }),
-
-        /**
-         * Prefetch a specific user's details
-         */
-        prefetchDetail: (id: string, fetchFn: () => Promise<any>) =>
-            queryClient.prefetchQuery({
-                queryKey: QueryKeys.Users.detail(id),
-                queryFn: fetchFn,
-            }),
-
-        /**
-         * Remove a specific user from the cache
-         * Useful after deletion
-         */
-        removeDetail: (id: string) =>
+        removeDetail: (userId: string) =>
             queryClient.removeQueries({
-                queryKey: QueryKeys.Users.detail(id),
+                queryKey: QueryKeys.Users.detail(userId),
             }),
     },
 
-    /**
-     * Role-related query utilities
-     */
+    // Role query utilities
     Roles: {
-        /**
-         * Invalidate all role-related queries
-         */
-        invalidateAll: () =>
-            queryClient.invalidateQueries({ queryKey: QueryKeys.Roles.all }),
-
-        /**
-         * Invalidate the roles list query
-         */
         invalidateList: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Roles.list(),
             }),
-
-        /**
-         * Invalidate a specific role detail query
-         */
-        invalidateDetail: (id: string) =>
+        invalidateCount: () =>
             queryClient.invalidateQueries({
-                queryKey: QueryKeys.Roles.detail(id),
+                queryKey: QueryKeys.Roles.count(),
             }),
-
-        /**
-         * Invalidate permissions for a specific role
-         */
+        invalidateDetail: (roleId: string) =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Roles.detail(roleId),
+            }),
         invalidatePermissions: (roleId: string) =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Roles.permissions(roleId),
             }),
-
-        /**
-         * Prefetch a specific role's details
-         */
-        prefetchDetail: (id: string, fetchFn: () => Promise<any>) =>
-            queryClient.prefetchQuery({
-                queryKey: QueryKeys.Roles.detail(id),
-                queryFn: fetchFn,
+        invalidateActions: (roleId: string) =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Roles.actions(roleId),
             }),
-
-        /**
-         * Remove a specific role from the cache
-         */
-        removeDetail: (id: string) =>
+        removeDetail: (roleId: string) =>
             queryClient.removeQueries({
-                queryKey: QueryKeys.Roles.detail(id),
+                queryKey: QueryKeys.Roles.detail(roleId),
             }),
     },
 
-    /**
-     * Volunteer-related query utilities
-     */
-    Volunteers: {
-        /**
-         * Invalidate all volunteer-related queries
-         */
-        invalidateAll: () =>
-            queryClient.invalidateQueries({
-                queryKey: QueryKeys.Volunteers.all,
-            }),
-
-        /**
-         * Invalidate the volunteer opportunities list query
-         */
+    // Volunteer opportunity query utilities
+    VolunteerOpportunities: {
         invalidateList: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Volunteers.list(),
             }),
-
-        /**
-         * Invalidate the volunteer opportunities count query
-         */
         invalidateCount: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Volunteers.count(),
             }),
-
-        /**
-         * Invalidate a specific volunteer opportunity detail query
-         */
-        invalidateOpportunityDetail: (id: string) =>
+        invalidateDetail: (opportunityId: string) =>
             queryClient.invalidateQueries({
-                queryKey: QueryKeys.Volunteers.opportunityDetail(id),
+                queryKey: QueryKeys.Volunteers.opportunityDetail(opportunityId),
             }),
-
-        /**
-         * Invalidate interested members for a specific opportunity
-         */
+        removeDetail: (opportunityId: string) =>
+            queryClient.removeQueries({
+                queryKey: QueryKeys.Volunteers.opportunityDetail(opportunityId),
+            }),
         invalidateInterestedMembers: (opportunityId: string) =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Volunteers.interestedMembers(opportunityId),
             }),
+    },
 
-        /**
-         * Prefetch a specific volunteer opportunity's details
-         */
-        prefetchOpportunityDetail: (id: string, fetchFn: () => Promise<any>) =>
-            queryClient.prefetchQuery({
-                queryKey: QueryKeys.Volunteers.opportunityDetail(id),
-                queryFn: fetchFn,
+    // Envelope query utilities
+    Envelopes: {
+        invalidateList: () =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Envelopes.list(),
             }),
-
-        /**
-         * Remove a specific volunteer opportunity from the cache
-         */
-        removeOpportunityDetail: (id: string) =>
+        invalidateCount: () =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Envelopes.count(),
+            }),
+        invalidateDetail: (envelopeId: string) =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Envelopes.detail(envelopeId),
+            }),
+        removeDetail: (envelopeId: string) =>
             queryClient.removeQueries({
-                queryKey: QueryKeys.Volunteers.opportunityDetail(id),
+                queryKey: QueryKeys.Envelopes.detail(envelopeId),
+            }),
+        invalidateByNumber: (number: number) =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Envelopes.byNumber(number),
+            }),
+        invalidateAvailable: () =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Envelopes.available(),
+            }),
+        invalidateHistory: (envelopeId: string) =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Envelopes.history(envelopeId),
             }),
     },
 
-    Envelopes: {
-        invalidateList: () => {
+    // Interest query utilities
+    Interests: {
+        invalidateList: () =>
             queryClient.invalidateQueries({
-                queryKey: QueryKeys.Envelopes.list(),
-            });
-        },
-        invalidateCount: () => {
+                queryKey: QueryKeys.Interests.list(),
+            }),
+        invalidateCount: () =>
             queryClient.invalidateQueries({
-                queryKey: QueryKeys.Envelopes.count(),
-            });
-        },
-        invalidateDetail: (id: string) => {
+                queryKey: QueryKeys.Interests.count(),
+            }),
+        invalidateDetail: (interestId: string) =>
             queryClient.invalidateQueries({
-                queryKey: QueryKeys.Envelopes.detail(id),
-            });
-        },
-        invalidateAvailable: () => {
-            queryClient.invalidateQueries({
-                queryKey: QueryKeys.Envelopes.available(),
-            });
-        },
-        invalidateHistory: (id: string) => {
-            queryClient.invalidateQueries({
-                queryKey: QueryKeys.Envelopes.history(id),
-            });
-        },
-        removeDetail: (id: string) => {
+                queryKey: QueryKeys.Interests.detail(interestId),
+            }),
+        removeDetail: (interestId: string) =>
             queryClient.removeQueries({
-                queryKey: QueryKeys.Envelopes.detail(id),
-            });
-        },
+                queryKey: QueryKeys.Interests.detail(interestId),
+            }),
+        invalidateByMember: (memberId: string) =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Interests.byMember(memberId),
+            }),
+        invalidateByOpportunity: (opportunityId: string) =>
+            queryClient.invalidateQueries({
+                queryKey: QueryKeys.Interests.byOpportunity(opportunityId),
+            }),
     },
 });

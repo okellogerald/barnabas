@@ -30,7 +30,7 @@ import { Navigation } from '@/app';
 import { Role } from '@/models';
 import { RoleQueries } from '@/features/role';
 import { RoleFilterState, RolesListSuccessState, useRoleFilterStore, useRolesList } from '@/features/role/role-list';
-import { SORT_DIRECTION } from '@/constants';
+import { SortDirection } from '@/lib/query';
 
 const { Title, Text } = Typography;
 
@@ -78,7 +78,7 @@ const RolesListPage: React.FC = () => {
   // Handle sorting change
   const handleSortChange = (field: string) => {
     // Keep the same direction for a new field
-    const currentDirection = filterStore.filters.sortDirection || SORT_DIRECTION.ASC;
+    const currentDirection = filterStore.filters.sortDirection || SortDirection.ASC;
     
     filterStore.setFilters({
       ...filterStore.filters,
@@ -90,7 +90,7 @@ const RolesListPage: React.FC = () => {
   // Toggle sort direction
   const toggleSortDirection = () => {
     const currentField = filterStore.filters.sortBy || 'name';
-    const newDirection = filterStore.filters.sortDirection === 'asc' ? SORT_DIRECTION.DESC : SORT_DIRECTION.ASC;
+    const newDirection = filterStore.filters.sortDirection === 'asc' ? SortDirection.DESC : SortDirection.ASC;
     
     filterStore.setFilters({
       ...filterStore.filters,

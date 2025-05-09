@@ -3,10 +3,10 @@ import { TableProps } from "antd";
 import { mapQueryToAsyncState, SuccessState, UI_STATE_TYPE } from "@/lib/state";
 import { User } from "@/models";
 import { Navigation } from "@/app";
-import { SORT_DIRECTION } from "@/constants";
 import { useUserFilterStore } from "./use_filter_store";
 import { RoleQueries } from "@/features/role";
 import { UserQueries } from "../queries";
+import { SortDirection } from "@/lib/query";
 
 // Custom success state for the users list
 export class UsersListSuccessState
@@ -18,7 +18,7 @@ export class UsersListSuccessState
         roleId?: string;
         isActive?: boolean;
         sortBy?: string;
-        sortDirection?: SORT_DIRECTION;
+        sortDirection?: SortDirection;
     };
     readonly pagination: {
         current: number;
@@ -38,7 +38,7 @@ export class UsersListSuccessState
             roleId?: string;
             isActive?: boolean;
             sortBy?: string;
-            sortDirection?: SORT_DIRECTION;
+            sortDirection?: SortDirection;
         };
         pagination: {
             current: number;
@@ -162,7 +162,7 @@ export const useUsersList = () => {
 
         // Sorting
         if (filters.sortBy) {
-            if (filters.sortDirection === SORT_DIRECTION.ASC) {
+            if (filters.sortDirection === SortDirection.ASC) {
                 params.orderBy = filters.sortBy;
             } else {
                 params.orderByDesc = filters.sortBy;

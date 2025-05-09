@@ -1,11 +1,11 @@
 import { BaseRepository } from "@/data/_common";
-import { memberContract } from "./contract";
+import { memberContract } from "./member.contract";
 import {
     CreateMemberDTO,
     MemberDTO,
     MemberQueryParams,
     UpdateMemberDTO,
-} from "./schema";
+} from "./member.schema";
 
 type GetMembersResponse = {
     results: MemberDTO[];

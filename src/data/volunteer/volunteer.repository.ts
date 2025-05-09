@@ -1,14 +1,14 @@
 import { BaseRepository } from "@/data/_common";
-import { opportunityContract } from "./volunteer.contract";
-import { VolunteerQueryBuilder } from "./volunteer.query_builder";
+import { volunteerOpportunityContract } from "./volunteer.contract";
+import { VolunteerOpportunityQueryBuilder } from "./volunteer.query_builder";
 import {
-    CreateOpportunityDTO,
-    OpportunityDTO,
-    UpdateOpportunityDTO,
+    CreateVolunteerOpportunityDTO,
+    UpdateVolunteerOpportunityDTO,
+    VolunteerOpportunityDTO,
 } from "./volunteer.schema";
 
-export class VolunteerRepository
-    extends BaseRepository<typeof opportunityContract> {
+export class VolunteerOpportunityRepository
+    extends BaseRepository<typeof volunteerOpportunityContract> {
     /**
      * Default query parameters applied to volunteer opportunity requests
      */
@@ -17,19 +17,19 @@ export class VolunteerRepository
     };
 
     constructor() {
-        super("opportunity", opportunityContract);
+        super("opportunity", volunteerOpportunityContract);
     }
 
     /**
      * Get all volunteer opportunities with pagination and filtering
      */
     async getAll(
-        queryBuilder: VolunteerQueryBuilder,
-    ): Promise<{ results: OpportunityDTO[]; total: number }> {
+        queryBuilder: VolunteerOpportunityQueryBuilder,
+    ): Promise<{ results: VolunteerOpportunityDTO[]; total: number }> {
         const query = queryBuilder.build();
         const result = await this.client.getAll({ query });
         const opportunities = this.handleResponse<
-            { results: OpportunityDTO[]; total: number }
+            { results: VolunteerOpportunityDTO[]; total: number }
         >(
             result,
             200,
@@ -41,9 +41,9 @@ export class VolunteerRepository
     /**
      * Get count of volunteer opportunities with specific criteria
      */
-    async getCount(builder: VolunteerQueryBuilder): Promise<number> {
+    async getCount(builder: VolunteerOpportunityQueryBuilder): Promise<number> {
         // Ensure the builder is configured for count query
-        const countBuilder = VolunteerQueryBuilder.is(builder)
+        const countBuilder = VolunteerOpportunityQueryBuilder.is(builder)
             ? builder.clone().configureForCount()
             : builder;
 
@@ -55,7 +55,7 @@ export class VolunteerRepository
     /**
      * Get volunteer opportunity by ID
      */
-    async getById(id: string): Promise<OpportunityDTO | null> {
+    async getById(id: string): Promise<VolunteerOpportunityDTO | null> {
         const result = await this.client.getById({
             params: { id },
         });
@@ -64,17 +64,19 @@ export class VolunteerRepository
             return null;
         }
 
-        return this.handleResponse<OpportunityDTO>(result, 200);
+        return this.handleResponse<VolunteerOpportunityDTO>(result, 200);
     }
 
     /**
      * Create a new volunteer opportunity
      */
-    async create(data: CreateOpportunityDTO): Promise<OpportunityDTO> {
+    async create(
+        data: CreateVolunteerOpportunityDTO,
+    ): Promise<VolunteerOpportunityDTO> {
         const result = await this.client.create({
             body: data,
         });
-        return this.handleResponse<OpportunityDTO>(result, 201);
+        return this.handleResponse<VolunteerOpportunityDTO>(result, 201);
     }
 
     /**
@@ -82,22 +84,22 @@ export class VolunteerRepository
      */
     async update(
         id: string,
-        data: UpdateOpportunityDTO,
-    ): Promise<OpportunityDTO> {
+        data: UpdateVolunteerOpportunityDTO,
+    ): Promise<VolunteerOpportunityDTO> {
         const result = await this.client.update({
             params: { id },
             body: data,
         });
-        return this.handleResponse<OpportunityDTO>(result, 200);
+        return this.handleResponse<VolunteerOpportunityDTO>(result, 200);
     }
 
     /**
      * Delete a volunteer opportunity
      */
-    async delete(id: string): Promise<OpportunityDTO> {
+    async delete(id: string): Promise<VolunteerOpportunityDTO> {
         const result = await this.client.delete({
             params: { id },
         });
-        return this.handleResponse<OpportunityDTO>(result, 200);
+        return this.handleResponse<VolunteerOpportunityDTO>(result, 200);
     }
 }

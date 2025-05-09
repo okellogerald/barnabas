@@ -3,7 +3,7 @@ import {
     FellowshipDTO,
     UpdateFellowshipDTO,
 } from "@/data/fellowship";
-import { modelFactory } from "./model.factory";
+import { modelFactory } from "../factories";
 import type { Member } from "./member.model";
 
 /**
@@ -49,19 +49,34 @@ export class Fellowship {
             memberCount?: number;
         };
 
-        if (dtoAny.chairman && typeof dtoAny.chairman === "object" && dtoAny.chairman.id) {
+        if (
+            dtoAny.chairman && typeof dtoAny.chairman === "object" &&
+            dtoAny.chairman.id
+        ) {
             this.chairman = modelFactory.createMember(dtoAny.chairman);
         }
 
-        if (dtoAny.deputyChairman && typeof dtoAny.deputyChairman === "object" && dtoAny.deputyChairman.id) {
-            this.deputyChairman = modelFactory.createMember(dtoAny.deputyChairman);
+        if (
+            dtoAny.deputyChairman &&
+            typeof dtoAny.deputyChairman === "object" &&
+            dtoAny.deputyChairman.id
+        ) {
+            this.deputyChairman = modelFactory.createMember(
+                dtoAny.deputyChairman,
+            );
         }
 
-        if (dtoAny.secretary && typeof dtoAny.secretary === "object" && dtoAny.secretary.id) {
+        if (
+            dtoAny.secretary && typeof dtoAny.secretary === "object" &&
+            dtoAny.secretary.id
+        ) {
             this.secretary = modelFactory.createMember(dtoAny.secretary);
         }
 
-        if (dtoAny.treasurer && typeof dtoAny.treasurer === "object" && dtoAny.treasurer.id) {
+        if (
+            dtoAny.treasurer && typeof dtoAny.treasurer === "object" &&
+            dtoAny.treasurer.id
+        ) {
             this.treasurer = modelFactory.createMember(dtoAny.treasurer);
         }
 
@@ -205,6 +220,3 @@ export class Fellowship {
         };
     }
 }
-
-// Register the Fellowship class with the factory
-modelFactory.register('Fellowship', Fellowship);

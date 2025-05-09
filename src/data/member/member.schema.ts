@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { CommonSchemas } from "@/data/_common";
-import { fellowshipSchema } from "../fellowship";
 import {
     DependantRelationship,
     EducationLevel,
@@ -9,7 +8,11 @@ import {
     MarriageType,
     MemberRole,
 } from "@/constants";
-import { OpportunitySchemas } from "../volunteer";
+import { schemaFactory } from "@/factories";
+
+// Lazy getter for schema factory
+const getFellowshipSchema = () => schemaFactory.getFellowshipSchema();
+const getVolunteerSchema = () => schemaFactory.getVolunteerOpportunitySchema();
 
 // Dependant schema for a member's dependant
 const dependantSchema = z.object({
@@ -49,19 +52,21 @@ const memberSchema = z.object({
     churchId: CommonSchemas.id,
 
     // comes with eager set to include "fellowship"
-    fellowship: fellowshipSchema.nullable().optional(),
+    fellowship: z.lazy(getFellowshipSchema).nullable().optional(),
 
     // required
     fellowshipId: CommonSchemas.id,
     firstName: CommonSchemas.name,
     dateOfBirth: CommonSchemas.date,
     lastName: CommonSchemas.name,
-    phoneNumber:CommonSchemas.phoneNumber,
+    phoneNumber: CommonSchemas.phoneNumber,
     gender: z.nativeEnum(Gender).default(Gender.Male),
     memberRole: z.nativeEnum(MemberRole).default(MemberRole.Regular),
     maritalStatus: z.nativeEnum(MaritalStatus).default(MaritalStatus.Single),
     marriageType: z.nativeEnum(MarriageType).default(MarriageType.None),
-    educationLevel: z.nativeEnum(EducationLevel).default(EducationLevel.Primary),
+    educationLevel: z.nativeEnum(EducationLevel).default(
+        EducationLevel.Primary,
+    ),
     middleName: CommonSchemas.name.nullable().optional(),
 
     // with default
@@ -92,7 +97,7 @@ const memberSchema = z.object({
     fellowshipAbsenceReason: z.string().nullable().optional(),
     // Optional related collections
     dependants: z.array(dependantSchema).optional(),
-    interests: OpportunitySchemas.opportunityArray.optional(),
+    interests: z.array(z.lazy(getVolunteerSchema)).optional(),
 });
 
 // Schema for creating a new member

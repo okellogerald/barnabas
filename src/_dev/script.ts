@@ -697,7 +697,6 @@ export class ChurchApiClient {
 
                 // Create the member object
                 const memberData = {
-                    envelopeNumber: (1000 + this.members.length + i).toString(),
                     firstName,
                     middleName,
                     lastName,

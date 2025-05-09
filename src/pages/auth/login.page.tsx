@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Typography, Alert, Button, Space } from 'antd';
 import { FormFieldBuilder } from '@/components/form';
 import { LoginRequest } from '@/data/auth';
-import { AuthLayout } from '@/components/layout';
+import { AuthLayout } from '@/components/layouts';
 import { UseLogin } from '@/interactors/login';
 import { AppConfig } from '@/app';
 

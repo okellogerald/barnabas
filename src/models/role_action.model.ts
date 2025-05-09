@@ -1,5 +1,4 @@
 import { RoleActionDTO } from "@/data/role-actions";
-import { modelFactory } from "./model.factory";
 
 export class RoleAction {
   id: string;
@@ -38,5 +37,3 @@ export class RoleAction {
     return JSON.stringify(this.toDTO());
   }
 }
-
-modelFactory.register("RoleAction", RoleAction);

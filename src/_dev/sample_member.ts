@@ -13,7 +13,6 @@ export const sampleMembers = [
     new Member({
         id: "7a3b2c1d4e5f64a3b2c1d8e7f6a5b4c3",
         churchId: "19d4e951c2324768b20d689e2fc1ce81",
-        envelopeNumber: "2024",
         firstName: "Daniel",
         middleName: "Elias",
         lastName: "Mwangi",
@@ -58,7 +57,6 @@ export const sampleMembers = [
     new Member({
         id: "b5c4d3e2f1a04f5e6d7c8b9a0f1e2d3c",
         churchId: "19d4e951c2324768b20d689e2fc1ce81",
-        envelopeNumber: "2025",
         firstName: "Elizabeth",
         middleName: "Ruth",
         lastName: "Kimaro",
@@ -128,7 +126,6 @@ export const sampleMembers = [
     new Member({
         id: "c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1",
         churchId: "19d4e951c2324768b20d689e2fc1ce81",
-        envelopeNumber: "2026",
         firstName: "Joseph",
         middleName: "Peter",
         lastName: "Nkosi",
@@ -184,7 +181,6 @@ export const sampleMembers = [
     new Member({
         id: "d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1g2",
         churchId: "19d4e951c2324768b20d689e2fc1ce81",
-        envelopeNumber: "2027",
         firstName: "Grace",
         middleName: "Esther",
         lastName: "Ochieng",

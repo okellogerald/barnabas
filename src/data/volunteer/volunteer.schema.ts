@@ -2,7 +2,7 @@ import { z } from "zod";
 import { CommonSchemas } from "@/data/_common";
 
 // Volunteer Opportunity schema
-const opportunitySchema = z.object({
+const volunteerOpportunitySchema = z.object({
     id: CommonSchemas.id,
     ...CommonSchemas.systemDates,
 
@@ -13,7 +13,7 @@ const opportunitySchema = z.object({
 });
 
 // Schema for creating a new opportunity
-const createOpportunitySchema = opportunitySchema.omit({
+const createVolunteerOpportunitySchema = volunteerOpportunitySchema.omit({
     id: true,
     churchId: true,
     createdAt: true,
@@ -21,15 +21,22 @@ const createOpportunitySchema = opportunitySchema.omit({
 });
 
 // Schema for updating an existing opportunity
-const updateOpportunitySchema = createOpportunitySchema.partial();
+const updateVolunteerOpportunitySchema = createVolunteerOpportunitySchema
+    .partial();
 
-export const OpportunitySchemas = {
-    opportunity: opportunitySchema,
-    opportunityArray: z.array(opportunitySchema),
-    createOpportunity: createOpportunitySchema,
-    updateOpportunity: updateOpportunitySchema,
+export const VolunteerOpportunitySchemas = {
+    volunteerOpportunity: volunteerOpportunitySchema,
+    volunteerOpportunityArray: z.array(volunteerOpportunitySchema),
+    createVolunteerOpportunity: createVolunteerOpportunitySchema,
+    updateVolunteerOpportunity: updateVolunteerOpportunitySchema,
 };
 
-export type OpportunityDTO = z.infer<typeof opportunitySchema>;
-export type CreateOpportunityDTO = z.infer<typeof createOpportunitySchema>;
-export type UpdateOpportunityDTO = z.infer<typeof updateOpportunitySchema>;
+export type VolunteerOpportunityDTO = z.infer<
+    typeof volunteerOpportunitySchema
+>;
+export type CreateVolunteerOpportunityDTO = z.infer<
+    typeof createVolunteerOpportunitySchema
+>;
+export type UpdateVolunteerOpportunityDTO = z.infer<
+    typeof updateVolunteerOpportunitySchema
+>;

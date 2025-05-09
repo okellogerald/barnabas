@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Typography, Flex, Tag, Space, Divider } from "antd";
 import { PlusOutlined, RedoOutlined } from "@ant-design/icons";
-import { AsyncPageContentLayout } from "@/components/layout";
+import { AsyncPageContentLayout } from "@/components/layouts";
 import { MemberListPageUIState, MemberListSuccessState } from "@/interactors/member-list/types";
 import { useMemberList } from "@/interactors/member-list/hook";
 import {

@@ -3,7 +3,7 @@ import type { MemberDTO } from "@/data/member";
 import type { RoleDTO } from "@/data/role";
 import { RoleActionDTO } from "@/data/role-actions";
 import { UserDTO } from "@/data/user";
-import type { OpportunityDTO } from "@/data/volunteer";
+import type { VolunteerOpportunityDTO } from "@/data/volunteer";
 
 /**
  * Factory singleton class to handle model instantiation and resolve circular dependencies
@@ -17,9 +17,11 @@ export class ModelFactory {
   /**
    * Gets the singleton instance of ModelFactory
    */
-  public static get instance(): ModelFactory {
+  public static getInstance(): ModelFactory {
     if (!ModelFactory._instance) {
       ModelFactory._instance = new ModelFactory();
+      // 🧊 Freeze the instance to prevent modifications
+      Object.freeze(ModelFactory._instance);
     }
     return ModelFactory._instance;
   }
@@ -29,6 +31,7 @@ export class ModelFactory {
    */
   public register(modelName: string, modelClass: any): void {
     this._modelClasses[modelName] = modelClass;
+    console.log("Registered model class: ", modelName);
   }
 
   /**
@@ -86,12 +89,10 @@ export class ModelFactory {
   /**
    * Create a VolunteerOpportunity instance from DTO
    */
-  public createVolunteerOpportunity(dto: OpportunityDTO): any {
+  public createVolunteerOpportunity(dto: VolunteerOpportunityDTO): any {
     const OpportunityClass = this.getModelClass("VolunteerOpportunity");
+    console.log("class: ", OpportunityClass)
     if (!OpportunityClass) return null;
     return OpportunityClass.fromDTO(dto);
   }
 }
-
-// Export the singleton instance
-export const modelFactory = ModelFactory.instance;

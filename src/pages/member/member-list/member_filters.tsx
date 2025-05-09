@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Button, Card, Checkbox, Col, Input, Row, Select, Space, Divider } from "antd";
 import { FilterOutlined, CloseOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { QueryKeys } from "@/interactors/_queries";
 import { FellowshipManager } from "@/features/fellowship";
 import { canApplyFilters, useMemberList } from "@/interactors/member-list";
 import { isSuccessState, UI_STATE_TYPE } from "@/interactors/_state";
+import { QueryKeys } from "@/lib/query";
 
 /**
  * Member list filter component
@@ -54,7 +54,7 @@ export const MemberFilters: React.FC<{
 
     // Fetch fellowships for dropdown
     const fellowshipsQuery = useQuery({
-        queryKey: [QueryKeys.fellowships.all],
+        queryKey: [QueryKeys.Fellowships.all],
         queryFn: () => FellowshipManager.instance.getAll(),
         staleTime: 5 * 60 * 1000, // 5 minutes
     });

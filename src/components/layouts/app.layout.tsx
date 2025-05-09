@@ -15,7 +15,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AuthManager } from '@/features/auth/auth.manager';
 import { User } from '@/models';
 import { ItemType, MenuItemType } from 'antd/es/menu/interface';
-import { DesignTokens } from '@/app';
+import { DesignTokens } from '@/app/theme/constants';
 import { Actions } from '@/features/auth/permission';
 
 const { Header, Sider, Content } = Layout;

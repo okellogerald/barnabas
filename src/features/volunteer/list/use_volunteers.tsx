@@ -4,7 +4,7 @@ import { mapQueryToAsyncState, SuccessState, UI_STATE_TYPE } from "@/lib/state";
 import { VolunteerOpportunity } from "@/models";
 import { VolunteerQueries } from "../volunteer.queries";
 import { Navigation } from "@/app";
-import { VolunteerQueryCriteria } from "@/data/volunteer";
+import { VolunteerOpportunityQueryCriteria } from "@/data/volunteer";
 import { SortDirection } from "@/lib/query";
 import { useVolunteerFilterStore } from "./use_volunteers_filters_store";
 
@@ -113,12 +113,12 @@ const createTableColumns = () => {
             ellipsis: true,
             render: (description: string | null) => description || 'No description',
         },
-        {
-            title: "Interested Members",
-            key: "memberCount",
-            sorter: true,
-            render: (_, opportunity) => opportunity.getInterestSummary(),
-        },
+        // {
+        //     title: "Interested Members",
+        //     key: "memberCount",
+        //     sorter: true,
+        //     render: (_, opportunity) => opportunity.getInterestSummary(),
+        // },
     ] as TableProps<VolunteerOpportunity>["columns"];
 };
 
@@ -126,7 +126,7 @@ const createTableColumns = () => {
 export const useVolunteersList = () => {
     // Filter drawer state
     const [filterDrawerOpen, setFilterDrawerOpen] = useState<boolean>(false);
-    
+
     // Form instance for filters
     const [filterForm] = Form.useForm();
 
@@ -142,7 +142,7 @@ export const useVolunteersList = () => {
     } = useVolunteerFilterStore();
 
     // Create the query criteria from filter state
-    const queryCriteria = useMemo((): VolunteerQueryCriteria => {
+    const queryCriteria = useMemo((): VolunteerOpportunityQueryCriteria => {
         return {
             // Pagination
             page: currentPage,
@@ -196,10 +196,10 @@ export const useVolunteersList = () => {
 
     // Toggle sort direction
     const toggleSortDirection = useCallback(() => {
-        const newDirection = filters.sortDirection === SortDirection.ASC 
-        ? SortDirection.DESC 
-        : SortDirection.ASC;
-      
+        const newDirection = filters.sortDirection === SortDirection.ASC
+            ? SortDirection.DESC
+            : SortDirection.ASC;
+
         setSortBy(filters.sortBy || 'name', newDirection);
     }, [filters.sortBy, filters.sortDirection, setSortBy]);
 
@@ -208,9 +208,9 @@ export const useVolunteersList = () => {
         const formattedValues = {
             ...values,
             // Ensure hasMembers is a boolean if it exists and not empty string
-            hasMembers: values.hasMembers === '' ? undefined : 
-                        values.hasMembers === 'true' ? true : 
-                        values.hasMembers === 'false' ? false : values.hasMembers,
+            hasMembers: values.hasMembers === '' ? undefined :
+                values.hasMembers === 'true' ? true :
+                    values.hasMembers === 'false' ? false : values.hasMembers,
         };
 
         updateFilters(formattedValues);

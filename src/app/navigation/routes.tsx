@@ -1,14 +1,14 @@
 import React, { lazy, Suspense } from 'react';
 import { Navigate, Routes, Route, useNavigate } from 'react-router-dom';
-import AppLayout from '@/components/layout/app.layout';
+import AppLayout from '@/components/layouts/app.layout';
 import { ROUTES } from './constants';
 import { AuthManager } from '@/features/auth/auth.manager';
-import ProtectedRoute from './protected_route';
+import ProtectedRoute from './protected-route';
 import { MemberEditRouteLoader } from '@/pages/member/member-edit/loader';
 import { MemberDetailsRouteLoader } from '@/pages/member/member-details/loader';
 import { EnvelopeListPage } from '@/pages/envelope';
-import EnvelopeDetailPage from '@/pages/envelope/envelope_details.page';
-import EnvelopeAssignPage from '@/pages/envelope/envelope_assign.page';
+import EnvelopeDetailPage from '@/pages/envelope/envelope.details.page';
+import EnvelopeAssignPage from '@/pages/envelope/envelope.assign.page';
 
 // Lazy-loaded components
 const LoginPage = lazy(() => import('@/pages/auth/login.page'));
@@ -19,20 +19,20 @@ const MemberCreatePage = lazy(() => import('@/pages/member/member-create/member_
 const MemberEditPage = lazy(() => import('@/pages/member/member-edit/member_edit.page'));
 const MemberDetailsPage = lazy(() => import('@/pages/member/member-details/member_details.page'));
 
-const FellowshipListPage = lazy(() => import('@/pages/fellowship/list/page'));
-const FellowshipDetailsPage = lazy(() => import('@/pages/fellowship/details/page'));
-const FellowshipCreatePage = lazy(() => import('@/pages/fellowship/create/page'));
-const FellowshipEditPage = lazy(() => import('@/pages/fellowship/edit/page'));
+const FellowshipListPage = lazy(() => import('@/pages/fellowship/fellowship.list.page'));
+const FellowshipDetailsPage = lazy(() => import('@/pages/fellowship/fellowship.details.page'));
+const FellowshipCreatePage = lazy(() => import('@/pages/fellowship/fellowship.create.page'));
+const FellowshipEditPage = lazy(() => import('@/pages/fellowship/fellowship.edit.page'));
 
 const UserListPage = lazy(() => import('@/pages/user/user.list.page'));
 const UserCreatePage = lazy(() => import('@/pages/user/user.create.page'));
 const UserDetailsPage = lazy(() => import('@/pages/user/user.details.page'));
 const UserEditPage = lazy(() => import('@/pages/user/user.edit.page'));
 
-const VolunteerListPage = lazy(() => import('@/pages/volunteer/volunteer_list.page'));
+const VolunteerListPage = lazy(() => import('@/pages/volunteer/volunteer.list.page'));
 
-const RoleListPage = lazy(() => import('@/pages/role/role_list.page'));
-const RoleDetailsPage = lazy(() => import('@/pages/role/role_details.page'));
+const RoleListPage = lazy(() => import('@/pages/role/role.list.page'));
+const RoleDetailsPage = lazy(() => import('@/pages/role/role.details.page'));
 
 const NotFoundPage = lazy(() => import('@/pages/errors/not_found.page'));
 

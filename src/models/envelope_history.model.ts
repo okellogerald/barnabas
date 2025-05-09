@@ -1,10 +1,10 @@
 import { EnvelopeHistoryDTO } from "@/data/envelope";
 import { Member } from "./member.model";
-import { modelFactory } from "./model.factory";
+import { modelFactory } from "../factories";
 
 export enum EnvelopeActivityType {
     ASSIGN = "ASSIGNMENT",
-    RELEASE = "RELEASE"
+    RELEASE = "RELEASE",
 }
 
 export class EnvelopeHistory {
@@ -40,7 +40,9 @@ export class EnvelopeHistory {
      * Gets a description of the activity
      */
     getActivityDescription(): string {
-        const memberName = this.member ? this.member.getFullName() : "Unknown Member";
+        const memberName = this.member
+            ? this.member.getFullName()
+            : "Unknown Member";
         const date = this.activityAt.toLocaleDateString();
 
         switch (this.activityType) {
@@ -77,6 +79,3 @@ export class EnvelopeHistory {
         };
     }
 }
-
-// Register the EnvelopeHistory class with the factory
-modelFactory.register('EnvelopeHistory', EnvelopeHistory);

@@ -1,7 +1,7 @@
-import { modelFactory } from "./model.factory";
 import type { Role } from "./role.model";
 import type { Church } from "./church.model";
 import { UserDTO } from "@/data/user";
+import { modelFactory } from "@/factories";
 
 /**
  * User model representing a system user
@@ -116,6 +116,3 @@ export class User {
     return this.isActive ? "Active" : "Inactive";
   }
 }
-
-// Register the User class with the factory
-modelFactory.register("User", User);
