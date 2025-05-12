@@ -14,6 +14,19 @@ export const volunteerOpportunityContract = c.router({
         method: "GET",
         path: "/",
         responses: {
+            200: z.array(z.lazy(getVolunteerSchema)),
+            401: z.null(),
+            403: z.null(),
+        },
+        summary: "Get all volunteer opportunities",
+        query: z.object({}),
+    },
+
+    // Get all opportunities with pagination
+    getPaginated: {
+        method: "GET",
+        path: "/",
+        responses: {
             200: z.object({
                 results: z.array(z.lazy(getVolunteerSchema)),
                 total: z.number(),

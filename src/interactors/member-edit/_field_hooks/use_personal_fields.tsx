@@ -15,7 +15,7 @@ import { Member } from '@/models';
 export const usePersonalFields = (memberData?: Member) => {
     // Extract initial values from member data if available
     const initialValues: Partial<MemberEditPersonalInfo> = memberData ? {
-        envelopeNumber: memberData.envelopeNumber,
+       // envelopeNumber: memberData.envelopeNumber,
         firstName: memberData.firstName,
         middleName: memberData.middleName,
         lastName: memberData.lastName,
@@ -37,7 +37,7 @@ export const usePersonalFields = (memberData?: Member) => {
     // Create the form fields
     const createFields = useCallback((): SchemaFormFieldsMap<MemberEditPersonalInfo, PersonalInfoKeys> => {
         return {
-            envelopeNumber: builder.createTextField('envelopeNumber'),
+            // envelopeNumber: builder.createTextField('envelopeNumber'),
             firstName: builder.createTextField('firstName'),
             middleName: builder.createTextField('middleName'),
             lastName: builder.createTextField('lastName'),

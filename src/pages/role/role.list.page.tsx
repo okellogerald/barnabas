@@ -15,6 +15,7 @@ import {
   Badge,
   Tag,
   Tooltip,
+  Alert,
 } from 'antd';
 import {
   KeyOutlined,
@@ -44,10 +45,10 @@ const RolesListPage: React.FC = () => {
   // ======== STATE MANAGEMENT ========
   // Get the role list state
   const rolesState = useRolesList();
-  
+
   // Filter and sort state from store
   const filterStore = useRoleFilterStore();
-  
+
   // Local state for UI controls
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [activeFiltersCount, setActiveFiltersCount] = useState(0);
@@ -57,14 +58,14 @@ const RolesListPage: React.FC = () => {
   useEffect(() => {
     // Count non-empty filter values, ignoring sortBy and sortDirection
     const count = Object.entries(filterStore.filters)
-      .filter(([key, value]) => 
-        key !== 'sortBy' && 
-        key !== 'sortDirection' && 
-        value !== undefined && 
-        value !== null && 
+      .filter(([key, value]) =>
+        key !== 'sortBy' &&
+        key !== 'sortDirection' &&
+        value !== undefined &&
+        value !== null &&
         value !== ''
       ).length;
-      
+
     setActiveFiltersCount(count);
   }, [filterStore.filters]);
 
@@ -79,26 +80,26 @@ const RolesListPage: React.FC = () => {
   const handleSortChange = (field: string) => {
     // Keep the same direction for a new field
     const currentDirection = filterStore.filters.sortDirection || SortDirection.ASC;
-    
+
     filterStore.setFilters({
       ...filterStore.filters,
       sortBy: field,
       sortDirection: currentDirection
     });
   };
-  
+
   // Toggle sort direction
   const toggleSortDirection = () => {
     const currentField = filterStore.filters.sortBy || 'name';
     const newDirection = filterStore.filters.sortDirection === 'asc' ? SortDirection.DESC : SortDirection.ASC;
-    
+
     filterStore.setFilters({
       ...filterStore.filters,
       sortBy: currentField,
       sortDirection: newDirection
     });
   };
-  
+
   // Reset filters
   const handleResetFilters = () => {
     filterStore.resetFilters();
@@ -162,12 +163,13 @@ const RolesListPage: React.FC = () => {
                   {/* Main Content Card */}
                   <Card style={{ marginTop: 16 }}>
                     {/* Additional Info Banner */}
-                    <div style={{ marginBottom: 16, background: '#f0f5ff', padding: 16, borderRadius: 2, display: 'flex', alignItems: 'center' }}>
-                      <InfoCircleOutlined style={{ color: '#1890ff', fontSize: 16, marginRight: 8 }} />
-                      <Text type="secondary">
-                        System roles are predefined and cannot be modified. Each role has specific actions that determine what users with that role can do.
-                      </Text>
-                    </div>
+                    <Alert
+                      banner
+                      type="info"
+                      message="System roles are predefined and cannot be modified. Each role has specific actions that determine what users with that role can do."
+                      icon={<InfoCircleOutlined />}
+                      style={{ marginBottom: 16, padding: 16 }}
+                    />
 
                     {/* Sorting Controls */}
                     <Row justify="end" style={{ marginBottom: 16 }}>
@@ -187,7 +189,7 @@ const RolesListPage: React.FC = () => {
                               <Space>
                                 {(() => {
                                   const sortBy = filterStore.filters.sortBy || 'name';
-                                  switch(sortBy) {
+                                  switch (sortBy) {
                                     case 'name': return 'Name';
                                     case 'description': return 'Description';
                                     default: return 'Name';
@@ -246,7 +248,7 @@ const RolesListPage: React.FC = () => {
                   </Card>
 
                   {/* Filter Drawer */}
-                  <FilterDrawer 
+                  <FilterDrawer
                     open={filterDrawerOpen}
                     initialValues={filterStore.filters}
                     onClose={() => setFilterDrawerOpen(false)}
@@ -277,12 +279,12 @@ interface FilterDrawerProps {
   onReset: () => void;
 }
 
-const FilterDrawer: React.FC<FilterDrawerProps> = ({ 
-  open, 
-  initialValues, 
-  onClose, 
-  onApply, 
-  onReset 
+const FilterDrawer: React.FC<FilterDrawerProps> = ({
+  open,
+  initialValues,
+  onClose,
+  onApply,
+  onReset
 }) => {
   const [form] = Form.useForm();
 

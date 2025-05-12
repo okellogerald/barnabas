@@ -27,7 +27,8 @@ export type FormSectionKey =
  * Section-specific key types for type safety
  */
 export type PersonalInfoKeys =
-    | "envelopeNumber"
+    // Not including envelopeNumber for it should not be editted in member-edit, but rather envelope management
+    // | "envelopeNumber"
     | "firstName"
     | "middleName"
     | "lastName"

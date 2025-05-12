@@ -6,9 +6,10 @@ import { CommonSchemas } from "@/data/_common";
  * Schema for personal information
  */
 export const MemberEditPersonalInfoSchema = z.object({
-    envelopeNumber: z.string()
-        .nullable().optional()
-        .describe("Unique envelope number assigned to the member"),
+    // Not including envelopeNumber for it should not be editted in member-edit, but rather envelope management
+    // envelopeNumber: z.string()
+    //     .nullable().optional()
+    //     .describe("Unique envelope number assigned to the member"),
 
     firstName: CommonSchemas.name
         .describe("Member's first name"),

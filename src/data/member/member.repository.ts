@@ -18,7 +18,7 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
     }
 
     static defaultQueryParams: MemberQueryParams = {
-        eager: "fellowship",
+        eager: "[fellowship,interests,dependants]",
         rangeStart: 0,
         rangeEnd: 9,
     };
@@ -48,24 +48,32 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
      * @returns Member data.
      * @throws Error if the member is not found or there's an issue retrieving the member.
      */
-    async getById(
-        id: string,
-        //eager: string = "fellowship,interests,dependants",
-        eager: string = "fellowship",
-    ): Promise<MemberDTO | undefined> {
-        try {
-            const result = await this.client.getById({
-                params: { id },
-                query: { eager },
-            });
-            if (result.status === 404) {
-                return undefined;
-            }
-            return this.handleResponse<MemberDTO>(result, 200);
-        } catch (error) {
-            console.error(`Error in getById with id ${id}:`, error);
-            throw new Error(`Failed to retrieve member with ID ${id}.`);
+    async getById(id: string): Promise<MemberDTO | undefined> {
+        const query: MemberQueryParams = {
+            ...MemberRepository.defaultQueryParams,
+            id: id,
+        };
+        const results = await this.getAll(query);
+        const member = results.results.find((member) => member.id === id);
+        if (!member) {
+            console.error(`Member with ID ${id} not found.`);
+            throw new Error(`Member with ID ${id} not found.`);
         }
+        return member;
+        //! when eager is implemented for this endpoint, uncomment the code below
+        // try {
+        //     const result = await this.client.getById({
+        //         params: { id },
+        //         query: { eager },
+        //     });
+        //     if (result.status === 404) {
+        //         return undefined;
+        //     }
+        //     return this.handleResponse<MemberDTO>(result, 200);
+        // } catch (error) {
+        //     console.error(`Error in getById with id ${id}:`, error);
+        //     throw new Error(`Failed to retrieve member with ID ${id}.`);
+        // }
     }
 
     /**

@@ -47,7 +47,7 @@ export const MEMBER_UI = {
 };
 
 export const MEMBER_API = {
-    EAGER_LOADING: "fellowship", // Default relationships to include
+    EAGER_LOADING: "[fellowship,interests,dependants]", // Default relationships to include
     DEFAULT_ORDER_BY: "firstName",
     FILTERS: {
         BOOLEAN_TRUE: 1,

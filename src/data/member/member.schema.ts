@@ -137,6 +137,7 @@ const memberQueryParamsSchema = z.object({
     baptized: z.coerce.boolean().optional(),
     confirmed: z.coerce.boolean().optional(),
     attendsFellowship: z.coerce.boolean().optional(),
+    id: z.string().optional(),
 });
 
 export const MemberSchemas = {

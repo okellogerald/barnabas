@@ -84,9 +84,32 @@ export class VolunteerManager {
     }
 
     /**
+     * Retrieves all volunteer opportunities with optional filtering
+     */
+    public async getAll(
+        options?:
+            | VolunteerOpportunityQueryCriteria
+            | VolunteerOpportunityQueryBuilder,
+    ): Promise<VolunteerOpportunity[]> {
+        if (!this._permManager.canPerformAction(Actions.OPPORTUNITY_FIND_ALL)) {
+            throw PermissionError.fromAction(Actions.OPPORTUNITY_FIND_ALL);
+        }
+
+        try {
+            const builder = VolunteerOpportunityQueryBuilder.from(options);
+            const results = await this._repo.getAll(builder);
+            const opportunities = results.map(VolunteerOpportunity.fromDTO);
+            return opportunities;
+        } catch (error) {
+            console.error("Error retrieving volunteer opportunities:", error);
+            throw new Error("Failed to retrieve volunteer opportunities.");
+        }
+    }
+
+    /**
      * Retrieves all volunteer opportunities with optional filtering and pagination.
      */
-    public async getOpportunities(
+    public async getPaginatedOpportunities(
         options?:
             | VolunteerOpportunityQueryCriteria
             | VolunteerOpportunityQueryBuilder,
@@ -97,7 +120,7 @@ export class VolunteerManager {
 
         try {
             const builder = VolunteerOpportunityQueryBuilder.from(options);
-            const response = await this._repo.getAll(builder);
+            const response = await this._repo.getPaginated(builder);
 
             const opportunities = response.results.map(
                 VolunteerOpportunity.fromDTO,

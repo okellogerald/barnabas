@@ -36,7 +36,7 @@ export const VolunteerQueries = {
           : options,
       ],
       queryFn: async () => {
-        return await volunteerManager.getOpportunities(options);
+        return await volunteerManager.getPaginatedOpportunities(options);
       },
     }),
 
@@ -172,7 +172,7 @@ export const VolunteerQueries = {
           .filterByName(searchTerm)
           .includeDefaultRelations();
 
-        return await volunteerManager.getOpportunities(builder);
+        return await volunteerManager.getPaginatedOpportunities(builder);
       },
       enabled: !!searchTerm && searchTerm.length > 0,
     }),

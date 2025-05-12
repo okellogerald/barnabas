@@ -9,6 +9,7 @@ import {
 } from "@/constants";
 import { modelFactory } from "../factories";
 import { VolunteerOpportunity } from "./volunteer.model";
+import { Fellowship } from "./fellowship.model";
 
 /**
  * Member model representing a church member
@@ -55,7 +56,7 @@ export class Member {
 
   // Related entities
   dependants: Dependant[];
-  fellowship: any | null; // Will be Fellowship type at runtime
+  fellowship: Fellowship | null; // Will be Fellowship type at runtime
   interests: VolunteerOpportunity[]; // Will be VolunteerOpportunity[] at runtime
   envelope: any | null; // Will be Envelope type at runtime
 
@@ -109,8 +110,6 @@ export class Member {
       ? modelFactory.createFellowship(dto.fellowship)
       : null;
 
-    console.log("interests: ", dto.interests);
-
     // Handle interests array
     this.interests = dto.interests?.map((i) => {
       // If the interest is already a full opportunity object
@@ -118,12 +117,10 @@ export class Member {
         return modelFactory.createVolunteerOpportunity(i);
       }
 
-      console.log("Interest is not a full object:", i);
       // If the interest is just an ID or object with ID
       const VolunteerOpportunityClass = modelFactory.getModelClass(
         "VolunteerOpportunity",
       );
-      console.log("VolunteerOpportunityClass:", VolunteerOpportunityClass);
       if (!VolunteerOpportunityClass) return null;
 
       return new VolunteerOpportunityClass({

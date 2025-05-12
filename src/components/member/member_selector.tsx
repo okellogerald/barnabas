@@ -70,7 +70,7 @@ export const MemberSelector: React.FC<MemberSelectorProps> = ({
 }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 10;
+    const pageSize = 5;
 
     // Build query parameters
     const queryParams = {

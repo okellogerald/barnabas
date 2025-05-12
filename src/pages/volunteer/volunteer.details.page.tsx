@@ -12,7 +12,8 @@ import {
   Descriptions,
   Breadcrumb,
   Divider,
-  Skeleton
+  Skeleton,
+  App
 } from 'antd';
 import {
   EditOutlined,
@@ -28,10 +29,10 @@ import { notifyUtils } from '@/utilities';
 import { Link } from 'react-router-dom';
 import { useVolunteerDetail, VolunteerDetailSuccessState } from '@/features/volunteer/hooks';
 import { useVolunteerPageUI } from '@/features/volunteer/list';
+import { ROUTES } from '@/app';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
-const { confirm } = Modal;
 
 /**
  * VolunteerOpportunityDetailPage - Component for viewing and managing a single volunteer opportunity
@@ -43,32 +44,34 @@ const { confirm } = Modal;
 const VolunteerOpportunityDetailPage: React.FC = () => {
   // Get ID from URL params
   const { id } = useParams<{ id: string }>();
-  
+
   // Core data handling and state
   const { state, formHelpers } = useVolunteerDetail(id);
-  
+
   // UI state management (modals, drawers, etc.)
   const ui = useVolunteerPageUI();
-  
+
+  const { modal } = App.useApp()
+
   // Initialize form when data is loaded
   useEffect(() => {
     if (VolunteerDetailSuccessState.is(state) && ui.isEditModalOpen) {
       formHelpers.initializeForm(state.data);
     }
   }, [state, ui.isEditModalOpen, formHelpers]);
-  
+
   // Handle form submission for edit
   const handleEditSubmit = async (values: { name: string; description: string }) => {
     if (!VolunteerDetailSuccessState.is(state)) return;
-    
+
     try {
       await state.update({
         name: values.name,
         description: values.description || null
       });
-      
+
       ui.closeEditModal();
-      
+
       // Show success message
       notifyUtils.success('Volunteer opportunity updated successfully');
     } catch (error) {
@@ -79,8 +82,8 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
   // Handle delete confirmation
   const showDeleteConfirm = () => {
     if (!VolunteerDetailSuccessState.is(state)) return;
-    
-    confirm({
+
+    modal.confirm({
       title: 'Are you sure you want to delete this volunteer opportunity?',
       icon: <ExclamationCircleOutlined />,
       content: 'This action cannot be undone.',
@@ -109,25 +112,27 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
   return (
     <div className="volunteer-opportunity-detail-page">
       {/* Breadcrumb Navigation - always show this */}
-      <Breadcrumb style={{ marginBottom: 16 }}>
-        <Breadcrumb.Item>
-          <Link to="/dashboard">Dashboard</Link>
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>
-          <Link to="/volunteers">Volunteer Opportunities</Link>
-        </Breadcrumb.Item>
-        <Breadcrumb.Item>
-          {VolunteerDetailSuccessState.is(state) ? state.data.name : 'Loading...'}
-        </Breadcrumb.Item>
-      </Breadcrumb>
+      <Breadcrumb
+        items={[
+          {
+            title: <Link to={ROUTES.DASHBOARD}>Dashboard</Link>,
+          },
+          {
+            title: <Link to={ROUTES.OPPORTUNITIES.LIST}>Volunteer Opportunities</Link>,
+          },
+          {
+            title: VolunteerDetailSuccessState.is(state) ? state.data.name : 'Loading...',
+          },
+        ]}
+        style={{ marginBottom: 16 }} />
 
       <AsyncStateMatcher
         state={state}
         views={{
           LoadingView: () => (
             <Card>
-              <Button 
-                icon={<ArrowLeftOutlined />} 
+              <Button
+                icon={<ArrowLeftOutlined />}
                 onClick={() => window.history.back()}
                 style={{ marginBottom: 16 }}
               >
@@ -137,13 +142,13 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
               <Skeleton active paragraph={{ rows: 4 }} />
             </Card>
           ),
-          
+
           ErrorView: ({ state }) => (
             <Card>
               <Row justify="space-between" align="middle">
                 <Col>
-                  <Button 
-                    icon={<ArrowLeftOutlined />} 
+                  <Button
+                    icon={<ArrowLeftOutlined />}
                     onClick={() => window.history.back()}
                     style={{ marginBottom: 16 }}
                   >
@@ -152,9 +157,9 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
                 </Col>
                 <Col>
                   {isErrorState(state) && (
-                    <Button 
-                      type="primary" 
-                      onClick={() => state.retry()} 
+                    <Button
+                      type="primary"
+                      onClick={() => state.retry()}
                       danger
                     >
                       Try Again
@@ -169,12 +174,12 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
               </Paragraph>
             </Card>
           ),
-          
+
           SuccessView: ({ state }) => {
             if (!VolunteerDetailSuccessState.is(state)) {
               return null;
             }
-            
+
             const opportunity = state.data;
 
             return (
@@ -183,8 +188,8 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
                 <Card>
                   <Row justify="space-between" align="middle">
                     <Col>
-                      <Button 
-                        icon={<ArrowLeftOutlined />} 
+                      <Button
+                        icon={<ArrowLeftOutlined />}
                         onClick={() => state.goBack()}
                         style={{ marginBottom: 16 }}
                       >
@@ -214,29 +219,29 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
 
                   {/* Opportunity Details */}
                   <Title level={3}>{opportunity.name}</Title>
-                  
+
                   <Descriptions bordered column={1} size="small">
-                    <Descriptions.Item 
+                    <Descriptions.Item
                       label={<Space><InfoCircleOutlined /> Description</Space>}
                     >
                       {opportunity.description || "No description provided"}
                     </Descriptions.Item>
-                    
-                    <Descriptions.Item 
+
+                    <Descriptions.Item
                       label={<Space><CalendarOutlined /> Created</Space>}
                     >
                       {new Date(opportunity.createdAt).toLocaleString()}
                     </Descriptions.Item>
-                    
-                    <Descriptions.Item 
+
+                    <Descriptions.Item
                       label={<Space><CalendarOutlined /> Last Updated</Space>}
                     >
                       {new Date(opportunity.updatedAt).toLocaleString()}
                     </Descriptions.Item>
                   </Descriptions>
-                  
+
                   <Divider />
-                  
+
                   <Card type="inner" title="Member Management">
                     <Paragraph>
                       To manage members for this volunteer opportunity, please use the Members section
@@ -259,8 +264,8 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
                     formHelpers.resetForm();
                   }}
                   footer={[
-                    <Button 
-                      key="cancel" 
+                    <Button
+                      key="cancel"
                       onClick={() => {
                         ui.closeEditModal();
                         formHelpers.resetForm();

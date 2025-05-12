@@ -9,13 +9,6 @@ import {
 
 export class VolunteerOpportunityRepository
     extends BaseRepository<typeof volunteerOpportunityContract> {
-    /**
-     * Default query parameters applied to volunteer opportunity requests
-     */
-    static defaultQueryParams = {
-        eager: "interestedMembers",
-    };
-
     constructor() {
         super("opportunity", volunteerOpportunityContract);
     }
@@ -25,9 +18,25 @@ export class VolunteerOpportunityRepository
      */
     async getAll(
         queryBuilder: VolunteerOpportunityQueryBuilder,
-    ): Promise<{ results: VolunteerOpportunityDTO[]; total: number }> {
+    ): Promise<VolunteerOpportunityDTO[]> {
         const query = queryBuilder.build();
         const result = await this.client.getAll({ query });
+        const opportunities = this.handleResponse<VolunteerOpportunityDTO[]>(
+            result,
+            200,
+        );
+
+        return opportunities;
+    }
+
+    /**
+     * Get all volunteer opportunities with pagination and filtering
+     */
+    async getPaginated(
+        queryBuilder: VolunteerOpportunityQueryBuilder,
+    ): Promise<{ results: VolunteerOpportunityDTO[]; total: number }> {
+        const query = queryBuilder.build();
+        const result = await this.client.getPaginated({ query });
         const opportunities = this.handleResponse<
             { results: VolunteerOpportunityDTO[]; total: number }
         >(
@@ -48,7 +57,7 @@ export class VolunteerOpportunityRepository
             : builder;
 
         // Get just enough data to retrieve the total
-        const response = await this.getAll(countBuilder);
+        const response = await this.getPaginated(countBuilder);
         return response.total;
     }
 

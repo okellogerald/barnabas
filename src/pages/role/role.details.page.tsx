@@ -6,18 +6,19 @@ import {
     Space,
     Row,
     Col,
-    Divider,
-    Descriptions,
     Tag,
     Alert,
-    Empty
+    Empty,
+    Flex
 } from 'antd';
 import {
     ArrowLeftOutlined,
     ReloadOutlined,
     KeyOutlined,
     LockOutlined,
-    InfoCircleOutlined
+    InfoCircleOutlined,
+    CalendarOutlined,
+    FileTextOutlined
 } from '@ant-design/icons';
 import { useRoleDetails, RoleDetailsSuccessState } from '@/features/role/role-details';
 import { AsyncStateMatcher } from '@/lib/state/async_state.matcher';
@@ -45,107 +46,125 @@ const RoleDetailsPage: React.FC = () => {
             <div className="role-details-page">
                 {/* Main Details Card */}
                 <Card>
-                    <Row gutter={[0, 16]}>
-                        {/* Page Header with Actions */}
-                        <Col span={24}>
-                            <Row justify="space-between" align="middle">
-                                <Col>
-                                    <Title level={3}>
-                                        {role.name}
-                                        <Tag color="blue" style={{ marginLeft: 8 }}>
-                                            System Role
-                                        </Tag>
-                                    </Title>
-                                    <Text type="secondary">
-                                        Role ID: {role.id}
-                                    </Text>
-                                </Col>
-                                <Col>
-                                    <Space>
-                                        <Button
-                                            icon={<ArrowLeftOutlined />}
-                                            onClick={uiActions.back}
-                                        >
-                                            Back to Roles
-                                        </Button>
-
-                                        <Button
-                                            icon={<ReloadOutlined />}
-                                            onClick={uiActions.refresh}
-                                        >
-                                            Refresh
-                                        </Button>
-                                    </Space>
-                                </Col>
-                            </Row>
+                    {/* Page Header with Actions */}
+                    <Row justify="space-between" align="middle" style={{ marginBottom: 16 }}>
+                        <Col>
+                            <Flex align="center" gap={8}>
+                                <Title level={3} style={{ margin: 0 }}>
+                                    {role.name}
+                                </Title>
+                                <Tag color="blue">System Role</Tag>
+                            </Flex>
+                            <Text type="secondary">ID: {role.id}</Text>
                         </Col>
+                        <Col>
+                            <Space>
+                                <Button
+                                    icon={<ArrowLeftOutlined />}
+                                    onClick={uiActions.back}
+                                >
+                                    Back to Roles
+                                </Button>
 
-                        {/* Read-only Notice */}
-                        <Col span={24}>
-                            <Alert
-                                message="System Role - Read Only"
-                                description="Roles are predefined in the system and cannot be modified. Each role has specific actions that determine what users with that role can do."
-                                type="info"
-                                showIcon
-                                icon={<LockOutlined />}
-                            />
-                        </Col>
-
-                        {/* Role Information Section */}
-                        <Col span={24}>
-                            <Divider orientation="left">Role Information</Divider>
-                            <Descriptions bordered column={{ xs: 1, sm: 2, md: 2 }}>
-                                <Descriptions.Item label="Name">{role.name}</Descriptions.Item>
-                                <Descriptions.Item label="Church ID">{role.churchId}</Descriptions.Item>
-                                <Descriptions.Item label="Description" span={2}>
-                                    {role.getDescription ? role.getDescription() : role.description || 'No description available'}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Created At">
-                                    {role.createdAt.toLocaleString()}
-                                </Descriptions.Item>
-                                <Descriptions.Item label="Last Updated">
-                                    {role.updatedAt.toLocaleString()}
-                                </Descriptions.Item>
-                            </Descriptions>
-                        </Col>
-
-                        {/* Role Actions Section */}
-                        <Col span={24}>
-                            <Divider orientation="left">Role Actions</Divider>
-                            <Card
-                                title={<Space><KeyOutlined /> Allowed Actions</Space>}
-                                extra={<Text type="secondary">These define what users with this role can do</Text>}
-                                variant={"outlined"}
-                            >
-                                {roleState.isLoading ? (
-                                    <div style={{ textAlign: 'center', padding: '20px' }}>
-                                        <Text>Loading actions...</Text>
-                                    </div>
-                                ) : roleActions && roleActions.length > 0 ? (
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                                        {roleActions.map(action => (
-                                            <Tag key={action.id} color="blue">
-                                                {action.action}
-                                            </Tag>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <Empty
-                                        image={Empty.PRESENTED_IMAGE_SIMPLE}
-                                        description="No specific actions defined for this role"
-                                    />
-                                )}
-                            </Card>
-
-                            <div style={{ marginTop: 16 }}>
-                                <Text type="secondary">
-                                    <InfoCircleOutlined style={{ marginRight: 8 }} />
-                                    Actions determine what operations users with this role can perform in the system.
-                                    For example, a user with the "user.create" action can create new users.
-                                </Text>
-                            </div>
+                                <Button
+                                    icon={<ReloadOutlined />}
+                                    onClick={uiActions.refresh}
+                                >
+                                    Refresh
+                                </Button>
+                            </Space>
                         </Col>
                     </Row>
+
+                    {/* Read-only Notice */}
+                    <Alert
+                        message="System Role - Read Only"
+                        description="Roles are predefined in the system and cannot be modified. Each role has specific actions that determine what users with that role can do."
+                        type="info"
+                        showIcon
+                        banner
+                        icon={<LockOutlined />}
+                        style={{ marginBottom: 24 }}
+                    />
+
+                    {/* Role Information Section - Refined */}
+                    <Card 
+                        title={<Flex align="center" gap={8}><FileTextOutlined /> Role Information</Flex>}
+                        style={{ marginBottom: 24 }}
+                        variant='outlined'
+                        className="inner-card"
+                    >
+                        <Row gutter={[24, 16]}>
+                            <Col xs={24} md={12}>
+                                <Flex vertical gap={4}>
+                                    <Text type="secondary">Name</Text>
+                                    <Text strong>{role.name}</Text>
+                                </Flex>
+                            </Col>
+                            <Col xs={24} md={12}>
+                                <Flex vertical gap={4}>
+                                    <Text type="secondary">Church ID</Text>
+                                    <Text copyable>{role.churchId}</Text>
+                                </Flex>
+                            </Col>
+                            <Col span={24}>
+                                <Flex vertical gap={4}>
+                                    <Text type="secondary">Description</Text>
+                                    <Text>
+                                        {role.getDescription ? role.getDescription() : role.description || 'No description available'}
+                                    </Text>
+                                </Flex>
+                            </Col>
+                            
+                            <Col xs={24} md={12}>
+                                <Flex vertical gap={4}>
+                                    <Text type="secondary"><CalendarOutlined /> Created At</Text>
+                                    <Text>{role.createdAt.toLocaleString()}</Text>
+                                </Flex>
+                            </Col>
+                            <Col xs={24} md={12}>
+                                <Flex vertical gap={4}>
+                                    <Text type="secondary"><CalendarOutlined /> Last Updated</Text>
+                                    <Text>{role.updatedAt.toLocaleString()}</Text>
+                                </Flex>
+                            </Col>
+                        </Row>
+                    </Card>
+
+                    {/* Role Actions Section - Refined */}
+                    <Card 
+                        title={<Flex align="center" gap={8}><KeyOutlined /> Allowed Actions</Flex>}
+                        extra={<Text type="secondary">These define what users with this role can do</Text>}
+                        variant='outlined'
+                        className="inner-card"
+                    >
+                        {roleState.isLoading ? (
+                            <div style={{ textAlign: 'center', padding: '20px' }}>
+                                <Text>Loading actions...</Text>
+                            </div>
+                        ) : roleActions && roleActions.length > 0 ? (
+                            <Flex gap={8} wrap="wrap">
+                                {roleActions.map(action => (
+                                    <Tag key={action.id} color="blue">
+                                        {action.action}
+                                    </Tag>
+                                ))}
+                            </Flex>
+                        ) : (
+                            <Empty
+                                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                description="No specific actions defined for this role"
+                            />
+                        )}
+                        
+                        <Flex align="center" gap={8} style={{ marginTop: 16 }}>
+                            <InfoCircleOutlined style={{ color: '#1890ff' }} />
+                            <Text type="secondary">
+                                Actions determine what operations users with this role can perform in the system.
+                                For example, a user with the "user.create" action can create new users.
+                            </Text>
+                        </Flex>
+                    </Card>
                 </Card>
             </div>
         );

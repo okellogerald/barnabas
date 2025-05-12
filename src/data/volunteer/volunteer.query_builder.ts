@@ -1,4 +1,5 @@
 import { QueryBuilder, SortDirection } from "@/lib/query";
+import { VolunteerOpportunityDTO } from "./volunteer.schema";
 
 // Symbol for volunteer opportunity query builder type
 export const VOLUNTEER_OPPORTUNITY_QUERY_BUILDER_TYPE = Symbol(
@@ -14,7 +15,7 @@ export interface VolunteerOpportunityQueryCriteria {
     pageSize?: number;
 
     // Filters
-    name?: string;
+    name?: keyof VolunteerOpportunityDTO;
     description?: string;
 
     // Sorting
