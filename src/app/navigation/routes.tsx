@@ -15,7 +15,7 @@ const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard.page'));
 
 const MembersPage = lazy(() => import('@/pages/member/member_list.page'));
 const MemberCreatePage = lazy(() => import('@/pages/member/member-create/member_create.page'));
-const MemberEditPage = lazy(() => import('@/pages/member/member-edit/member_edit.page'));
+const MemberEditPage = lazy(() => import('@/pages/member/member_edit.page'));
 const MemberDetailsPage = lazy(() => import('@/pages/member/member_details.page'));
 
 const FellowshipListPage = lazy(() => import('@/pages/fellowship/fellowship.list.page'));
