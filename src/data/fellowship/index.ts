@@ -1,3 +1,5 @@
 export * from "./contract"
 export * from "./repository"
 export * from "./schema"
+export * from "./fellowship.manager"
+export * from "./fellowship.queries"

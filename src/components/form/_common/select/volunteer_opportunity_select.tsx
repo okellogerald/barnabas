@@ -1,10 +1,10 @@
 import React from 'react';
 import { SelectProps } from 'antd';
 import { AsyncSelect } from './async_select';
-import { VolunteerManager } from '@/features/volunteer';
 import { VolunteerOpportunityQueryCriteria } from '@/data/volunteer';
 import { SortDirection } from '@/lib/query';
 import { VolunteerOpportunity } from '@/models';
+import { VolunteerManager } from '@/data/volunteer/volunteer.manager';
 
 interface OpportunityOption {
     label: string;

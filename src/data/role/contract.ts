@@ -1,6 +1,6 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
-import { CommonSchemas } from "@/data/_common";
+import { CommonSchemas } from "@/data/shared";
 import { RoleSchemas } from "../role/schema";
 
 const c = initContract();

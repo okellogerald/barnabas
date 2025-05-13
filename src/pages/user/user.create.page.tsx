@@ -22,8 +22,8 @@ import {
   ArrowLeftOutlined,
   ReloadOutlined
 } from '@ant-design/icons';
-import { useUserCreate } from '@/features/user/user-create';
 import { Rule } from 'antd/es/form';
+import { useUserCreate } from '@/hooks/user';
 
 const { Title, Text } = Typography;
 const { Option } = Select;

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CommonSchemas } from "@/data/_common";
+import { CommonSchemas } from "@/data/shared";
 import {
     DependantRelationship,
     EducationLevel,

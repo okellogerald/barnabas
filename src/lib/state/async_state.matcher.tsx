@@ -49,7 +49,7 @@ interface AsyncStateMatcherProps<T> {
     IdleView?: React.ComponentType<{ state: IdleState }>;
     LoadingView?: React.ComponentType<{ state: LoadingState }>;
     ErrorView?: React.ComponentType<{ state: ErrorState }>;
-    SuccessView: React.ComponentType<{ state: SuccessState<T> }>;
+    SuccessView: React.ComponentType<{ state: SuccessState<T> | any }>;
     UnauthorizedView?: React.ComponentType<{ state: UnauthorizedState }>;
     NotFoundView?: React.ComponentType<{ state: NotFoundState }>;
     UnauthenticatedView?: React.ComponentType<{ state: UnauthenticatedState }>;

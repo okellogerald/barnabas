@@ -10,12 +10,12 @@ import {
     PhoneOutlined
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { AuthManager } from '@/features/auth/auth.manager';
-import { Actions } from '@/features/auth/permission';
+import { AuthenticationManager } from '@/data/authentication/auth.manager';
 import { useDashboard } from '@/interactors/dashboard/hook';
 import { createUIStateMatcher, IErrorState } from '@/interactors/_state';
 import { DashboardPageSuccessState } from '@/interactors/dashboard/types';
 import { CSSProperties } from 'react';
+import { Actions } from '@/data/authorization';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -42,8 +42,8 @@ const DashboardPage: React.FC = () => {
  */
 const SuccessView: React.FC<{ state: DashboardPageSuccessState }> = ({ state }) => {
     const { church, totalFellowships, totalMembers } = state;
-    const user = AuthManager.instance.useCurrentUser();
-    const authManager = AuthManager.instance;
+    const user = AuthenticationManager.instance.useCurrentUser();
+    const authManager = AuthenticationManager.instance;
 
     /**
      * Helper function to get time-based greeting

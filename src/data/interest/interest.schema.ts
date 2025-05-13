@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CommonSchemas } from "../_common";
+import { CommonSchemas } from "../shared";
 import { schemaFactory } from "@/factories";
 
 // Lazy getter

@@ -1,4 +1,4 @@
-import { CommonSchemas } from "@/data/_common";
+import { CommonSchemas } from "@/data/shared";
 import { z } from "zod";
 
 /**

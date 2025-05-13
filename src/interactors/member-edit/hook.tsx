@@ -14,13 +14,13 @@ import { useInterestFields } from "./_field_hooks/use_interests_fields";
 import { STEPS } from "./stores/store.ui";
 import { useMemberEditUIStore } from "./stores/store.ui";
 import { useStore } from "zustand";
-import { MemberManager } from "@/features/member";
 import { MEMBER_NOTIFICATIONS } from "@/constants/member";
 import { FormSectionKey } from "./types";
 import { MemberEditFormValues, validateSection } from "./schemas/schemas.member";
 import { useParams } from "react-router-dom";
 import { Member } from "@/models";
 import { Navigation } from "@/app";
+import { MemberManager } from "@/data/member";
 
 // Define the interface for section update data
 interface SectionUpdateData {

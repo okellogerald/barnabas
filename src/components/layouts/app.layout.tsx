@@ -12,11 +12,11 @@ import {
     HeartOutlined
 } from '@ant-design/icons';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { AuthManager } from '@/features/auth/auth.manager';
+import { AuthenticationManager } from '@/data/authentication/auth.manager';
 import { User } from '@/models';
 import { ItemType, MenuItemType } from 'antd/es/menu/interface';
 import { DesignTokens } from '@/app/theme/constants';
-import { Actions } from '@/features/auth/permission';
+import { Actions } from '@/data/authorization';
 
 const { Header, Sider, Content } = Layout;
 const { Title, Text } = Typography;
@@ -44,7 +44,7 @@ const Logo: React.FC<LogoProps> = ({ collapsed }) => (
 interface NavigationMenuProps {
     collapsed: boolean;
     currentPath: string;
-    authManager: AuthManager;
+    authManager: AuthenticationManager;
 }
 
 const NavigationMenu: React.FC<NavigationMenuProps> = ({ currentPath, authManager }) => {
@@ -173,7 +173,7 @@ const AppLayout: React.FC = () => {
     const [collapsed, setCollapsed] = useState<boolean>(false);
     const location = useLocation();
     const navigate = useNavigate();
-    const authManager = AuthManager.instance;
+    const authManager = AuthenticationManager.instance;
     const currentUser = authManager.useCurrentUser() as User;
 
     // Handle sidebar toggle

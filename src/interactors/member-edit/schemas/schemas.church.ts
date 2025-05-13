@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { MemberRole } from "@/constants";
-import { CommonSchemas } from "@/data/_common";
+import { CommonSchemas } from "@/data/shared";
 
 /**
  * Schema for church information

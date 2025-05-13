@@ -24,11 +24,11 @@ import {
   SearchOutlined,
   InfoCircleOutlined
 } from '@ant-design/icons';
-import { VolunteerListSuccessState, useVolunteerList } from '@/features/volunteer/list';
+import { VolunteerListSuccessState, useVolunteerList } from '@/hooks/volunteer/list';
 import { AsyncStateMatcher } from '@/lib/state';
 import { notifyUtils } from '@/utilities';
-import { useVolunteerPageUI } from '@/features/volunteer/list';
-import { useCreateVolunteerOpportunity } from '@/features/volunteer/hooks';
+import { useVolunteerPageUI } from '@/hooks/volunteer/list';
+import { useCreateVolunteerOpportunity } from '@/hooks/volunteer';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -46,13 +46,13 @@ const VolunteerOpportunityListPage: React.FC = () => {
   // Core data handling and state
   const opportunitiesState = useVolunteerList();
   const createOpportunity = useCreateVolunteerOpportunity();
-  
+
   // UI state management (modals, drawers, etc.)
   const ui = useVolunteerPageUI();
 
   // Form for creating new opportunities
   const [createForm] = Form.useForm();
-  
+
   // Handle creation form submission
   const handleCreateSubmit = async (values: { name: string; description: string }) => {
     try {
@@ -60,10 +60,10 @@ const VolunteerOpportunityListPage: React.FC = () => {
         name: values.name,
         description: values.description
       });
-      
+
       ui.closeCreateModal();
       createForm.resetFields();
-      
+
       // Display success message
       notifyUtils.success('Volunteer opportunity created successfully');
     } catch (error) {
@@ -73,7 +73,7 @@ const VolunteerOpportunityListPage: React.FC = () => {
 
   // Filter form
   const [filterForm] = Form.useForm();
-  
+
   // Handle filter submission
   const handleFilterSubmit = (values: { searchTerm: string }) => {
     if (VolunteerListSuccessState.is(opportunitiesState)) {
@@ -81,7 +81,7 @@ const VolunteerOpportunityListPage: React.FC = () => {
     }
     ui.closeFilterDrawer();
   };
-  
+
   // Handle filter reset
   const handleFilterReset = () => {
     filterForm.resetFields();
@@ -168,8 +168,8 @@ const VolunteerOpportunityListPage: React.FC = () => {
                           <Paragraph type="secondary">
                             Create volunteer opportunities to track member interests and skills
                           </Paragraph>
-                          <Button 
-                            type="primary" 
+                          <Button
+                            type="primary"
                             icon={<PlusOutlined />}
                             onClick={ui.openCreateModal}
                           >
@@ -220,14 +220,14 @@ const VolunteerOpportunityListPage: React.FC = () => {
                     initialValues={{ searchTerm: state.filters.name }}
                     onFinish={handleFilterSubmit}
                   >
-                    <Form.Item 
-                      name="searchTerm" 
+                    <Form.Item
+                      name="searchTerm"
                       label="Search Term"
                       extra="Search by opportunity name"
                     >
-                      <Input 
-                        placeholder="Enter search term" 
-                        prefix={<SearchOutlined />} 
+                      <Input
+                        placeholder="Enter search term"
+                        prefix={<SearchOutlined />}
                         allowClear
                       />
                     </Form.Item>

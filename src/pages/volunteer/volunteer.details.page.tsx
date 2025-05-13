@@ -27,8 +27,8 @@ import { useParams } from 'react-router-dom';
 import { AsyncStateMatcher, isErrorState } from '@/lib/state';
 import { notifyUtils } from '@/utilities';
 import { Link } from 'react-router-dom';
-import { useVolunteerDetail, VolunteerDetailSuccessState } from '@/features/volunteer/hooks';
-import { useVolunteerPageUI } from '@/features/volunteer/list';
+import { useVolunteerDetail, VolunteerDetailSuccessState } from '@/hooks/volunteer';
+import { useVolunteerPageUI } from '@/hooks/volunteer/list';
 import { ROUTES } from '@/app';
 
 const { Title, Text, Paragraph } = Typography;

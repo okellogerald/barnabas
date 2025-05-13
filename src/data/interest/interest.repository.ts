@@ -1,4 +1,4 @@
-import { BaseRepository } from "@/data/_common";
+import { BaseRepository } from "@/data/shared";
 import { interestContract } from "./interest.contract";
 import { CreateInterestDTO, InterestDTO } from "./interest.schema";
 import { InterestQueryBuilder } from "./interest.query_builder";

@@ -29,9 +29,9 @@ import {
 import { AsyncStateMatcher } from '@/lib/state/async_state.matcher';
 import { Navigation } from '@/app';
 import { Role } from '@/models';
-import { RoleQueries } from '@/features/role';
-import { RoleFilterState, RolesListSuccessState, useRoleFilterStore, useRolesList } from '@/features/role/role-list';
+import { RoleFilterState, RolesListSuccessState, useRoleFilterStore, useRolesList } from '@/hooks/role/role-list';
 import { SortDirection } from '@/lib/query';
+import { RoleQueries } from '@/data/role/role.queries';
 
 const { Title, Text } = Typography;
 

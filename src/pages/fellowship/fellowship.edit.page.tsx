@@ -1,26 +1,26 @@
 import React from 'react';
-import { 
-  Form, 
-  Input, 
-  Button, 
-  Card, 
-  Typography, 
-  Space, 
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Typography,
+  Space,
   Row,
   Col,
   Divider,
   Select,
   Alert
 } from 'antd';
-import { 
-  ArrowLeftOutlined, 
-  SaveOutlined, 
+import {
+  ArrowLeftOutlined,
+  SaveOutlined,
   ReloadOutlined,
   TeamOutlined
 } from '@ant-design/icons';
 import { AsyncStateMatcher } from '@/lib/state/async_state.matcher';
 import { isSuccessState } from '@/lib/state';
-import { useFellowshipEdit } from '@/features/fellowship/fellowship-edit';
+import { useFellowshipEdit } from '@/hooks/fellowship';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -33,7 +33,7 @@ const { Option } = Select;
  */
 const FellowshipEditPage: React.FC = () => {
   // Get form handling logic and data from hook
-  const { 
+  const {
     form,
     isSubmitting,
     fellowshipState,
@@ -49,7 +49,7 @@ const FellowshipEditPage: React.FC = () => {
     if (!isSuccessState(fellowshipState)) return null;
 
     const fellowship = fellowshipState.data;
-    
+
     return (
       <div className="fellowship-edit-page">
         <Card>
@@ -92,7 +92,7 @@ const FellowshipEditPage: React.FC = () => {
                     { max: 500, message: 'Notes cannot exceed 500 characters' }
                   ]}
                 >
-                  <TextArea 
+                  <TextArea
                     placeholder="Enter optional notes about this fellowship"
                     rows={4}
                     showCount
@@ -101,7 +101,7 @@ const FellowshipEditPage: React.FC = () => {
                 </Form.Item>
 
                 <Divider orientation="left">Leadership Roles</Divider>
-                
+
                 {members.length === 0 && !membersLoading && (
                   <Alert
                     message="No Members"
@@ -161,7 +161,7 @@ const FellowshipEditPage: React.FC = () => {
                   name="treasurerId"
                   label="Treasurer"
                   extra="Manages fellowship finances"
->
+                >
                   <Select
                     placeholder="Select a treasurer"
                     allowClear
@@ -205,7 +205,7 @@ const FellowshipEditPage: React.FC = () => {
                 <Form.Item>
                   <Row justify="space-between">
                     <Col>
-                      <Button 
+                      <Button
                         icon={<ArrowLeftOutlined />}
                         onClick={handleCancel}
                       >
@@ -214,14 +214,14 @@ const FellowshipEditPage: React.FC = () => {
                     </Col>
                     <Col>
                       <Space>
-                        <Button 
+                        <Button
                           icon={<ReloadOutlined />}
                           onClick={handleReset}
                         >
                           Reset
                         </Button>
-                        <Button 
-                          type="primary" 
+                        <Button
+                          type="primary"
                           htmlType="submit"
                           icon={<SaveOutlined />}
                           loading={isSubmitting}

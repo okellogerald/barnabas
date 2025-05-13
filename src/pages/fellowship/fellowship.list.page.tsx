@@ -27,13 +27,13 @@ import {
   SortAscendingOutlined,
   SortDescendingOutlined,
 } from '@ant-design/icons';
-import { useFellowshipsList, FellowshipsListSuccessState } from '@/features/fellowship/fellowship-list';
+import { useFellowshipsList, FellowshipsListSuccessState } from '@/hooks/fellowship/fellowship-list';
 import { AsyncStateMatcher } from '@/lib/state/async_state.matcher';
 import { Navigation } from '@/app';
-import { AuthManager } from '@/features/auth';
+import { AuthenticationManager } from '@/data/authentication';
 import { Fellowship } from '@/models';
-import { FellowshipFilterState, useFellowshipFilterStore } from '@/features/fellowship/fellowship-list';
-import { Actions } from '@/features/auth/permission';
+import { FellowshipFilterState, useFellowshipFilterStore } from '@/hooks/fellowship/fellowship-list';
+import { Actions } from '@/data/authorization';
 
 const { Title, Text } = Typography;
 
@@ -56,7 +56,7 @@ const FellowshipListPage: React.FC = () => {
 
   // ======== PERMISSIONS ========
   // Check if user has permission to create fellowships
-  const canCreateFellowship = AuthManager.instance.hasPermission(Actions.FELLOWSHIP_CREATE);
+  const canCreateFellowship = AuthenticationManager.instance.hasPermission(Actions.FELLOWSHIP_CREATE);
 
   // ======== FILTER COUNT TRACKING ========
   // Count active filters (excluding sort options)

@@ -3,7 +3,6 @@ import {
     MemberEditFormSchema,
     MemberEditFormValues,
 } from "./schemas/schemas.member";
-import { MemberManager } from "@/features/member";
 import { FormSectionKey } from "./types";
 import {
     MemberEditPersonalInfo,
@@ -31,6 +30,7 @@ import {
 } from "./schemas/schemas.professional";
 import { Member } from "@/models";
 import { MemberEditDependantsSchema } from "./schemas/schemas.dependants";
+import { MemberManager } from "@/data/member";
 
 interface SectionUpdateData {
     section: FormSectionKey;

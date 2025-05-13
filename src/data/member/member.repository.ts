@@ -1,11 +1,10 @@
-import { BaseRepository } from "@/data/_common";
-import { memberContract } from "./member.contract";
+import { BaseRepository } from "@/data/shared";
+import { memberContract } from "./member.api_contract";
+import { CreateMemberDTO, MemberDTO, UpdateMemberDTO } from "./member.schema";
 import {
-    CreateMemberDTO,
-    MemberDTO,
-    MemberQueryParams,
-    UpdateMemberDTO,
-} from "./member.schema";
+    MemberQueryBuilder,
+    MemberQueryCriteria,
+} from "./member.query_builder";
 
 type GetMembersResponse = {
     results: MemberDTO[];
@@ -17,24 +16,31 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
         super("member", memberContract);
     }
 
-    static defaultQueryParams: MemberQueryParams = {
-        eager: "[fellowship,interests,dependants]",
-        rangeStart: 0,
-        rangeEnd: 9,
-    };
-
     /**
-     * Retrieves all members with optional filtering, sorting, and pagination.
-     * @param queryParams Optional parameters for filtering, sorting, and pagination.
-     * @returns Object containing member data array and total count.
-     * @throws Error if there's an issue retrieving members.
+     * Get all members with pagination and filtering
+     * @param builderOrCriteria - A MemberQueryBuilder or MemberQueryCriteria for filtering data
+     * @returns {Promise<GetMembersResponse>} Object containing member data array and total count
      */
     async getAll(
-        queryParams: MemberQueryParams = MemberRepository.defaultQueryParams,
+        builderOrCriteria?: MemberQueryBuilder | MemberQueryCriteria,
     ): Promise<GetMembersResponse> {
         try {
-            const result = await this.client.getAll({ query: queryParams });
-            return this.handleResponse<GetMembersResponse>(result, 200);
+            // Convert builder to query params object if it's a builder
+            const query = MemberQueryBuilder.is(builderOrCriteria)
+                ? builderOrCriteria.build()
+                : builderOrCriteria
+                ? builderOrCriteria
+                : {};
+
+            // Execute the query
+            const result = await this.client.getAll({
+                query,
+            });
+
+            return this.handleResponse<GetMembersResponse>(
+                result,
+                200,
+            );
         } catch (error) {
             console.error("Error in getAll:", error);
             throw new Error("Failed to retrieve members.");
@@ -42,49 +48,62 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
     }
 
     /**
-     * Retrieves a specific member by ID.
-     * @param id Member ID.
-     * @param eager Optional eager loading parameter.
-     * @returns Member data.
-     * @throws Error if the member is not found or there's an issue retrieving the member.
+     * Get a member by ID
+     * @param id - The ID of the member to retrieve
+     * @returns {Promise<MemberDTO | null>} The member data or null if not found
      */
     async getById(id: string): Promise<MemberDTO | undefined> {
-        const query: MemberQueryParams = {
-            ...MemberRepository.defaultQueryParams,
-            id: id,
-        };
-        const results = await this.getAll(query);
-        const member = results.results.find((member) => member.id === id);
-        if (!member) {
-            console.error(`Member with ID ${id} not found.`);
-            throw new Error(`Member with ID ${id} not found.`);
+        try {
+            // Create a query builder for fetching a single member by ID
+            const builder = MemberQueryBuilder.newInstance()
+                .includeDefaultRelations()
+                .paginate(1, 1)
+                .where("id", id);
+
+            // Get all members matching the criteria
+            const result = await this.getAll(builder);
+
+            // Find the member with the matching ID
+            return result.results.find((m) => m.id === id);
+
+            // TODO: When the API supports direct getById with eager, use this code instead:
+            /*
+            const query: Record<string, any> = {};
+
+            // Add eager loading if specified
+            if (eager) {
+                query.eager = eager;
+            } else {
+                query.eager = MemberRepository.defaultQueryParams.eager;
+            }
+
+            const result = await this.client.getById({
+                params: { id },
+                query,
+            });
+
+            if (result.status === 404) {
+                return null;
+            }
+
+            return this.handleResponse<MemberDTO>(result, 200);
+            */
+        } catch (error) {
+            console.error(`Error retrieving member by ID (${id}):`, error);
+            throw new Error(`Failed to retrieve member by ID ${id}.`);
         }
-        return member;
-        //! when eager is implemented for this endpoint, uncomment the code below
-        // try {
-        //     const result = await this.client.getById({
-        //         params: { id },
-        //         query: { eager },
-        //     });
-        //     if (result.status === 404) {
-        //         return undefined;
-        //     }
-        //     return this.handleResponse<MemberDTO>(result, 200);
-        // } catch (error) {
-        //     console.error(`Error in getById with id ${id}:`, error);
-        //     throw new Error(`Failed to retrieve member with ID ${id}.`);
-        // }
     }
 
     /**
-     * Creates a new member.
-     * @param data Member data to create.
-     * @returns Created member data.
-     * @throws Error if there's an issue creating the member.
+     * Create a new member
+     * @param data - The data for the new member
+     * @returns {Promise<MemberDTO>} The created member data
      */
     async create(data: CreateMemberDTO): Promise<MemberDTO> {
         try {
-            const result = await this.client.create({ body: data });
+            const result = await this.client.create({
+                body: data,
+            });
             return this.handleResponse<MemberDTO>(result, 201);
         } catch (error) {
             console.error("Error in create:", error);
@@ -93,11 +112,10 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
     }
 
     /**
-     * Updates an existing member.
-     * @param id Member ID.
-     * @param data Member data to update.
-     * @returns Updated member data.
-     * @throws Error if the member is not found or there's an issue updating the member.
+     * Update an existing member
+     * @param id - The ID of the member to update
+     * @param data - The data to update
+     * @returns {Promise<MemberDTO>} The updated member data
      */
     async update(id: string, data: UpdateMemberDTO): Promise<MemberDTO> {
         try {
@@ -113,15 +131,16 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
     }
 
     /**
-     * Deletes a member.
-     * @param id Member ID.
-     * @returns Deleted member data.
-     * @throws Error if the member is not found or there's an issue deleting the member.
+     * Delete a member
+     * @param id - The ID of the member to delete
+     * @returns {Promise<void>} Nothing
      */
-    async delete(id: string): Promise<MemberDTO> {
+    async delete(id: string): Promise<void> {
         try {
-            const result = await this.client.delete({ params: { id } });
-            return this.handleResponse<MemberDTO>(result, 200);
+            const result = await this.client.delete({
+                params: { id },
+            });
+            this.handleResponse(result, 200);
         } catch (error) {
             console.error(`Error in delete with id ${id}:`, error);
             throw new Error(`Failed to delete member with ID ${id}.`);
@@ -129,17 +148,17 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
     }
 
     /**
-     * Searches for members by name or contact information.
-     * @param searchTerm Text to search for.
-     * @returns Object containing member data array and total count.
-     * @throws Error if there's an issue searching for members.
+     * Search for members by a search term (name, email, phone, etc.)
+     * @param searchTerm - The search term
+     * @returns {Promise<GetMembersResponse>} Object containing member data array and total count
      */
     async search(searchTerm: string): Promise<GetMembersResponse> {
         try {
-            return this.getAll({
-                ...MemberRepository.defaultQueryParams,
-                search: searchTerm,
-            });
+            const builder = MemberQueryBuilder.newInstance()
+                .search(searchTerm)
+                .includeDefaultRelations();
+
+            return await this.getAll(builder);
         } catch (error) {
             console.error(`Error in search with term ${searchTerm}:`, error);
             throw new Error(
@@ -149,17 +168,31 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
     }
 
     /**
-     * Gets members by fellowship.
-     * @param fellowshipId Fellowship ID.
-     * @returns Object containing member data array and total count.
-     * @throws Error if there's an issue retrieving members by fellowship.
+     * Get members belonging to a specific fellowship
+     * @param fellowshipId - The ID of the fellowship
+     * @param additionalCriteria - Optional additional filtering criteria
+     * @returns {Promise<GetMembersResponse>} Object containing member data array and total count
      */
-    async getByFellowship(fellowshipId: string): Promise<GetMembersResponse> {
+    async getByFellowship(
+        fellowshipId: string,
+        additionalCriteria?: Omit<MemberQueryCriteria, "fellowshipId">,
+    ): Promise<GetMembersResponse> {
         try {
-            return this.getAll({
-                ...MemberRepository.defaultQueryParams,
-                fellowshipId,
-            });
+            // Create a builder and set the fellowship filter
+            const builder = MemberQueryBuilder.newInstance()
+                .filterByFellowshipId(fellowshipId)
+                .includeDefaultRelations();
+
+            // Apply additional criteria if provided
+            if (additionalCriteria) {
+                const criteria: MemberQueryCriteria = {
+                    ...additionalCriteria,
+                    fellowshipId,
+                };
+                builder.applyCriteria(criteria);
+            }
+
+            return await this.getAll(builder);
         } catch (error) {
             console.error(
                 `Error in getByFellowship with id ${fellowshipId}:`,
@@ -172,24 +205,24 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
     }
 
     /**
-     * Gets members by baptism status.
-     * @param baptized Baptism status to filter by.
-     * @returns Object containing member data array and total count.
-     * @throws Error if there's an issue retrieving members by baptism status.
+     * Get members by baptism status
+     * @param isBaptized - The baptism status to filter by
+     * @returns {Promise<GetMembersResponse>} Object containing member data array and total count
      */
-    async getByBaptismStatus(baptized: boolean): Promise<GetMembersResponse> {
+    async getByBaptismStatus(isBaptized: boolean): Promise<GetMembersResponse> {
         try {
-            return this.getAll({
-                ...MemberRepository.defaultQueryParams,
-                baptized,
-            });
+            const builder = MemberQueryBuilder.newInstance()
+                .filterByBaptismStatus(isBaptized)
+                .includeDefaultRelations();
+
+            return await this.getAll(builder);
         } catch (error) {
             console.error(
-                `Error in getByBaptismStatus with status ${baptized}:`,
+                `Error in getByBaptismStatus with status ${isBaptized}:`,
                 error,
             );
             throw new Error(
-                `Failed to retrieve members by baptism status ${baptized}.`,
+                `Failed to retrieve members by baptism status ${isBaptized}.`,
             );
         }
     }

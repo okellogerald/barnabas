@@ -31,11 +31,11 @@ import {
 } from '@ant-design/icons';
 import { AsyncStateMatcher } from '@/lib/state/async_state.matcher';
 import { Navigation } from '@/app';
-import { AuthManager } from '@/features/auth';
 import { User } from '@/models';
-import { Actions } from '@/features/auth/permission';
-import { UserFilterState, UsersListSuccessState, useUserFilterStore, useUsersList } from '@/features/user';
+import { Actions } from '@/data/authorization';
+import { UserFilterState, UsersListSuccessState, useUserFilterStore, useUsersList } from '@/hooks/user';
 import { SortDirection } from '@/lib/query';
+import { AuthenticationManager } from '@/data/authentication/auth.manager';
 
 const { Title, Text } = Typography;
 
@@ -58,7 +58,7 @@ const UserListPage: React.FC = () => {
 
   // ======== PERMISSIONS ========
   // Check if user has permission to create users
-  const canCreateUser = AuthManager.instance.hasPermission(Actions.USER_CREATE);
+  const canCreateUser = AuthenticationManager.instance.hasPermission(Actions.USER_CREATE);
 
   // ======== FILTER COUNT TRACKING ========
   // Count active filters (excluding sort options)

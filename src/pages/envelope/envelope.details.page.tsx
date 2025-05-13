@@ -19,8 +19,8 @@ import {
 } from '@ant-design/icons';
 import { EnvelopeActivityType } from '@/models';
 import { AsyncStateMatcher } from '@/lib/state';
-import { EnvelopeDetailSuccessState, useEnvelopeDetail } from '@/features/envelope/envelope-details';
 import { useAppNavigation } from '@/app';
+import { EnvelopeDetailSuccessState, useEnvelopeDetail } from '@/hooks/envelope';
 
 const { Title, Text } = Typography;
 

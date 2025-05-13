@@ -1,21 +1,21 @@
 import React from 'react';
-import { 
-  Form, 
-  Input, 
-  Button, 
-  Card, 
-  Typography, 
-  Space, 
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Typography,
+  Space,
   Row,
   Col,
   Divider
 } from 'antd';
-import { 
-  ArrowLeftOutlined, 
-  SaveOutlined, 
+import {
+  ArrowLeftOutlined,
+  SaveOutlined,
   ReloadOutlined
 } from '@ant-design/icons';
-import { useFellowshipCreate } from '@/features/fellowship/fellowship-create';
+import { useFellowshipCreate } from '@/hooks/fellowship';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -27,7 +27,7 @@ const { TextArea } = Input;
  */
 const FellowshipCreatePage: React.FC = () => {
   // Get form handling logic from hook
-  const { 
+  const {
     form,
     isSubmitting,
     handleSubmit,
@@ -77,7 +77,7 @@ const FellowshipCreatePage: React.FC = () => {
                   { max: 500, message: 'Notes cannot exceed 500 characters' }
                 ]}
               >
-                <TextArea 
+                <TextArea
                   placeholder="Enter optional notes about this fellowship"
                   rows={4}
                   showCount
@@ -90,7 +90,7 @@ const FellowshipCreatePage: React.FC = () => {
               <Form.Item>
                 <Row justify="space-between">
                   <Col>
-                    <Button 
+                    <Button
                       icon={<ArrowLeftOutlined />}
                       onClick={handleCancel}
                     >
@@ -99,14 +99,14 @@ const FellowshipCreatePage: React.FC = () => {
                   </Col>
                   <Col>
                     <Space>
-                      <Button 
+                      <Button
                         icon={<ReloadOutlined />}
                         onClick={handleReset}
                       >
                         Reset
                       </Button>
-                      <Button 
-                        type="primary" 
+                      <Button
+                        type="primary"
                         htmlType="submit"
                         icon={<SaveOutlined />}
                         loading={isSubmitting}
@@ -126,13 +126,13 @@ const FellowshipCreatePage: React.FC = () => {
       <Card style={{ marginTop: 16 }}>
         <Title level={5}>About Fellowships</Title>
         <Text>
-          Fellowships are small groups of church members who meet regularly for worship, 
-          bible study, and community. Each fellowship has leaders including a Chairman, 
+          Fellowships are small groups of church members who meet regularly for worship,
+          bible study, and community. Each fellowship has leaders including a Chairman,
           Secretary, and Treasurer.
         </Text>
         <Divider />
         <Text type="secondary">
-          Note: After creating a fellowship, you can assign leadership roles from the 
+          Note: After creating a fellowship, you can assign leadership roles from the
           fellowship details page.
         </Text>
       </Card>

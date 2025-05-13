@@ -1,5 +1,4 @@
-import { LoginRequest, loginRequestSchema } from "@/data/auth";
-import { AuthManager } from "@/features/auth";
+import { AuthenticationManager, LoginRequest, loginRequestSchema } from "@/data/authentication";
 import { useMutation } from "@tanstack/react-query";
 import { Form } from "antd";
 import { LogInPageState } from "./types";
@@ -12,8 +11,7 @@ const handleSubmit = async (values: LoginRequest) => {
         throw new Error("Please make sure you have entered a valid email and password");
     }
 
-    console.log(result.data);
-    return await AuthManager.instance.login(values);
+    return await AuthenticationManager.instance.login(values);
 };
 
 export const UseLogin = (): LogInPageState => {

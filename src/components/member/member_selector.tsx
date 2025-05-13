@@ -3,7 +3,7 @@ import { Modal, Table, Input, Space, Alert, Tag } from 'antd';
 import { UserOutlined, SearchOutlined } from '@ant-design/icons';
 import { AsyncStateMatcher } from '@/lib/state';
 import { Member } from '@/models';
-import { MemberQueries } from '@/features/member/queries';
+import { MemberQueries } from '@/data/member/member.queries';
 import { mapQueryToAsyncState, SuccessState, UI_STATE_TYPE } from '@/lib/state';
 import { useState } from 'react';
 

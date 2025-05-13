@@ -1,6 +1,6 @@
-import { ChurchManager } from "@/features/church/church.manager";
-import { FellowshipManager } from "@/features/fellowship/manager";
-import { MemberManager } from "@/features/member";
+import { ChurchManager } from "@/data/church/church.manager";
+import { FellowshipManager } from "@/data/fellowship";
+import { MemberManager } from "@/data/member";
 import { PermissionError } from "@/lib/error";
 
 export const fetchMembersCount = async () => {

@@ -1,4 +1,4 @@
-import { BaseRepository } from "@/data/_common";
+import { BaseRepository } from "@/data/shared";
 import { volunteerOpportunityContract } from "./volunteer.contract";
 import { VolunteerOpportunityQueryBuilder } from "./volunteer.query_builder";
 import {

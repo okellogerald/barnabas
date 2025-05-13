@@ -2,22 +2,21 @@ import React, { lazy, Suspense } from 'react';
 import { Navigate, Routes, Route, useNavigate } from 'react-router-dom';
 import AppLayout from '@/components/layouts/app.layout';
 import { ROUTES } from './constants';
-import { AuthManager } from '@/features/auth/auth.manager';
+import { AuthenticationManager } from '@/data/authentication/auth.manager';
 import ProtectedRoute from './protected-route';
-import { MemberEditRouteLoader } from '@/pages/member/member-edit/loader';
-import { MemberDetailsRouteLoader } from '@/pages/member/member-details/loader';
 import { EnvelopeListPage } from '@/pages/envelope';
 import EnvelopeDetailPage from '@/pages/envelope/envelope.details.page';
 import EnvelopeAssignPage from '@/pages/envelope/envelope.assign.page';
+import { MemberDetailsRouteLoader, MemberEditRouteLoader } from '@/hooks/member/loaders';
 
 // Lazy-loaded components
 const LoginPage = lazy(() => import('@/pages/auth/login.page'));
 const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard.page'));
 
-const MembersPage = lazy(() => import('@/pages/member/member-list/member_list.page'));
+const MembersPage = lazy(() => import('@/pages/member/member_list.page'));
 const MemberCreatePage = lazy(() => import('@/pages/member/member-create/member_create.page'));
 const MemberEditPage = lazy(() => import('@/pages/member/member-edit/member_edit.page'));
-const MemberDetailsPage = lazy(() => import('@/pages/member/member-details/member_details.page'));
+const MemberDetailsPage = lazy(() => import('@/pages/member/member_details.page'));
 
 const FellowshipListPage = lazy(() => import('@/pages/fellowship/fellowship.list.page'));
 const FellowshipDetailsPage = lazy(() => import('@/pages/fellowship/fellowship.details.page'));
@@ -54,7 +53,7 @@ const PageLoader = () => (
  * Used in the ProtectedRoute component
  */
 export const checkAuth = () => {
-  return AuthManager.instance.isAuthenticated;
+  return AuthenticationManager.instance.isAuthenticated;
 };
 
 /**

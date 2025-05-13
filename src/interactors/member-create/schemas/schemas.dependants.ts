@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { DependantRelationship } from "@/constants";
-import { CommonSchemas } from "@/data/_common";
+import { CommonSchemas } from "@/data/shared";
 
 /**
  * Schema for a single dependant

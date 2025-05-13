@@ -1,9 +1,9 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { 
-  Card, 
-  Button, 
-  Space, 
+import {
+  Card,
+  Button,
+  Space,
   Alert,
   Typography,
   Divider,
@@ -13,7 +13,7 @@ import {
 } from 'antd';
 import { UserOutlined, RollbackOutlined } from '@ant-design/icons';
 import { AsyncStateMatcher } from '@/lib/state';
-import { EnvelopeAssignSuccessState, useEnvelopeAssign } from '@/features/member';
+import { EnvelopeAssignSuccessState, useEnvelopeAssign } from '@/hooks/member';
 import { MemberSelector } from '@/components/member/member_selector';
 
 const { Title, Text } = Typography;
@@ -23,7 +23,7 @@ const { Title, Text } = Typography;
  */
 const EnvelopeAssignPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  
+
   // Use our custom hook
   const state = useEnvelopeAssign(id || '');
 
@@ -36,15 +36,15 @@ const EnvelopeAssignPage: React.FC = () => {
             if (!EnvelopeAssignSuccessState.is(state)) {
               return null;
             }
-            
+
             const { envelope, selectedMember, isAssigning, memberSelectorVisible } = state;
-            
+
             // If envelope is already assigned, show warning
             if (envelope.memberId) {
               return (
-                <Alert 
-                  type="warning" 
-                  message="This envelope is already assigned to a member" 
+                <Alert
+                  type="warning"
+                  message="This envelope is already assigned to a member"
                   description={
                     <>
                       <p>Envelope #{envelope.envelopeNumber} is currently assigned to {
@@ -94,16 +94,16 @@ const EnvelopeAssignPage: React.FC = () => {
                         {selectedMember.fellowship?.name || <Text type="secondary">None</Text>}
                       </Descriptions.Item>
                     </Descriptions>
-                    
+
                     <div style={{ marginTop: 16, display: 'flex', justifyContent: 'space-between' }}>
-                      <Button 
+                      <Button
                         onClick={() => state.showMemberSelector()}
                       >
                         Change Member
                       </Button>
-                      
-                      <Button 
-                        type="primary" 
+
+                      <Button
+                        type="primary"
                         icon={<UserOutlined />}
                         loading={isAssigning}
                         onClick={() => state.assign()}
@@ -114,12 +114,12 @@ const EnvelopeAssignPage: React.FC = () => {
                   </div>
                 ) : (
                   <div style={{ textAlign: 'center', padding: '30px 0' }}>
-                    <Empty 
+                    <Empty
                       description="No member selected"
                       image={Empty.PRESENTED_IMAGE_SIMPLE}
                     />
-                    <Button 
-                      type="primary" 
+                    <Button
+                      type="primary"
                       icon={<UserOutlined />}
                       onClick={() => state.showMemberSelector()}
                       style={{ marginTop: 16 }}
@@ -128,18 +128,18 @@ const EnvelopeAssignPage: React.FC = () => {
                     </Button>
                   </div>
                 )}
-                
+
                 <Divider />
-                
+
                 <div style={{ textAlign: 'right' }}>
-                  <Button 
+                  <Button
                     onClick={() => state.cancel()}
                     icon={<RollbackOutlined />}
                   >
                     Cancel
                   </Button>
                 </div>
-                
+
                 {/* Member selector modal */}
                 <MemberSelector
                   visible={memberSelectorVisible}

@@ -1,6 +1,6 @@
 import { UseQueryResult } from "@tanstack/react-query";
 import { AsyncState, AsyncStateFactory } from "./types";
-import { ApiError } from "@/data/_common";
+import { ApiError } from "@/data/shared";
 
 type StateDeterminationParams<T> = {
   queryResult: UseQueryResult<T, unknown>;

@@ -1,4 +1,4 @@
-import { BaseRepository } from "@/data/_common";
+import { BaseRepository } from "@/data/shared";
 import { userContract } from "./contract";
 import {
     CreateUserDTO,

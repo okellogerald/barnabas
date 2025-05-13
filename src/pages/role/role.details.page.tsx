@@ -20,8 +20,8 @@ import {
     CalendarOutlined,
     FileTextOutlined
 } from '@ant-design/icons';
-import { useRoleDetails, RoleDetailsSuccessState } from '@/features/role/role-details';
 import { AsyncStateMatcher } from '@/lib/state/async_state.matcher';
+import { RoleDetailsSuccessState, useRoleDetails } from '@/hooks/role';
 
 const { Title, Text } = Typography;
 
@@ -88,7 +88,7 @@ const RoleDetailsPage: React.FC = () => {
                     />
 
                     {/* Role Information Section - Refined */}
-                    <Card 
+                    <Card
                         title={<Flex align="center" gap={8}><FileTextOutlined /> Role Information</Flex>}
                         style={{ marginBottom: 24 }}
                         variant='outlined'
@@ -115,7 +115,7 @@ const RoleDetailsPage: React.FC = () => {
                                     </Text>
                                 </Flex>
                             </Col>
-                            
+
                             <Col xs={24} md={12}>
                                 <Flex vertical gap={4}>
                                     <Text type="secondary"><CalendarOutlined /> Created At</Text>
@@ -132,7 +132,7 @@ const RoleDetailsPage: React.FC = () => {
                     </Card>
 
                     {/* Role Actions Section - Refined */}
-                    <Card 
+                    <Card
                         title={<Flex align="center" gap={8}><KeyOutlined /> Allowed Actions</Flex>}
                         extra={<Text type="secondary">These define what users with this role can do</Text>}
                         variant='outlined'
@@ -156,7 +156,7 @@ const RoleDetailsPage: React.FC = () => {
                                 description="No specific actions defined for this role"
                             />
                         )}
-                        
+
                         <Flex align="center" gap={8} style={{ marginTop: 16 }}>
                             <InfoCircleOutlined style={{ color: '#1890ff' }} />
                             <Text type="secondary">
