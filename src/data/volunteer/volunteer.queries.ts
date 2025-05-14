@@ -77,8 +77,13 @@ export const VolunteerQueries = {
 
   /**
    * Hook for creating a new volunteer opportunity
+   * @param {object} props Optional callbacks for success and error states
+   * @returns {UseMutationResult<VolunteerOpportunity, Error, CreateVolunteerOpportunityDTO, unknown>} Mutation result
    */
-  useCreate: (): UseMutationResult<
+  useCreate: (props?: {
+    onSuccess?: (opportunity: VolunteerOpportunity) => void;
+    onError?: (error: Error) => void;
+  }): UseMutationResult<
     VolunteerOpportunity,
     Error,
     CreateVolunteerOpportunityDTO,
@@ -98,13 +103,29 @@ export const VolunteerQueries = {
           QueryKeys.Volunteers.opportunityDetail(newOpportunity.id),
           newOpportunity,
         );
+        
+        // Call the onSuccess callback if provided
+        if (props?.onSuccess) {
+          props.onSuccess(newOpportunity);
+        }
       },
+      onError: (error) => {
+        // Call the onError callback if provided
+        if (props?.onError) {
+          props.onError(error);
+        }
+      }
     }),
 
   /**
    * Hook for updating an existing volunteer opportunity
+   * @param {object} props Optional callbacks for success and error states
+   * @returns {UseMutationResult<VolunteerOpportunity, Error, {id: string, data: UpdateVolunteerOpportunityDTO}, unknown>} Mutation result
    */
-  useUpdate: (): UseMutationResult<
+  useUpdate: (props?: {
+    onSuccess?: (opportunity: VolunteerOpportunity) => void;
+    onError?: (error: Error) => void;
+  }): UseMutationResult<
     VolunteerOpportunity,
     Error,
     { id: string; data: UpdateVolunteerOpportunityDTO },
@@ -126,13 +147,29 @@ export const VolunteerQueries = {
         // Invalidate lists
         Query.VolunteerOpportunities.invalidateList();
         Query.VolunteerOpportunities.invalidateCount();
+        
+        // Call the onSuccess callback if provided
+        if (props?.onSuccess) {
+          props.onSuccess(updatedOpportunity);
+        }
       },
+      onError: (error) => {
+        // Call the onError callback if provided
+        if (props?.onError) {
+          props.onError(error);
+        }
+      }
     }),
 
   /**
    * Hook for deleting a volunteer opportunity
+   * @param {object} props Optional callbacks for success and error states
+   * @returns {UseMutationResult<VolunteerOpportunity, Error, string, unknown>} Mutation result
    */
-  useDelete: (): UseMutationResult<
+  useDelete: (props?: {
+    onSuccess?: (opportunity: VolunteerOpportunity) => void;
+    onError?: (error: Error) => void;
+  }): UseMutationResult<
     VolunteerOpportunity,
     Error,
     string,
@@ -153,7 +190,18 @@ export const VolunteerQueries = {
         // Invalidate lists and counts
         Query.VolunteerOpportunities.invalidateList();
         Query.VolunteerOpportunities.invalidateCount();
+        
+        // Call the onSuccess callback if provided
+        if (props?.onSuccess) {
+          props.onSuccess(deletedOpportunity);
+        }
       },
+      onError: (error) => {
+        // Call the onError callback if provided
+        if (props?.onError) {
+          props.onError(error);
+        }
+      }
     }),
 
   /**

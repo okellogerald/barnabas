@@ -88,25 +88,44 @@ export const UserQueries = {
 
   /**
    * Hook for creating a new user
+   * @param {object} props Optional callbacks for success and error states
    * @returns {UseMutationResult<User, Error, CreateUserDTO, unknown>} Mutation result
    */
-  useCreate: (): UseMutationResult<User, Error, CreateUserDTO, unknown> =>
+  useCreate: (props?: {
+    onSuccess?: (user: User) => void;
+    onError?: (error: Error) => void;
+  }): UseMutationResult<User, Error, CreateUserDTO, unknown> =>
     useMutation({
       mutationFn: async (data: CreateUserDTO) => {
         return userManager.createUser(data);
       },
-      onSuccess: () => {
+      onSuccess: (user) => {
         // Invalidate relevant queries
         Query.Users.invalidateList();
         Query.Users.invalidateCount();
+        
+        // Call the onSuccess callback if provided
+        if (props?.onSuccess) {
+          props.onSuccess(user);
+        }
       },
+      onError: (error) => {
+        // Call the onError callback if provided
+        if (props?.onError) {
+          props.onError(error);
+        }
+      }
     }),
 
   /**
    * Hook for updating an existing user
+   * @param {object} props Optional callbacks for success and error states
    * @returns {UseMutationResult<User, Error, {id: string, data: UpdateUserDTO}, unknown>} Mutation result
    */
-  useUpdate: (): UseMutationResult<
+  useUpdate: (props?: {
+    onSuccess?: (user: User) => void;
+    onError?: (error: Error) => void;
+  }): UseMutationResult<
     User,
     Error,
     { id: string; data: UpdateUserDTO },
@@ -125,14 +144,29 @@ export const UserQueries = {
 
         // Invalidate lists
         Query.Users.invalidateList();
+        
+        // Call the onSuccess callback if provided
+        if (props?.onSuccess) {
+          props.onSuccess(updatedUser);
+        }
       },
+      onError: (error) => {
+        // Call the onError callback if provided
+        if (props?.onError) {
+          props.onError(error);
+        }
+      }
     }),
 
   /**
    * Hook for deleting a user
+   * @param {object} props Optional callbacks for success and error states
    * @returns {UseMutationResult<void, Error, string, unknown>} Mutation result
    */
-  useDelete: (): UseMutationResult<void, Error, string, unknown> =>
+  useDelete: (props?: {
+    onSuccess?: (userId: string) => void;
+    onError?: (error: Error) => void;
+  }): UseMutationResult<void, Error, string, unknown> =>
     useMutation({
       mutationFn: (id: string) => userManager.deleteUser(id),
       onSuccess: (_, deletedId) => {
@@ -142,6 +176,17 @@ export const UserQueries = {
         // Invalidate lists and counts
         Query.Users.invalidateList();
         Query.Users.invalidateCount();
+        
+        // Call the onSuccess callback if provided
+        if (props?.onSuccess) {
+          props.onSuccess(deletedId);
+        }
       },
+      onError: (error) => {
+        // Call the onError callback if provided
+        if (props?.onError) {
+          props.onError(error);
+        }
+      }
     }),
 };

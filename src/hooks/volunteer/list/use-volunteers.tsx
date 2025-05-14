@@ -171,7 +171,7 @@ export function useVolunteerList() {
     columns,
     rowKey: "id",
     onRow: (opportunity: VolunteerOpportunity) => ({
-      onClick: () => Navigation.Volunteers.toDetails(opportunity.id),
+      onClick: () => Navigation.Opportunities.toDetails(opportunity.id),
       style: {
         cursor: "pointer",
         transition: "background-color 0.3s",

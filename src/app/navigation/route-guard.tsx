@@ -1,13 +1,14 @@
-import React, { PropsWithChildren } from 'react';
+import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { AuthenticationManager } from '@/data/authentication/authentication.manager';
-import { ROUTES } from './route.constants';
+import { ROUTES } from './routes.constants';
+import { ProtectedRouteProps } from './types';
 
 /**
  * Component for protecting routes that require authentication
  * Redirects to login page if user is not authenticated
  */
-const ProtectedRoute: React.FC<PropsWithChildren> = ({ children }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     const location = useLocation();
     const isAuthenticated = AuthenticationManager.instance.isAuthenticated;
 

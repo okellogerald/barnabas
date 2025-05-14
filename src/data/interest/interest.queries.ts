@@ -93,8 +93,12 @@ export const InterestQueries = {
 
     /**
      * Hook for creating a new interest
+     * @param {object} props Optional callbacks for success and error states
      */
-    useCreate: (): UseMutationResult<
+    useCreate: (props?: {
+        onSuccess?: (interest: Interest) => void;
+        onError?: (error: Error) => void;
+    }): UseMutationResult<
         Interest,
         Error,
         CreateInterestDTO,
@@ -119,13 +123,28 @@ export const InterestQueries = {
             Query.VolunteerOpportunities.invalidateDetail(
                 createdInterest.opportunityId,
             );
+            
+            // Call the onSuccess callback if provided
+            if (props?.onSuccess) {
+                props.onSuccess(createdInterest);
+            }
         },
+        onError: (error) => {
+            // Call the onError callback if provided
+            if (props?.onError) {
+                props.onError(error);
+            }
+        }
     }),
 
     /**
      * Hook for deleting an interest
+     * @param {object} props Optional callbacks for success and error states
      */
-    useDelete: (): UseMutationResult<
+    useDelete: (props?: {
+        onSuccess?: (interest: Interest) => void;
+        onError?: (error: Error, interestId: string) => void;
+    }): UseMutationResult<
         Interest,
         Error,
         string,
@@ -165,14 +184,24 @@ export const InterestQueries = {
             Query.VolunteerOpportunities.invalidateDetail(
                 deletedInterest.opportunityId,
             );
+            
+            // Call the onSuccess callback if provided
+            if (props?.onSuccess) {
+                props.onSuccess(deletedInterest);
+            }
         },
-        onError: (_, __, context) => {
+        onError: (error, interestId, context) => {
             // If there was an error, restore from snapshot
             if (context?.previousInterest) {
                 queryClient.setQueryData(
                     QueryKeys.Interests.detail(context.previousInterest.id),
                     context.previousInterest,
                 );
+            }
+            
+            // Call the onError callback if provided
+            if (props?.onError) {
+                props.onError(error, interestId);
             }
         },
     }),

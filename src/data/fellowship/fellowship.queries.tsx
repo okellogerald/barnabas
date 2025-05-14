@@ -113,26 +113,45 @@ export const FellowshipQueries = {
 
   /**
    * Hook for creating a new fellowship
+   * @param {object} props Optional callbacks for success and error states
    * @returns {UseMutationResult<Fellowship, Error, CreateFellowshipDTO, unknown>} Mutation result
    */
-  useCreate: (): UseMutationResult<Fellowship, Error, CreateFellowshipDTO, unknown> =>
+  useCreate: (props?: {
+    onSuccess?: (fellowship: Fellowship) => void;
+    onError?: (error: Error) => void;
+  }): UseMutationResult<Fellowship, Error, CreateFellowshipDTO, unknown> =>
     useMutation({
       mutationFn: async (data: CreateFellowshipDTO) => {
         const dto = await fellowshipManager.createFellowship(data);
         return Fellowship.fromDTO(dto);
       },
-      onSuccess: () => {
+      onSuccess: (fellowship) => {
         // Invalidate relevant queries
         Query.Fellowships.invalidateList();
         Query.Fellowships.invalidateCount();
+        
+        // Call the onSuccess callback if provided
+        if (props?.onSuccess) {
+          props.onSuccess(fellowship);
+        }
       },
+      onError: (error) => {
+        // Call the onError callback if provided
+        if (props?.onError) {
+          props.onError(error);
+        }
+      }
     }),
 
   /**
    * Hook for updating an existing fellowship
+   * @param {object} props Optional callbacks for success and error states
    * @returns {UseMutationResult<Fellowship, Error, {id: string, data: UpdateFellowshipDTO}, unknown>} Mutation result
    */
-  useUpdate: (): UseMutationResult<
+  useUpdate: (props?: {
+    onSuccess?: (fellowship: Fellowship) => void;
+    onError?: (error: Error) => void;
+  }): UseMutationResult<
     Fellowship,
     Error,
     { id: string; data: UpdateFellowshipDTO },
@@ -162,14 +181,29 @@ export const FellowshipQueries = {
         ) {
           Query.Fellowships.invalidateLeadership();
         }
+        
+        // Call the onSuccess callback if provided
+        if (props?.onSuccess) {
+          props.onSuccess(updatedFellowship);
+        }
       },
+      onError: (error) => {
+        // Call the onError callback if provided
+        if (props?.onError) {
+          props.onError(error);
+        }
+      }
     }),
 
   /**
    * Hook for deleting a fellowship
+   * @param {object} props Optional callbacks for success and error states
    * @returns {UseMutationResult<void, Error, string, unknown>} Mutation result
    */
-  useDelete: (): UseMutationResult<void, Error, string, unknown> =>
+  useDelete: (props?: {
+    onSuccess?: (id: string) => void;
+    onError?: (error: Error) => void;
+  }): UseMutationResult<void, Error, string, unknown> =>
     useMutation({
       mutationFn: (id: string) => fellowshipManager.deleteFellowship(id),
       onSuccess: (_, deletedId) => {
@@ -180,7 +214,18 @@ export const FellowshipQueries = {
         Query.Fellowships.invalidateList();
         Query.Fellowships.invalidateCount();
         Query.Fellowships.invalidateLeadership();
+        
+        // Call the onSuccess callback if provided
+        if (props?.onSuccess) {
+          props.onSuccess(deletedId);
+        }
       },
+      onError: (error) => {
+        // Call the onError callback if provided
+        if (props?.onError) {
+          props.onError(error);
+        }
+      }
     }),
 
   /**

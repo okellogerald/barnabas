@@ -15,19 +15,17 @@ export const EnvelopeQueries = {
   /**
    * Hook to fetch a list of envelopes with optional filtering and pagination
    */
-  useList: (
-    options?: EnvelopeQueryCriteria | EnvelopeQueryBuilder
-  ): UseQueryResult<{ envelopes: Envelope[], total: number }, Error> =>
+  useList: (options?: EnvelopeQueryCriteria | EnvelopeQueryBuilder): UseQueryResult<{ envelopes: Envelope[], total: number }, Error> =>
     useQuery({
       queryKey: [QueryKeys.Envelopes.list(), EnvelopeQueryBuilder.is(options) ? options.build() : options],
       queryFn: async () => {
         return await envelopeManager.getEnvelopes(options);
-      },
+      }
     }),
 
   /**
-     * Hook to fetch envelope count with query criteria or builder
-     */
+   * Hook to fetch envelope count with query criteria or builder
+   */
   useCount: (options?: EnvelopeQueryCriteria | EnvelopeQueryBuilder) => {
     const queryKey = [
       QueryKeys.Envelopes.count(),
@@ -40,7 +38,6 @@ export const EnvelopeQueries = {
     });
   },
 
-
   /**
    * Hook to fetch available envelopes
    */
@@ -49,7 +46,7 @@ export const EnvelopeQueries = {
       queryKey: QueryKeys.Envelopes.available(),
       queryFn: async () => {
         return await envelopeManager.getAvailableEnvelopes();
-      },
+      }
     }),
 
   /**
@@ -99,7 +96,10 @@ export const EnvelopeQueries = {
   /**
    * Hook for creating a block of envelopes
    */
-  useCreateBlock: (): UseMutationResult<
+  useCreateBlock: (props?: {
+    onSuccess?: (result: { count: number, startNumber: number, endNumber: number }) => void;
+    onError?: (error: Error) => void;
+  }): UseMutationResult<
     { count: number, startNumber: number, endNumber: number },
     Error,
     EnvelopeBlockDTO,
@@ -109,18 +109,32 @@ export const EnvelopeQueries = {
       mutationFn: async (data: EnvelopeBlockDTO) => {
         return await envelopeManager.createEnvelopeBlock(data);
       },
-      onSuccess: () => {
+      onSuccess: (result) => {
         // Invalidate relevant queries
         Query.Envelopes.invalidateList();
         Query.Envelopes.invalidateCount();
         Query.Envelopes.invalidateAvailable();
+
+        // Call the onSuccess callback if provided
+        if (props?.onSuccess) {
+          props.onSuccess(result);
+        }
       },
+      onError: (error) => {
+        // Call the onError callback if provided
+        if (props?.onError) {
+          props.onError(error);
+        }
+      }
     }),
 
   /**
    * Hook for deleting a block of envelopes
    */
-  useDeleteBlock: (): UseMutationResult<
+  useDeleteBlock: (props?: {
+    onSuccess?: (result: { count: number, startNumber: number, endNumber: number }) => void;
+    onError?: (error: Error) => void;
+  }): UseMutationResult<
     { count: number, startNumber: number, endNumber: number },
     Error,
     EnvelopeBlockDTO,
@@ -130,18 +144,32 @@ export const EnvelopeQueries = {
       mutationFn: async (data: EnvelopeBlockDTO) => {
         return await envelopeManager.deleteEnvelopeBlock(data);
       },
-      onSuccess: () => {
+      onSuccess: (result) => {
         // Invalidate relevant queries
         Query.Envelopes.invalidateList();
         Query.Envelopes.invalidateCount();
         Query.Envelopes.invalidateAvailable();
+
+        // Call the onSuccess callback if provided
+        if (props?.onSuccess) {
+          props.onSuccess(result);
+        }
       },
+      onError: (error) => {
+        // Call the onError callback if provided
+        if (props?.onError) {
+          props.onError(error);
+        }
+      }
     }),
 
   /**
    * Hook for assigning an envelope to a member
    */
-  useAssign: (): UseMutationResult<
+  useAssign: (props?: {
+    onSuccess?: (envelope: Envelope) => void;
+    onError?: (error: Error) => void;
+  }): UseMutationResult<
     Envelope,
     Error,
     { envelopeId: string, memberId: string },
@@ -167,13 +195,27 @@ export const EnvelopeQueries = {
         if (updatedEnvelope.memberId) {
           Query.Members.invalidateDetail(updatedEnvelope.memberId);
         }
+
+        // Call the onSuccess callback if provided
+        if (props?.onSuccess) {
+          props.onSuccess(updatedEnvelope);
+        }
       },
+      onError: (error) => {
+        // Call the onError callback if provided
+        if (props?.onError) {
+          props.onError(error);
+        }
+      }
     }),
 
   /**
    * Hook for releasing an envelope from a member
    */
-  useRelease: (): UseMutationResult<
+  useRelease: (props?: {
+    onSuccess?: (envelope: Envelope) => void;
+    onError?: (error: Error) => void;
+  }): UseMutationResult<
     Envelope,
     Error,
     string,
@@ -194,6 +236,17 @@ export const EnvelopeQueries = {
         Query.Envelopes.invalidateList();
         Query.Envelopes.invalidateAvailable();
         Query.Envelopes.invalidateHistory(envelopeId);
+
+        // Call the onSuccess callback if provided
+        if (props?.onSuccess) {
+          props.onSuccess(updatedEnvelope);
+        }
       },
+      onError: (error) => {
+        // Call the onError callback if provided
+        if (props?.onError) {
+          props.onError(error);
+        }
+      }
     }),
 }

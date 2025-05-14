@@ -2,11 +2,11 @@ import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { App as AntApp } from 'antd';
 import { QueryClientProvider } from '@tanstack/react-query';
-import AppRoutes from './navigation/routes';
 import ThemeProvider from './theme/provider';
 import { ToastContainer } from 'react-toastify';
 import NiceModal from '@ebay/nice-modal-react';
 import { queryClient } from '@/lib/query';
+import AppRoutes from './navigation/route-definitions';
 
 /**
  * AppProvider

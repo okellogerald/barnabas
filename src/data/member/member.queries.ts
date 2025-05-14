@@ -88,28 +88,47 @@ export const MemberQueries = {
 
     /**
      * Hook for creating a new member
+     * @param {object} props Optional callbacks for success and error states
      * @returns {UseMutationResult<Member, Error, CreateMemberDTO, unknown>} Mutation result
      */
-    useCreate: (): UseMutationResult<Member, Error, CreateMemberDTO, unknown> =>
+    useCreate: (props?: {
+        onSuccess?: (member: Member) => void;
+        onError?: (error: Error) => void;
+    }): UseMutationResult<Member, Error, CreateMemberDTO, unknown> =>
         useMutation({
             mutationFn: async (data: CreateMemberDTO) => {
                 return await memberManager.createMember(data);
             },
-            onSuccess: () => {
+            onSuccess: (member) => {
                 // Invalidate relevant queries
                 Query.Members.invalidateList();
                 Query.Members.invalidateCount();
 
                 // If the new member is assigned to a fellowship, invalidate fellowship queries too
                 Query.Fellowships.invalidateList();
+                
+                // Call the onSuccess callback if provided
+                if (props?.onSuccess) {
+                    props.onSuccess(member);
+                }
+            },
+            onError: (error) => {
+                // Call the onError callback if provided
+                if (props?.onError) {
+                    props.onError(error);
+                }
             },
         }),
 
     /**
      * Hook for updating an existing member
+     * @param {object} props Optional callbacks for success and error states
      * @returns {UseMutationResult<Member, Error, {id: string, data: UpdateMemberDTO}, unknown>} Mutation result
      */
-    useUpdate: (): UseMutationResult<
+    useUpdate: (props?: {
+        onSuccess?: (member: Member) => void;
+        onError?: (error: Error) => void;
+    }): UseMutationResult<
         Member,
         Error,
         { id: string; data: UpdateMemberDTO },
@@ -145,11 +164,24 @@ export const MemberQueries = {
                     });
                 }
             }
+            
+            // Call the onSuccess callback if provided
+            if (props?.onSuccess) {
+                props.onSuccess(updatedMember);
+            }
+        },
+        onError: (error) => {
+            // Call the onError callback if provided
+            if (props?.onError) {
+                props.onError(error);
+            }
         },
     }),
 
     /**
      * Hook for deleting a member
+     * @param {string} id The member ID to delete
+     * @param {object} props Optional callbacks for success and error states
      * @returns {UseMutationResult<void, Error, string, unknown>} Mutation result
      */
     useDelete: (id: string, props?: {
@@ -196,9 +228,13 @@ export const MemberQueries = {
 
     /**
      * Hook for removing a dependant from a member
+     * @param {object} props Optional callbacks for success and error states
      * @returns {UseMutationResult<Member, Error, {memberId: string, dependantId: string}, unknown>} Mutation result
      */
-    useRemoveDependant: (): UseMutationResult<
+    useRemoveDependant: (props?: {
+        onSuccess?: (member: Member) => void;
+        onError?: (error: Error) => void;
+    }): UseMutationResult<
         Member,
         Error,
         { memberId: string; dependantId: string },
@@ -231,6 +267,17 @@ export const MemberQueries = {
                 QueryKeys.Members.detail(updatedMember.id),
                 updatedMember,
             );
+            
+            // Call the onSuccess callback if provided
+            if (props?.onSuccess) {
+                props.onSuccess(updatedMember);
+            }
+        },
+        onError: (error) => {
+            // Call the onError callback if provided
+            if (props?.onError) {
+                props.onError(error);
+            }
         },
     }),
 
