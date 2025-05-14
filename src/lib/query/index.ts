@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
-import { QueryKeys } from "./keys";
-import { QueryUtils } from "./utils";
+import { QueryKeys } from "./query.keys";
+import { QueryUtils } from "./query.utils";
 
 // Configure the query client with default options
 const defaultOptions = {
@@ -26,6 +26,5 @@ export const Query = QueryUtils(queryClient);
 // Export query keys
 export { QueryKeys };
 
-export * from "./query_builder"
-export * from "./types"
-
+export * from "./query.builder";
+export * from "./query.types";

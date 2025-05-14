@@ -1,40 +1,41 @@
 import React, { lazy, Suspense } from 'react';
 import { Navigate, Routes, Route, useNavigate } from 'react-router-dom';
 import AppLayout from '@/components/layouts/app.layout';
-import { ROUTES } from './constants';
-import { AuthenticationManager } from '@/data/authentication/auth.manager';
+import { ROUTES } from './route.constants';
+import { AuthenticationManager } from '@/data/authentication/authentication.manager';
 import ProtectedRoute from './protected-route';
-import { EnvelopeListPage } from '@/pages/envelope';
-import EnvelopeDetailPage from '@/pages/envelope/envelope.details.page';
-import EnvelopeAssignPage from '@/pages/envelope/envelope.assign.page';
 import { MemberDetailsRouteLoader, MemberEditRouteLoader } from '@/hooks/member/loaders';
 
 // Lazy-loaded components
 const LoginPage = lazy(() => import('@/pages/auth/login.page'));
 const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard.page'));
 
-const MembersPage = lazy(() => import('@/pages/member/member_list.page'));
-const MemberCreatePage = lazy(() => import('@/pages/member/member-create/member_create.page'));
-const MemberEditPage = lazy(() => import('@/pages/member/member_edit.page'));
-const MemberDetailsPage = lazy(() => import('@/pages/member/member_details.page'));
+const MembersPage = lazy(() => import('@/pages/member/member-list.page'));
+const MemberCreatePage = lazy(() => import('@/pages/member/member-create.page'));
+const MemberEditPage = lazy(() => import('@/pages/member/member-edit.page'));
+const MemberDetailsPage = lazy(() => import('@/pages/member/member-details.page'));
 
-const FellowshipListPage = lazy(() => import('@/pages/fellowship/fellowship.list.page'));
-const FellowshipDetailsPage = lazy(() => import('@/pages/fellowship/fellowship.details.page'));
-const FellowshipCreatePage = lazy(() => import('@/pages/fellowship/fellowship.create.page'));
-const FellowshipEditPage = lazy(() => import('@/pages/fellowship/fellowship.edit.page'));
+const FellowshipListPage = lazy(() => import('@/pages/fellowship/fellowship-list.page'));
+const FellowshipDetailsPage = lazy(() => import('@/pages/fellowship/fellowship-details.page'));
+const FellowshipCreatePage = lazy(() => import('@/pages/fellowship/fellowship-create.page'));
+const FellowshipEditPage = lazy(() => import('@/pages/fellowship/fellowship-edit.page'));
 
-const UserListPage = lazy(() => import('@/pages/user/user.list.page'));
-const UserCreatePage = lazy(() => import('@/pages/user/user.create.page'));
-const UserDetailsPage = lazy(() => import('@/pages/user/user.details.page'));
-const UserEditPage = lazy(() => import('@/pages/user/user.edit.page'));
+const UserListPage = lazy(() => import('@/pages/user/user-list.page'));
+const UserCreatePage = lazy(() => import('@/pages/user/user-create.page'));
+const UserDetailsPage = lazy(() => import('@/pages/user/user-details.page'));
+const UserEditPage = lazy(() => import('@/pages/user/user-edit.page'));
 
-const VolunteerListPage = lazy(() => import('@/pages/volunteer/volunteer.list.page'));
-const VolunteerDetailsPage = lazy(() => import('@/pages/volunteer/volunteer.details.page'));
+const VolunteerListPage = lazy(() => import('@/pages/volunteer/volunteer-list.page'));
+const VolunteerDetailsPage = lazy(() => import('@/pages/volunteer/volunteer-details.page'));
 
-const RoleListPage = lazy(() => import('@/pages/role/role.list.page'));
-const RoleDetailsPage = lazy(() => import('@/pages/role/role.details.page'));
+const EnvelopeListPage = lazy(() => import('@/pages/envelope/envelope-list.page'));
+const EnvelopeDetailsPage = lazy(() => import('@/pages/envelope/envelope-details.page'));
+const EnvelopeAssignPage = lazy(() => import('@/pages/envelope/envelope-assign.page'));
 
-const NotFoundPage = lazy(() => import('@/pages/errors/not_found.page'));
+const RoleListPage = lazy(() => import('@/pages/role/role-list.page'));
+const RoleDetailsPage = lazy(() => import('@/pages/role/role-details.page'));
+
+const NotFoundPage = lazy(() => import('@/pages/errors/not-found.page'));
 
 // Loading component for suspense fallback
 const PageLoader = () => (
@@ -101,7 +102,7 @@ const AppRoutes: React.FC = () => {
           <Route path={ROUTES.USERS.DETAILS} element={<UserDetailsPage />} />
 
           <Route path={ROUTES.ENVELOPES.LIST} element={<EnvelopeListPage />} />
-          <Route path={ROUTES.ENVELOPES.DETAILS} element={<EnvelopeDetailPage />} />
+          <Route path={ROUTES.ENVELOPES.DETAILS} element={<EnvelopeDetailsPage />} />
           <Route path={ROUTES.ENVELOPES.ASSIGN} element={<EnvelopeAssignPage />} />
 
           <Route path={ROUTES.OPPORTUNITIES.LIST} element={<VolunteerListPage />} />

@@ -1,10 +1,10 @@
 import { BaseRepository } from "@/data/shared";
-import { memberContract } from "./member.api_contract";
+import { memberContract } from "./member.api-contract";
 import { CreateMemberDTO, MemberDTO, UpdateMemberDTO } from "./member.schema";
 import {
     MemberQueryBuilder,
     MemberQueryCriteria,
-} from "./member.query_builder";
+} from "./member.query-builder";
 
 type GetMembersResponse = {
     results: MemberDTO[];

@@ -1,4 +1,4 @@
-import { ErrorCategory, ErrorContext } from "./types";
+import { ErrorCategory, ErrorContext } from "./error.types";
 
 /**
  * Custom API error class that extends the standard Error.

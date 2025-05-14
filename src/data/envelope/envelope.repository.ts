@@ -1,12 +1,12 @@
 import { BaseRepository } from "@/data/shared";
-import { envelopeContract } from "./envelope.contract";
+import { envelopeContract } from "./envelope.api-contract";
 import {
     EnvelopeAssignmentDTO,
     EnvelopeBlockDTO,
     EnvelopeDTO,
     EnvelopeHistoryDTO,
 } from "./envelope.schema";
-import { EnvelopeQueryBuilder } from "./envelope.query_builder";
+import { EnvelopeQueryBuilder } from "./envelope.query-builder";
 
 export class EnvelopeRepository
     extends BaseRepository<typeof envelopeContract> {

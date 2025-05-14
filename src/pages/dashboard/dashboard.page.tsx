@@ -10,7 +10,7 @@ import {
     PhoneOutlined
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { AuthenticationManager } from '@/data/authentication/auth.manager';
+import { AuthenticationManager } from '@/data/authentication/authentication.manager';
 import { useDashboard } from '@/interactors/dashboard/hook';
 import { createUIStateMatcher, IErrorState } from '@/interactors/_state';
 import { DashboardPageSuccessState } from '@/interactors/dashboard/types';

@@ -7,7 +7,7 @@ import { MemberManager } from "./member.manager";
 import {
     MemberQueryBuilder,
     MemberQueryCriteria,
-} from "@/data/member/member.query_builder";
+} from "@/data/member/member.query-builder";
 
 // Create a manager instance
 const memberManager = MemberManager.instance;

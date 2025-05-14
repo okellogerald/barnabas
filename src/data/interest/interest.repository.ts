@@ -1,12 +1,13 @@
 import { BaseRepository } from "@/data/shared";
-import { interestContract } from "./interest.contract";
+import { interestContract } from "./interest.api-contract";
 import { CreateInterestDTO, InterestDTO } from "./interest.schema";
-import { InterestQueryBuilder } from "./interest.query_builder";
+import { InterestQueryBuilder } from "./interest.query-builder";
 
 /**
  * Repository for managing volunteer interest data
  */
-export class InterestRepository extends BaseRepository<typeof interestContract> {
+export class InterestRepository
+    extends BaseRepository<typeof interestContract> {
     constructor() {
         super("interest", interestContract);
     }
@@ -15,7 +16,7 @@ export class InterestRepository extends BaseRepository<typeof interestContract> 
      * Default query parameters
      */
     static defaultQueryParams = {
-        eager: "[member,opportunity]"
+        eager: "[member,opportunity]",
     };
 
     /**

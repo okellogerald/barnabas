@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { AuthenticationManager } from '@/data/authentication/auth.manager';
-import { ROUTES } from './constants';
+import { AuthenticationManager } from '@/data/authentication/authentication.manager';
+import { ROUTES } from './route.constants';
 
 /**
  * Component for protecting routes that require authentication

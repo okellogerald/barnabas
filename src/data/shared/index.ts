@@ -1,3 +1,3 @@
-export * from "./base_repository"
+export * from "./base-repository"
 export * from "./schemas"
 export * from "./error"

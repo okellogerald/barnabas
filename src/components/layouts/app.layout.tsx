@@ -12,7 +12,7 @@ import {
     HeartOutlined
 } from '@ant-design/icons';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { AuthenticationManager } from '@/data/authentication/auth.manager';
+import { AuthenticationManager } from '@/data/authentication/authentication.manager';
 import { User } from '@/models';
 import { ItemType, MenuItemType } from 'antd/es/menu/interface';
 import { DesignTokens } from '@/app/theme/constants';

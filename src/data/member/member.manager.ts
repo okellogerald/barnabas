@@ -9,7 +9,7 @@ import { PermissionError } from "@/lib/error";
 import {
     MemberQueryBuilder,
     MemberQueryCriteria,
-} from "@/data/member/member.query_builder";
+} from "@/data/member/member.query-builder";
 
 /**
  * @typedef {object} GetMembersResponse

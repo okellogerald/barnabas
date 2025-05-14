@@ -1,3 +1,3 @@
-export * from "./contract";
-export * from "./repository";
-export * from "./schema";
+export * from "./role-actions.api-contract";
+export * from "./role-actions.repository";
+export * from "./role-actions.schema";

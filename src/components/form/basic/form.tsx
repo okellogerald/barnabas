@@ -4,7 +4,7 @@ import { FormRow } from "./row";
 import React, { CSSProperties } from "react";
 import { Header } from "antd/es/layout/layout";
 
-import "../_common/form.css"
+import "../shared/form.css"
 
 const headerStyle: CSSProperties = {
     backgroundColor: "white",

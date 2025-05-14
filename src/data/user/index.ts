@@ -1,2 +1,2 @@
-export * from "./repository"
-export * from "./schema"
+export * from "./user.repository";
+export * from "./user.schema";

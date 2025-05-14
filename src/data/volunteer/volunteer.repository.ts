@@ -1,6 +1,6 @@
 import { BaseRepository } from "@/data/shared";
-import { volunteerOpportunityContract } from "./volunteer.contract";
-import { VolunteerOpportunityQueryBuilder } from "./volunteer.query_builder";
+import { volunteerOpportunityContract } from "./volunteer.api-contract";
+import { VolunteerOpportunityQueryBuilder } from "./volunteer.query-builder";
 import {
     CreateVolunteerOpportunityDTO,
     UpdateVolunteerOpportunityDTO,

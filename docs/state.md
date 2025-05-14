@@ -103,19 +103,26 @@ export class SuccessState<T> extends BaseState<UI_STATE_TYPE.SUCCESS> {
 For domain-specific logic, we extend the base `SuccessState` class:
 
 ```typescript
+
+interface PayoutDetailsPageSuccessStateActions extends SuccessStateActions {
+  refresh: () => void;
+  showApproveDialog: () => void;
+  showRejectDialog: () => void;
+}
+
 export class PayoutDetailsPageSuccessState extends SuccessState<Payout> {
   readonly canApprove: boolean;
   readonly canReject: boolean;
+
+  override actions: PayoutDetailsPageSuccessStateActions;
   
   constructor(args: {
     data: Payout;
     canApprove: boolean;
     canReject: boolean;
-    actions: {
-      refresh: () => void;
-    };
+    actions: PayoutDetailsPageSuccessStateActions;
   }) {
-    super(args.data, { refresh: args.actions.refresh });
+    super(args.data, args.actions);
     this.canApprove = args.canApprove;
     this.canReject = args.canReject;
   }
@@ -129,18 +136,6 @@ export class PayoutDetailsPageSuccessState extends SuccessState<Payout> {
       'showApproveDialog' in state &&
       'showRejectDialog' in state
     );
-  }
-  
-  showApproveDialog() {
-    if (this.canApprove) {
-      // Approval logic...
-    }
-  }
-  
-  showRejectDialog() {
-    if (this.canReject) {
-      // Rejection logic...
-    }
   }
 }
 ```
@@ -240,48 +235,46 @@ Components use type guards to render different UI based on state:
 function PayoutDetailsPage() {
   const state = usePayoutDetails();
 
-  // Basic loading/error handling
-  if (isLoadingState(state)) {
-    return <Spinner message={state.message} />;
-  }
-  
-  if (isErrorState(state)) {
-    return (
-      <ErrorMessage 
-        message={state.getErrorMessage()} 
-        onRetry={() => state.retry()} 
+  return (
+    <div className="payout-details-page">
+      <AsyncStateMatcher
+        state={state}
+        views={{
+          SuccessView: ({ state }) => {
+            // Safe access to data in success state
+            if (PayoutDetailsPageSuccessState.is(state)) {
+              return (
+                <div>
+                  <PayoutDetails payout={state.data} />
+                  
+                  <Button onClick={() => state.refresh()}>Refresh</Button>
+
+                  {/* Check for extended state capabilities */}
+                  {PayoutDetailsPageSuccessState.is(state) && (
+                    <>
+                      {state.canApprove && (
+                        <Button onClick={() => state.showApproveDialog()}>
+                          Approve
+                        </Button>
+                      )}
+
+                      {state.canReject && (
+                        <Button onClick={() => state.showRejectDialog()}>
+                          Reject
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            }
+
+            return null;
+          },
+        }}
       />
-    );
-  }
-  
-  // Safe access to data in success state
-  if (isSuccessState(state)) {
-    return (
-      <div>
-        <PayoutDetails payout={state.data} />
-        <Button onClick={() => state.refresh()}>Refresh</Button>
-        
-        {/* Check for extended state capabilities */}
-        {PayoutDetailsPageSuccessState.is(state) && (
-          <>
-            {state.canApprove && (
-              <Button onClick={() => state.showApproveDialog()}>
-                Approve
-              </Button>
-            )}
-            
-            {state.canReject && (
-              <Button onClick={() => state.showRejectDialog()}>
-                Reject
-              </Button>
-            )}
-          </>
-        )}
-      </div>
-    );
-  }
-  
-  return null;
+    </div>
+  );
 }
 ```
 
@@ -328,12 +321,19 @@ Here's a complete example showing how this pattern works in practice:
 
 ```tsx
 // 1. Define extended state
+interface UserProfileSuccessStateActions extends SuccessStateActions {
+  refresh: () => void;
+  editProfile: () => void;
+}
+
 export class UserProfileSuccessState extends SuccessState<User> {
   readonly canEdit: boolean;
   readonly isAdmin: boolean;
+
+  override actions: UserProfileSuccessStateActions
   
-  constructor(user: User, actions: { refresh: () => void }) {
-    super(user, { refresh: actions.refresh });
+  constructor(user: User, actions: UserProfileSuccessStateActions) {
+    super(user, actions);
     this.canEdit = user.permissions.includes('EDIT_PROFILE');
     this.isAdmin = user.role === 'ADMIN';
   }
@@ -345,17 +345,11 @@ export class UserProfileSuccessState extends SuccessState<User> {
       'isAdmin' in state
     );
   }
-  
-  editProfile() {
-    if (this.canEdit) {
-      // Navigate to edit profile page
-    }
-  }
 }
 
 // 2. Create a custom hook
 export function useUserProfile(userId: string) {
-  const query = userAPI.useGetUser(userId);
+  const query = UserQueries.useGetUser(userId);
   
   return mapQueryToAsyncState(query, {
     loadingMessage: "Loading user profile...",
@@ -369,33 +363,38 @@ export function useUserProfile(userId: string) {
 function UserProfilePage() {
   const { userId } = useParams();
   const state = useUserProfile(userId);
-  
-  if (isLoadingState(state)) {
-    return <LoadingSpinner message={state.message} />;
-  }
-  
-  if (isErrorState(state)) {
-    return <ErrorView message={state.message} onRetry={() => state.retry()} />;
-  }
-  
-  if (isSuccessState(state)) {
-    return (
-      <ProfileContainer>
-        <h1>{state.data.name}</h1>
-        <ProfileDetails user={state.data} />
-        
-        {/* Handle extended state capabilities */}
-        {UserProfileSuccessState.is(state) && state.canEdit && (
-          <Button onClick={() => state.editProfile()}>
-            Edit Profile
-          </Button>
-        )}
-      </ProfileContainer>
-    );
-  }
-  
-  return <EmptyState />;
+
+  return (
+    <div className="user-profile-page">
+      <AsyncStateMatcher
+        state={state}
+        views={{
+          SuccessView: ({ state }) => {
+            // Safe access to data in success state
+            if (UserProfileSuccessState.is(state)) {
+              return (
+                <ProfileContainer>
+                  <h1>{state.data.name}</h1>
+                  <ProfileDetails user={state.data} />
+
+                  {/* Handle extended state capabilities */}
+                  {state.canEdit && (
+                    <Button onClick={() => state.editProfile()}>
+                      Edit Profile
+                    </Button>
+                  )}
+                </ProfileContainer>
+              );
+            }
+
+            return <EmptyState />;
+          },
+        }}
+      />
+    </div>
+  );
 }
+
 ```
 
 ### Handling Multiple Queries: `mapQueriesToAsyncState`

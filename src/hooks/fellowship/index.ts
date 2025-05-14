@@ -1,3 +1,3 @@
-export * from "./use_fellowship_create"
-export * from "./use_fellowship_details"
-export * from "./use_fellowship_edit"
+export * from "./use-fellowship-create"
+export * from "./use-fellowship-details"
+export * from "./use-fellowship-edit"

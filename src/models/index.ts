@@ -7,6 +7,6 @@ export * from "./user.model";
 export * from "./interest.model";
 export * from "./church.model";
 export * from "./dependant.model";
-export * from "./role_action.model";
+export * from "./role-action.model";
 export * from "./envelope.model";
-export * from "./envelope_history.model";
+export * from "./envelope-history.model";
