@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import { mapQueriesToAsyncState, SuccessState, UI_STATE_TYPE } from "@/lib/state";
 import { Envelope, EnvelopeHistory } from "@/models";
-import { useNavigate } from "react-router-dom";
 import { useQueries } from "@tanstack/react-query";
 import { QueryKeys } from "@/lib/query";
 import { EnvelopeQueries } from "@/data/envelope";
+import { useAppNavigation } from "@/app";
 
 export class EnvelopeDetailSuccessState extends SuccessState<Envelope> {
     readonly envelope: Envelope;
@@ -52,7 +52,7 @@ export class EnvelopeDetailSuccessState extends SuccessState<Envelope> {
 }
 
 export const useEnvelopeDetail = (id: string) => {
-    const navigate = useNavigate();
+    const navigate = useAppNavigation();
     const releaseMutation = EnvelopeQueries.useRelease();
 
     // Combined queries
@@ -83,7 +83,7 @@ export const useEnvelopeDetail = (id: string) => {
     }, [id, releaseMutation, envelopeQuery, historyQuery]);
 
     const handleAssign = useCallback(() => {
-        navigate(`/envelopes/${id}/assign`);
+        navigate.Envelopes.toAssign(id)
     }, [id, navigate]);
 
 

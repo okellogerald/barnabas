@@ -6,6 +6,22 @@ import { CommonSchemas } from "@/data/shared";
 const c = initContract();
 
 export const memberContract = c.router({
+    getCount: {
+        method: "GET",
+        path: "",
+        query: z.object({}),
+        responses: {
+            200: z.array(
+                z.union([
+                    z.object({ "count(*)": z.number() }),
+                    z.object({}),
+                ]),
+            ),
+            401: z.null(),
+            403: z.null(),
+        },
+        summary: "Get all members with filtering and pagination",
+    },
     getAll: {
         method: "GET",
         path: "",

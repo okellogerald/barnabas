@@ -15,7 +15,8 @@ export class QueryBuilder {
         filters: [],
         sort: [],
         includes: [],
-
+        groupBy: [],
+        join: [],
         count: "*",
         page: 1,
         pageSize: AppConfig.DEFAULT_PAGE_SIZE,
@@ -26,6 +27,8 @@ export class QueryBuilder {
             filters: options.filters || [],
             sort: options.sort || [],
             includes: options.includes || [],
+            groupBy: options.groupBy || [],
+            join: options.join || [],
             page: options.page,
             pageSize: options.pageSize,
         };
@@ -160,6 +163,10 @@ export class QueryBuilder {
 
     // RELATIONSHIP METHODS
 
+    /**
+     * Add eager loading for related models
+     * @param relations Relation name or array of relation names
+     */
     with(relations: string | string[]): this {
         const relationsArray = Array.isArray(relations)
             ? relations
@@ -167,6 +174,38 @@ export class QueryBuilder {
         this.options.includes = [
             ...(this.options.includes || []),
             ...relationsArray,
+        ];
+        return this;
+    }
+
+    /**
+     * Add a JOIN to the query to fetch related models
+     * @param relations Relation name or array of relation names to join
+     */
+    join(relations: string | string[]): this {
+        const relationsArray = Array.isArray(relations)
+            ? relations
+            : [relations];
+        this.options.join = [
+            ...(this.options.join || []),
+            ...relationsArray,
+        ];
+        return this;
+    }
+
+    // GROUPING METHODS
+
+    /**
+     * Add GROUP BY clause to the query
+     * @param fields Field or fields to group by
+     */
+    groupBy(fields: string | string[]): this {
+        const fieldsArray = Array.isArray(fields)
+            ? fields
+            : [fields];
+        this.options.groupBy = [
+            ...(this.options.groupBy || []),
+            ...fieldsArray,
         ];
         return this;
     }
@@ -179,6 +218,16 @@ export class QueryBuilder {
      */
     count(expression: string = "*"): this {
         this.options.count = expression;
+        return this;
+    }
+
+    /**
+     * Count specific expression with alias
+     * @param expression Expression to count
+     * @param alias Alias for the count result
+     */
+    countAs(expression: string, alias: string): this {
+        this.options.count = `${expression} as ${alias}`;
         return this;
     }
 
@@ -244,13 +293,23 @@ export class QueryBuilder {
             }
         }
 
-        // Handle relations
+        // Handle eager loading of relations
         if (this.options.includes && this.options.includes.length > 0) {
             if (this.options.includes.length === 1) {
                 result.eager = this.options.includes[0];
             } else {
                 result.eager = this.options.includes.join(",");
             }
+        }
+
+        // Handle joins
+        if (this.options.join && this.options.join.length > 0) {
+            result.join = this.options.join.join(",");
+        }
+
+        // Handle grouping
+        if (this.options.groupBy && this.options.groupBy.length > 0) {
+            result.groupBy = this.options.groupBy.join(",");
         }
 
         // Handle count parameter

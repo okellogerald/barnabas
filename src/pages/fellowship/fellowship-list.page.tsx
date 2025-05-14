@@ -31,9 +31,9 @@ import { useFellowshipsList, FellowshipsListSuccessState } from '@/hooks/fellows
 import { AsyncStateMatcher } from '@/lib/state';
 import { Navigation } from '@/app';
 import { AuthenticationManager } from '@/data/authentication';
-import { Fellowship } from '@/models';
 import { FellowshipFilterState, useFellowshipFilterStore } from '@/hooks/fellowship/fellowship-list';
 import { Actions } from '@/data/authorization';
+import { SortDirection } from '@/lib/query';
 
 const { Title, Text } = Typography;
 
@@ -93,7 +93,7 @@ const FellowshipListPage: React.FC = () => {
   // Handle sorting change
   const handleSortChange = (field: string) => {
     // Keep the same direction for a new field
-    const currentDirection = filterStore.filters.sortDirection || 'asc';
+    const currentDirection = filterStore.filters.sortDirection || SortDirection.ASC;
 
     filterStore.setFilters({
       ...filterStore.filters,
@@ -105,7 +105,7 @@ const FellowshipListPage: React.FC = () => {
   // Toggle sort direction
   const toggleSortDirection = () => {
     const currentField = filterStore.filters.sortBy || 'name';
-    const newDirection = filterStore.filters.sortDirection === 'asc' ? 'desc' : 'asc';
+    const newDirection = filterStore.filters.sortDirection === 'asc' ? SortDirection.DESC : SortDirection.ASC;
 
     filterStore.setFilters({
       ...filterStore.filters,
@@ -243,10 +243,6 @@ const FellowshipListPage: React.FC = () => {
                       loading={state.loading}
                       size="middle"
                       className="fellowships-table"
-                      expandable={{
-                        expandedRowRender: (record) => <ExpandedRowContent fellowship={record} />,
-                        rowExpandable: () => true,
-                      }}
                       columns={[
                         {
                           title: "Name",
@@ -273,8 +269,6 @@ const FellowshipListPage: React.FC = () => {
                             return (
                               <Space direction="vertical" size="small">
                                 <Text>Chairman: {chairmanName}</Text>
-                                {fellowship.secretaryId && <Tag color="blue">Has Secretary</Tag>}
-                                {fellowship.treasurerId && <Tag color="green">Has Treasurer</Tag>}
                               </Space>
                             );
                           },
@@ -286,6 +280,11 @@ const FellowshipListPage: React.FC = () => {
                             // Check if we have a memberCount property (added by hook)
                             if ((fellowship as any).memberCount !== undefined) {
                               const count = (fellowship as any).memberCount;
+                              return `${count} member${count !== 1 ? 's' : ''}`;
+                            }
+
+                            if (!state.loadingCounts) {
+                              const count = state.memberCounts[fellowship.id] || 0;
                               return `${count} member${count !== 1 ? 's' : ''}`;
                             }
 
@@ -426,98 +425,6 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         </Row>
       </Form>
     </Drawer>
-  );
-};
-
-/**
- * Component: ExpandedRowContent
- * 
- * Renders the expanded row content with details about the fellowship
- */
-const ExpandedRowContent: React.FC<{ fellowship: Fellowship }> = ({ fellowship }) => {
-  // Get the member count (from our enhanced property)
-  const memberCount = (fellowship as any).memberCount;
-
-  return (
-    <Card variant={"outlined"} size="small" className="expanded-row-content">
-      <Row gutter={[24, 16]}>
-        {/* Leadership Column */}
-        <Col xs={24} md={12}>
-          <Title level={5}>Leadership</Title>
-          {fellowship.hasLeadership() ? (
-            <ul style={{ paddingLeft: 20, marginBottom: 0 }}>
-              {fellowship.getLeaderContactInfo().map((contact, index) => (
-                <li key={index}>{contact}</li>
-              ))}
-            </ul>
-          ) : (
-            <Text type="secondary">No leadership assigned to this fellowship</Text>
-          )}
-        </Col>
-
-        {/* Members Summary Column */}
-        <Col xs={24} md={12}>
-          <Title level={5}>Members</Title>
-          {memberCount !== undefined ? (
-            <div>
-              <Text>{memberCount} member{memberCount !== 1 ? 's' : ''}</Text>
-              {memberCount > 0 && (
-                <div style={{ marginTop: 8 }}>
-                  <Button
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Store the fellowship ID in sessionStorage for the member list to pick up
-                      sessionStorage.setItem('memberList_fellowshipId', fellowship.id);
-                      Navigation.Members.toList();
-                    }}
-                  >
-                    View All Members
-                  </Button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Spin size="small" />
-          )}
-        </Col>
-
-        {/* Notes Row (Full Width) */}
-        {fellowship.notes && (
-          <Col span={24}>
-            <Divider style={{ margin: '8px 0' }} />
-            <Title level={5}>Notes</Title>
-            <Text>{fellowship.notes}</Text>
-          </Col>
-        )}
-
-        {/* Actions */}
-        <Col span={24}>
-          <Divider style={{ margin: '8px 0' }} />
-          <Space>
-            <Button
-              type="primary"
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation();
-                Navigation.Fellowships.toDetails(fellowship.id);
-              }}
-            >
-              View Details
-            </Button>
-            <Button
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation();
-                Navigation.Fellowships.toEdit(fellowship.id);
-              }}
-            >
-              Edit Fellowship
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-    </Card>
   );
 };
 

@@ -1,3 +1,4 @@
+import { SortDirection } from "@/lib/query";
 import { create } from "zustand";
 
 export interface FellowshipFilters {
@@ -5,7 +6,7 @@ export interface FellowshipFilters {
   hasLeadership?: boolean;
   memberCount?: string; // 'empty', 'small', 'medium', 'large'
   sortBy?: string;
-  sortDirection?: 'asc' | 'desc';
+  sortDirection?: SortDirection;
 }
 
 export interface FellowshipFilterState {

@@ -94,18 +94,14 @@ export const FellowshipQueries = {
    */
   useMembersCount: (
     fellowshipId: string,
-  ): UseQueryResult<{ results: any[], total: number }, Error> =>
+  ): UseQueryResult<number, Error> =>
     useQuery({
       queryKey: [QueryKeys.Fellowships.members(fellowshipId)],
       queryFn: async () => {
         // Assuming you have a MemberRepository with similar methods
         const MemberManager = (await import('@/data/member')).MemberManager;
         const manager = MemberManager.instance;
-
-        const response = await manager.getMembersCount({
-          fellowshipId,
-        });
-
+        const response = await manager.getMembersCount({fellowshipId});
         return response
       },
       enabled: !!fellowshipId,

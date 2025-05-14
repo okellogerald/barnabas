@@ -16,7 +16,7 @@ export class EnvelopesListSuccessState extends SuccessState<{ envelopes: Envelop
         isAssigned?: boolean;
         memberId?: string;
         sortBy?: string;
-        sortDirection?: 'asc' | 'desc';
+        sortDirection?: SortDirection;
     };
     readonly pagination: {
         current: number;
@@ -34,7 +34,7 @@ export class EnvelopesListSuccessState extends SuccessState<{ envelopes: Envelop
             isAssigned?: boolean;
             memberId?: string;
             sortBy?: string;
-            sortDirection?: 'asc' | 'desc';
+            sortDirection?: SortDirection;
         };
         pagination: {
             current: number;

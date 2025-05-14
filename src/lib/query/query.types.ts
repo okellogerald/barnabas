@@ -41,6 +41,12 @@ export interface QueryOptions {
 
     // Relationships
     includes?: string[];
+    
+    // Join relations explicitly (for filtering on related fields)
+    join?: string[];
+    
+    // Group By (for aggregation queries)
+    groupBy?: string[];
 
     // Count
     count?: string;

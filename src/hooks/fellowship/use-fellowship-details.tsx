@@ -6,6 +6,8 @@ import { Navigation } from '@/app';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { FellowshipQueries } from '@/data/fellowship';
 
+// TODO: should be converted to using new state class implementations
+
 /**
  * Hook for managing fellowship details view
  * 
@@ -111,7 +113,7 @@ export const useFellowshipDetails = () => {
     });
 
     // Get members count
-    const membersCount = membersCountQuery.data?.total || 0;
+    const membersCount = membersCountQuery.data || 0;
     const membersCountLoading = membersCountQuery.isLoading;
 
     return {

@@ -76,7 +76,7 @@ export class MemberManager {
      * @throws {Error} If there is an error retrieving the count from the repository.
      */
     public async getMembersCount(
-        options?: MemberQueryCriteria | MemberQueryBuilder,
+        options?: Parameters<MemberRepository["getCount"]>[0],
     ): Promise<number> {
         // Check if the user has permission to find members (as count is derived from finding)
         if (!this._permManager.canPerformAction(Actions.MEMBER_FIND_ALL)) {
@@ -84,13 +84,8 @@ export class MemberManager {
         }
 
         try {
-            // Create a query builder configured for count
-            const builder = MemberQueryBuilder.from(options)
-                .configureForCount();
-
-            // Execute the query
-            const response = await this._repo.getAll(builder);
-            return response.total;
+            const count = await this._repo.getCount(options);
+            return count;
         } catch (error) {
             // Log the error for debugging purposes on the server
             console.error("Error retrieving filtered members count:", error);

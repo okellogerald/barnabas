@@ -23,7 +23,7 @@ export interface MemberQueryCriteria {
     attendsFellowship?: boolean;
     isBaptized?: boolean;
     isConfirmed?: boolean;
-    
+
     // Search
     search?: string;
 
@@ -147,7 +147,7 @@ export class MemberQueryBuilder extends QueryBuilder {
      */
     search(searchTerm: string): this {
         if (!searchTerm) return this;
-        
+
         const pattern = `%${searchTerm}%`;
         // Apply multiple filters for each field
         this.whereLikeLower(`firstName`, pattern);
@@ -207,7 +207,7 @@ export class MemberQueryBuilder extends QueryBuilder {
         if (options.search) {
             this.search(options.search);
         }
-        
+
         // Apply sorting
         if (options.sortBy) {
             this.orderBy(
@@ -218,12 +218,12 @@ export class MemberQueryBuilder extends QueryBuilder {
             // Default sort by last name
             this.orderBy("lastName", SortDirection.ASC);
         }
-        
+
         // Apply pagination
         if (options.page && options.pageSize) {
             this.paginate(options.page, options.pageSize);
         }
-        
+
         return this;
     }
 
@@ -256,12 +256,10 @@ export class MemberQueryBuilder extends QueryBuilder {
         options?: MemberQueryCriteria,
     ): MemberQueryBuilder {
         if (!options) {
-            return MemberQueryBuilder.newInstance().includeDefaultRelations();
+            return MemberQueryBuilder.newInstance();
         }
 
-        return MemberQueryBuilder.newInstance()
-            .includeDefaultRelations()
-            .applyCriteria(options);
+        return MemberQueryBuilder.newInstance().applyCriteria(options);
     }
 
     /**
@@ -289,7 +287,7 @@ export class MemberQueryBuilder extends QueryBuilder {
         options?: MemberQueryCriteria | MemberQueryBuilder,
     ): MemberQueryBuilder {
         if (!options) {
-            return MemberQueryBuilder.newInstance().includeDefaultRelations();
+            return MemberQueryBuilder.newInstance();
         }
 
         return MemberQueryBuilder.createFromBuilderOrCriteria(options);

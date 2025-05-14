@@ -7,6 +7,7 @@ import { Navigation } from "@/app";
 import _ from "lodash";
 import { useFellowshipMemberCounts } from "./use-fellowship-member-count";
 import { FellowshipQueries } from "@/data/fellowship";
+import { SortDirection } from "@/lib/query";
 
 // Custom success state for the fellowships list
 export class FellowshipsListSuccessState extends SuccessState<{ fellowships: Fellowship[], total: number }> {
@@ -16,7 +17,7 @@ export class FellowshipsListSuccessState extends SuccessState<{ fellowships: Fel
         memberCount?: string;
         hasLeadership?: boolean;
         sortBy?: string;
-        sortDirection?: 'asc' | 'desc';
+        sortDirection?: SortDirection;
     };
     readonly pagination: {
         current: number;
@@ -25,6 +26,8 @@ export class FellowshipsListSuccessState extends SuccessState<{ fellowships: Fel
         onChange: (page: number) => void;
     };
     readonly loading: boolean;
+    readonly loadingCounts: boolean;
+    readonly memberCounts: Record<string, number>;
 
     constructor(args: {
         data: { fellowships: Fellowship[], total: number };
@@ -34,7 +37,7 @@ export class FellowshipsListSuccessState extends SuccessState<{ fellowships: Fel
             memberCount?: string;
             hasLeadership?: boolean;
             sortBy?: string;
-            sortDirection?: 'asc' | 'desc';
+            sortDirection?: SortDirection;
         };
         pagination: {
             current: number;
@@ -43,6 +46,8 @@ export class FellowshipsListSuccessState extends SuccessState<{ fellowships: Fel
             onChange: (page: number) => void;
         };
         loading: boolean;
+        loadingCounts: boolean;
+        memberCounts: Record<string, number>;
         actions: {
             refresh: () => void;
             updateFilters: (filters: any) => void;
@@ -56,6 +61,8 @@ export class FellowshipsListSuccessState extends SuccessState<{ fellowships: Fel
         this.loading = args.loading;
         this._updateFilters = args.actions.updateFilters;
         this._clearFilters = args.actions.clearFilters;
+        this.loadingCounts = args.loadingCounts;
+        this.memberCounts = args.memberCounts;
     }
 
     private _updateFilters: (filters: any) => void;
@@ -123,7 +130,7 @@ const filterByMemberCount = (fellowships: Fellowship[], memberCountFilter?: stri
 const sortFellowships = (
     fellowships: Fellowship[],
     sortBy?: string,
-    sortDirection: 'asc' | 'desc' = 'asc',
+    sortDirection: SortDirection = SortDirection.ASC,
     memberCounts?: Record<string, number>
 ): Fellowship[] => {
     if (!sortBy) return fellowships;
@@ -202,9 +209,7 @@ export const useFellowshipsList = () => {
     const fellowshipsQuery = FellowshipQueries.useList(queryParams);
 
     // Get the total count for the current filters
-    const countQuery = FellowshipQueries.useCount({
-        name: filters.name
-    });
+    const countQuery = FellowshipQueries.useCount({ name: filters.name });
 
     // Extract fellowship IDs for the member count hook
     const fellowshipIds = useMemo(() => {
@@ -214,6 +219,9 @@ export const useFellowshipsList = () => {
 
     // Use our custom hook to fetch member counts
     const { counts: memberCounts, loading: countsLoading } = useFellowshipMemberCounts(fellowshipIds);
+    console.log("member counts: ", memberCounts, countsLoading);
+    console.log("fellowshipIds: ", fellowshipIds);
+    console.log("fellowshipsQuery.data?.fellowships: ", fellowshipsQuery.data?.fellowships);
 
     // Apply member counts to fellowship objects
     useEffect(() => {
@@ -289,7 +297,7 @@ export const useFellowshipsList = () => {
             filtered = sortFellowships(
                 filtered,
                 filters.sortBy,
-                filters.sortDirection || 'asc',
+                filters.sortDirection || SortDirection.ASC,
                 memberCounts
             );
         }
@@ -333,6 +341,8 @@ export const useFellowshipsList = () => {
                     onChange: handlePageChange,
                 },
                 loading: fellowshipsQuery.isRefetching || countQuery.isRefetching || countsLoading,
+                loadingCounts: countsLoading,
+                memberCounts,
                 actions: {
                     refresh: () => {
                         fellowshipsQuery.refetch();

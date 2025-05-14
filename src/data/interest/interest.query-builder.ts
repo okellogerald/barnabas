@@ -2,7 +2,7 @@ import { QueryBuilder, SortDirection } from "@/lib/query";
 
 // Symbol for interest query builder type
 export const INTEREST_QUERY_BUILDER_TYPE = Symbol(
-    "interest-query-builder-type"
+    "interest-query-builder-type",
 );
 
 /**
@@ -100,7 +100,7 @@ export class InterestQueryBuilder extends QueryBuilder {
      * Includes member and opportunity relations for eager loading.
      * @returns The current query builder instance.
      */
-    includeRelations(): this {
+    includeDefaultRelations(): this {
         return this.with(["member", "opportunity"]);
     }
 
@@ -119,7 +119,7 @@ export class InterestQueryBuilder extends QueryBuilder {
      * @returns A new instance with default relations.
      */
     static createWithDefaultRelations(): InterestQueryBuilder {
-        return InterestQueryBuilder.newInstance().includeRelations();
+        return InterestQueryBuilder.newInstance().includeDefaultRelations();
     }
 
     /**
@@ -135,7 +135,7 @@ export class InterestQueryBuilder extends QueryBuilder {
         }
 
         return InterestQueryBuilder.newInstance()
-            .includeRelations()
+            .includeDefaultRelations()
             .applyCriteria(options);
     }
 

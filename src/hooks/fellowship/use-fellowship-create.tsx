@@ -3,6 +3,8 @@ import { Form, message } from 'antd';
 import { CreateFellowshipDTO, FellowshipQueries } from '@/data/fellowship';
 import { Navigation } from '@/app';
 
+// TODO: should be converted to using new state class implementations
+
 export interface FellowshipFormValues {
     name: string;
     notes?: string;

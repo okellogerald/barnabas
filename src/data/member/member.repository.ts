@@ -5,6 +5,7 @@ import {
     MemberQueryBuilder,
     MemberQueryCriteria,
 } from "./member.query-builder";
+import { z } from "zod";
 
 type GetMembersResponse = {
     results: MemberDTO[];
@@ -14,6 +15,33 @@ type GetMembersResponse = {
 export class MemberRepository extends BaseRepository<typeof memberContract> {
     constructor() {
         super("member", memberContract);
+    }
+
+    async getCount(
+        criteria?: Exclude<
+            MemberQueryCriteria,
+            "page" | "pageSize" | "sort" | "sortDirection"
+        >,
+    ): Promise<number> {
+        try {
+            // Convert builder to query params object if it's a builder
+            const query = MemberQueryBuilder.from(criteria).configureForCount()
+                .build();
+            const result = await this.client.getCount({ query });
+            if (result.status === 200) {
+                const firstItem = result.body[0];
+                const validationResult = z.object({ "count(*)": z.number() })
+                    .safeParse(firstItem);
+                if (validationResult.success) {
+                    return validationResult.data["count(*)"];
+                }
+            }
+
+            throw new Error("Failed to retrieve member count.");
+        } catch (error) {
+            console.error("Error in getCount:", error);
+            throw new Error("Failed to retrieve member count.");
+        }
     }
 
     /**

@@ -37,11 +37,11 @@ export const MemberQueries = {
 
     /**
      * Hook to get the total count of members with optional filters
-     * @param {MemberQueryCriteria | MemberQueryBuilder} options Optional criteria or builder for filtering
+     * @param options Optional criteria or builder for filtering
      * @returns {UseQueryResult<number, Error>} Query result with the total count
      */
     useCount: (
-        options?: MemberQueryCriteria | MemberQueryBuilder,
+        options?: Parameters<typeof memberManager.getMembersCount>[0],
     ): UseQueryResult<number, Error> =>
         useQuery({
             queryKey: [

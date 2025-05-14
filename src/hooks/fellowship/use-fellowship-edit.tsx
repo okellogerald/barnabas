@@ -6,6 +6,8 @@ import { Navigation } from '@/app';
 import { mapQueryToAsyncState } from '@/lib/state';
 import { MemberQueries } from '@/data/member';
 
+// TODO: should be converted to using new state class implementations
+
 export interface FellowshipEditFormValues {
     name: string;
     notes?: string;
