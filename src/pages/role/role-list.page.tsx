@@ -27,11 +27,8 @@ import {
   InfoCircleOutlined
 } from '@ant-design/icons';
 import { AsyncStateMatcher } from '@/lib/state';
-import { Navigation } from '@/app';
-import { Role } from '@/models';
 import { RoleFilterState, RolesListSuccessState, useRoleFilterStore, useRolesList } from '@/hooks/role/role-list';
 import { SortDirection } from '@/lib/query';
-import { RoleQueries } from '@/data/role/role.queries';
 
 const { Title, Text } = Typography;
 
@@ -227,10 +224,6 @@ const RolesListPage: React.FC = () => {
                       loading={state.loading}
                       size="middle"
                       className="roles-table"
-                      expandable={{
-                        expandedRowRender: (record) => <ExpandedRowContent role={record} />,
-                        rowExpandable: () => true,
-                      }}
                     />
 
                     {/* Empty State */}
@@ -338,71 +331,6 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         </Row>
       </Form>
     </Drawer>
-  );
-};
-
-/**
- * Component: ExpandedRowContent
- * 
- * Renders the expanded row content with details about the role and its actions
- */
-const ExpandedRowContent: React.FC<{ role: Role }> = ({ role }) => {
-  // We need to fetch the role actions when the row is expanded
-  const roleActionsQuery = React.useMemo(() => {
-    return RoleQueries.useActions(role.id);
-  }, [role.id]);
-
-  return (
-    <Card size="small" className="expanded-row-content">
-      <Row gutter={[24, 16]}>
-        {/* Role Description */}
-        <Col xs={24} md={12}>
-          <Title level={5}>Description</Title>
-          <Text>
-            {role.getDescription ? role.getDescription() : role.description || 'No description available'}
-          </Text>
-        </Col>
-
-        {/* Role Actions */}
-        <Col xs={24} md={12}>
-          <Title level={5}>Role Actions</Title>
-          <div>
-            {roleActionsQuery.isLoading ? (
-              <Text>Loading actions...</Text>
-            ) : roleActionsQuery.isError ? (
-              <Text type="danger">Error loading actions</Text>
-            ) : (roleActionsQuery.data?.length || 0) > 0 ? (
-              <div style={{ marginTop: 8 }}>
-                {roleActionsQuery.data?.map((action) => (
-                  <Tag key={action.id} style={{ margin: '0 8px 8px 0' }}>
-                    {action.action}
-                  </Tag>
-                ))}
-              </div>
-            ) : (
-              <Text type="secondary">No specific actions defined for this role</Text>
-            )}
-          </div>
-        </Col>
-
-        {/* Actions */}
-        <Col span={24}>
-          <Divider style={{ margin: '8px 0' }} />
-          <Space>
-            <Button
-              type="primary"
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation();
-                Navigation.Roles.toDetails(role.id);
-              }}
-            >
-              View Details
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-    </Card>
   );
 };
 

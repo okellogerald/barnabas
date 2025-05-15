@@ -31,7 +31,6 @@ import {
 } from '@ant-design/icons';
 import { AsyncStateMatcher } from '@/lib/state/async-state.matcher';
 import { Navigation } from '@/app';
-import { User } from '@/models';
 import { Actions } from '@/data/authorization';
 import { UserFilterState, UsersListSuccessState, useUserFilterStore, useUsersList } from '@/hooks/user';
 import { SortDirection } from '@/lib/query';
@@ -247,10 +246,6 @@ const UserListPage: React.FC = () => {
                       loading={state.loading}
                       size="middle"
                       className="users-table"
-                      expandable={{
-                        expandedRowRender: (record) => <ExpandedRowContent user={record} />,
-                        rowExpandable: () => true,
-                      }}
                       columns={[
                         {
                           title: "Name",
@@ -451,81 +446,6 @@ const FilterDrawer: React.FC<FilterDrawerProps> = ({
         </Row>
       </Form>
     </Drawer>
-  );
-};
-
-/**
- * Component: ExpandedRowContent
- * 
- * Renders the expanded row content with details about the user
- */
-const ExpandedRowContent: React.FC<{ user: User }> = ({ user }) => {
-  return (
-    <Card size="small" className="expanded-row-content">
-      <Row gutter={[24, 16]}>
-        {/* Contact Details */}
-        <Col xs={24} md={12}>
-          <Title level={5}>Contact Information</Title>
-          <div>
-            <Space direction="vertical" size="small">
-              <div>
-                <Text type="secondary">Email:</Text> {user.email}
-              </div>
-              {user.phoneNumber && (
-                <div>
-                  <Text type="secondary">Phone:</Text> {user.phoneNumber}
-                </div>
-              )}
-            </Space>
-          </div>
-        </Col>
-
-        {/* System Information */}
-        <Col xs={24} md={12}>
-          <Title level={5}>System Information</Title>
-          <Space direction="vertical" size="small">
-            <div>
-              <Text type="secondary">Created:</Text> {user.createdAt.toLocaleString()}
-            </div>
-            <div>
-              <Text type="secondary">Last Updated:</Text> {user.updatedAt.toLocaleString()}
-            </div>
-            <div>
-              <Text type="secondary">Status:</Text> {user.email}
-            </div>
-            <div>
-              <Text type="secondary">Role:</Text> {user.getRoleName()}
-            </div>
-          </Space>
-        </Col>
-
-        {/* Actions */}
-        <Col span={24}>
-          <Divider style={{ margin: '8px 0' }} />
-          <Space>
-            <Button
-              type="primary"
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation();
-                Navigation.Users.toDetails(user.id);
-              }}
-            >
-              View Details
-            </Button>
-            <Button
-              size="small"
-              onClick={(e) => {
-                e.stopPropagation();
-                Navigation.Users.toEdit(user.id);
-              }}
-            >
-              Edit User
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-    </Card>
   );
 };
 
