@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { CommonSchemas } from "../shared";
+import { CommonSchemas } from "../shared/schemas";
 
 // Church schema
 export const churchSchema = z.object({

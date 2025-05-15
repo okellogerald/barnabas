@@ -101,7 +101,7 @@ export class InterestQueryBuilder extends QueryBuilder {
      * @returns The current query builder instance.
      */
     includeDefaultRelations(): this {
-        return this.with(["member", "opportunity"]);
+        return this.with("[member, opportunity]");
     }
 
     // === 🏗️ Factory Methods ===

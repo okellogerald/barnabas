@@ -5,8 +5,20 @@ import { InterestSchemas } from "./interest.schema";
 const c = initContract();
 
 export const interestContract = c.router({
-  // Get all volunteer interests with pagination and filtering
+  // Get all volunteer interests without pagination
   getAll: {
+    method: "GET",
+    path: "/",
+    responses: {
+      200: z.array(InterestSchemas.interestSchema),
+      401: z.null(),
+    },
+    summary: "Get all volunteer interests with filtering but without pagination",
+    query: z.object({}),
+  },
+
+  // Get all volunteer interests with pagination and filtering
+  getPaginated: {
     method: "GET",
     path: "/",
     responses: {

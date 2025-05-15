@@ -67,7 +67,7 @@ export class InterestManager {
         try {
             const builder = InterestQueryBuilder.from(options)
                 .configureForCount();
-            const response = await this._repo.getAll(builder);
+            const response = await this._repo.getPaginated(builder);
             return response.total;
         } catch (error) {
             console.error("Error retrieving filtered interests count:", error);
@@ -87,7 +87,7 @@ export class InterestManager {
 
         try {
             const builder = InterestQueryBuilder.from(options);
-            const response = await this._repo.getAll(builder);
+            const response = await this._repo.getPaginated(builder);
 
             const interests = response.results.map(Interest.fromDTO);
             return { interests, total: response.total };
@@ -152,7 +152,10 @@ export class InterestManager {
         }
 
         try {
-            const dtos = await this._repo.getByOpportunityId(opportunityId);
+            const queryBuilder = InterestQueryBuilder.newInstance()
+                .includeDefaultRelations()
+                .filterByOpportunityId(opportunityId);
+            const dtos = await this._repo.getAll(queryBuilder);
             return dtos.map(Interest.fromDTO);
         } catch (error) {
             console.error(

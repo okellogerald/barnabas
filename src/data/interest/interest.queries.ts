@@ -148,8 +148,7 @@ export const InterestQueries = {
         Interest,
         Error,
         string,
-        { previousInterest: Interest | null }
-    > => useMutation({
+        { previousInterest: Interest | null }> => useMutation({
         mutationFn: async (interestId: string) => {
             return await interestManager.deleteInterest(interestId);
         },

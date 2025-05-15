@@ -24,10 +24,6 @@ export const QueryUtils = (queryClient: QueryClient) => ({
             queryClient.removeQueries({
                 queryKey: QueryKeys.Fellowships.detail(id),
             }),
-        invalidateMembers: (fellowshipId: string) =>
-            queryClient.invalidateQueries({
-                queryKey: QueryKeys.Fellowships.members(fellowshipId),
-            }),
         invalidateLeadership: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Fellowships.leadership(),

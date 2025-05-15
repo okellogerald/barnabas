@@ -1,4 +1,4 @@
-import { BaseRepository } from "@/data/shared";
+import { BaseRepository } from "@/data/shared/base-repository";
 import { churchContract } from "./church.api-contract";
 import { ChurchDTO } from "./church.schema";
 

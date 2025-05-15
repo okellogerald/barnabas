@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   Button,
@@ -13,7 +13,8 @@ import {
   Breadcrumb,
   Divider,
   Skeleton,
-  App
+  App,
+  Tabs
 } from 'antd';
 import {
   EditOutlined,
@@ -21,18 +22,20 @@ import {
   ArrowLeftOutlined,
   ExclamationCircleOutlined,
   InfoCircleOutlined,
-  CalendarOutlined
+  CalendarOutlined,
+  TeamOutlined
 } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 import { AsyncStateMatcher, isErrorState } from '@/lib/state';
 import { notifyUtils } from '@/utilities';
 import { Link } from 'react-router-dom';
-import { useVolunteerDetail, VolunteerDetailSuccessState } from '@/hooks/volunteer';
+import { OpportunityMembersSuccessState, useOpportunityMembers, useVolunteerDetail, VolunteerDetailSuccessState } from '@/hooks/volunteer';
 import { useVolunteerPageUI } from '@/hooks/volunteer/list';
 import { ROUTES } from '@/app';
 
 const { Title, Text, Paragraph } = Typography;
 const { TextArea } = Input;
+const { TabPane } = Tabs;
 
 /**
  * VolunteerOpportunityDetailPage - Component for viewing and managing a single volunteer opportunity
@@ -40,10 +43,14 @@ const { TextArea } = Input;
  * This page displays the details of a volunteer opportunity and provides options to:
  * - Edit the opportunity details
  * - Delete the opportunity
+ * - Manage interested members
  */
 const VolunteerOpportunityDetailPage: React.FC = () => {
   // Get ID from URL params
   const { id } = useParams<{ id: string }>();
+
+  // Track active tab
+  const [activeTab, setActiveTab] = useState<string>('details');
 
   // Core data handling and state
   const { state, formHelpers } = useVolunteerDetail(id);
@@ -51,7 +58,7 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
   // UI state management (modals, drawers, etc.)
   const ui = useVolunteerPageUI();
 
-  const { modal } = App.useApp()
+  const { modal } = App.useApp();
 
   // Initialize form when data is loaded
   useEffect(() => {
@@ -217,42 +224,77 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
 
                   <Divider style={{ marginTop: 0 }} />
 
-                  {/* Opportunity Details */}
+                  {/* Opportunity Title */}
                   <Title level={3}>{opportunity.name}</Title>
 
-                  <Descriptions bordered column={1} size="small">
-                    <Descriptions.Item
-                      label={<Space><InfoCircleOutlined /> Description</Space>}
+                  {/* Tabs */}
+                  <Tabs activeKey={activeTab} onChange={setActiveTab}>
+                    {/* Details Tab */}
+                    <TabPane
+                      tab={<span><InfoCircleOutlined /> Details</span>}
+                      key="details"
                     >
-                      {opportunity.description || "No description provided"}
-                    </Descriptions.Item>
+                      {/* Opportunity Details */}
+                      <Descriptions bordered column={1} size="small">
+                        <Descriptions.Item
+                          label={<Space><InfoCircleOutlined /> Description</Space>}
+                        >
+                          {opportunity.description || "No description provided"}
+                        </Descriptions.Item>
 
-                    <Descriptions.Item
-                      label={<Space><CalendarOutlined /> Created</Space>}
+                        <Descriptions.Item
+                          label={<Space><CalendarOutlined /> Created</Space>}
+                        >
+                          {new Date(opportunity.createdAt).toLocaleString()}
+                        </Descriptions.Item>
+
+                        <Descriptions.Item
+                          label={<Space><CalendarOutlined /> Last Updated</Space>}
+                        >
+                          {new Date(opportunity.updatedAt).toLocaleString()}
+                        </Descriptions.Item>
+                      </Descriptions>
+
+                      {/* Member Summary Card - Clickable to switch to Members tab */}
+                      <Divider />
+                      <Card
+                        type="inner"
+                        title={<span><TeamOutlined /> Member Management</span>}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => setActiveTab('members')}
+                        className="clickable-card"
+                      >
+                        <Paragraph>
+                          This section allows you to manage members who have expressed interest in this volunteer opportunity.
+                          Click to view and manage interested members.
+                        </Paragraph>
+                        <Row justify="end">
+                          <Button
+                            type="primary"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setActiveTab('members');
+                            }}
+                          >
+                            Manage Interested Members
+                          </Button>
+                        </Row>
+                      </Card>
+                    </TabPane>
+
+                    {/* Members Tab */}
+                    <TabPane
+                      tab={<span><TeamOutlined /> Interested Members</span>}
+                      key="members"
                     >
-                      {new Date(opportunity.createdAt).toLocaleString()}
-                    </Descriptions.Item>
-
-                    <Descriptions.Item
-                      label={<Space><CalendarOutlined /> Last Updated</Space>}
-                    >
-                      {new Date(opportunity.updatedAt).toLocaleString()}
-                    </Descriptions.Item>
-                  </Descriptions>
-
-                  <Divider />
-
-                  <Card type="inner" title="Member Management">
-                    <Paragraph>
-                      To manage members for this volunteer opportunity, please use the Members section
-                      where you can assign or remove this opportunity from specific members.
-                    </Paragraph>
-                    <Row justify="end">
-                      <Button type="primary">
-                        <Link to="/members">Go to Members</Link>
-                      </Button>
-                    </Row>
-                  </Card>
+                      {id && (
+                        <OpportunityMembersTab
+                          opportunityId={id}
+                          isActive={activeTab === 'members'}
+                        />
+                      )}
+                    </TabPane>
+                  </Tabs>
                 </Card>
 
                 {/* Edit Opportunity Modal */}
@@ -328,5 +370,102 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
     </div>
   );
 };
+
+import { Table, Empty, Flex } from 'antd';
+import { UserAddOutlined, ReloadOutlined } from '@ant-design/icons';
+
+interface OpportunityMembersTabProps {
+  opportunityId: string;
+  isActive: boolean;
+}
+
+/**
+ * Opportunity Members Tab Component
+ * 
+ * Displays a table of members interested in a volunteer opportunity with actions to add/remove members
+ */
+const OpportunityMembersTab: React.FC<OpportunityMembersTabProps> = ({
+  opportunityId,
+  isActive
+}) => {
+  // Get members data from hook
+  const {
+    state,
+    openMemberSelector,
+  } = useOpportunityMembers(opportunityId, isActive);
+
+  // Render members table when data is loaded
+  const renderMembersTable = ({ state }: { state: OpportunityMembersSuccessState }) => {
+    const { tableProps, total, canAddMembers } = state;
+
+    return (
+      <Card>
+        <Flex vertical gap={16}>
+          {/* Header with title and actions */}
+          <Flex justify="space-between" align="center">
+            <Title level={4}>
+              <TeamOutlined /> Interested Members ({total})
+            </Title>
+
+            <Space>
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={() => state.refresh()}
+              >
+                Refresh
+              </Button>
+
+              {canAddMembers && (
+                <Button
+                  type="primary"
+                  icon={<UserAddOutlined />}
+                  onClick={() => openMemberSelector()}
+                >
+                  Add Member
+                </Button>
+              )}
+            </Space>
+          </Flex>
+
+          {/* Members table */}
+          {total > 0 ? (
+            <Table {...tableProps} />
+          ) : (
+            <Empty
+              description="No members interested in this opportunity yet"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+            >
+              {canAddMembers && (
+                <Button
+                  type="primary"
+                  icon={<UserAddOutlined />}
+                  onClick={() => openMemberSelector()}
+                >
+                  Add Interested Member
+                </Button>
+              )}
+            </Empty>
+          )}
+        </Flex>
+      </Card>
+    );
+  };
+
+  // Use AsyncStateMatcher to handle loading, error states
+  return (
+    <AsyncStateMatcher
+      state={state}
+      views={{
+        SuccessView: ({ state }) => {
+          if (OpportunityMembersSuccessState.is(state)) {
+            return renderMembersTable({ state });
+          }
+          return null;
+        }
+      }}
+    />
+  );
+};
+
 
 export default VolunteerOpportunityDetailPage;

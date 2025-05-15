@@ -24,8 +24,23 @@ export class InterestRepository
      */
     async getAll(
         queryBuilder: InterestQueryBuilder,
-    ): Promise<{ results: InterestDTO[]; total: number }> {
+    ): Promise<InterestDTO[]> {
         const result = await this.client.getAll({
+            query: queryBuilder.build(),
+        });
+        return this.handleResponse<InterestDTO[]>(
+            result,
+            200,
+        );
+    }
+
+    /**
+     * Get all volunteer interests with pagination and filtering
+     */
+    async getPaginated(
+        queryBuilder: InterestQueryBuilder,
+    ): Promise<{ results: InterestDTO[]; total: number }> {
+        const result = await this.client.getPaginated({
             query: queryBuilder.build(),
         });
         return this.handleResponse<{ results: InterestDTO[]; total: number }>(

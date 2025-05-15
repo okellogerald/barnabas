@@ -4,7 +4,7 @@
  * Provides type-safe query key generators for each entity
  */
 
-import { MemberQueryBuilder, MemberQueryCriteria } from "@/data/member/member.query-builder";
+import { MemberQueryBuilder, MemberQueryCriteria } from "@/data/member";
 
 export const QueryKeys = {
   // Fellowship-related query keys
@@ -28,7 +28,7 @@ export const QueryKeys = {
   // Member-related query keys
   Members: {
     all: ["members"] as const,
-    list: (params: MemberQueryBuilder | MemberQueryCriteria) =>
+    list: (params?: MemberQueryBuilder | MemberQueryCriteria) =>
       [
         ...QueryKeys.Members.all,
         "list",

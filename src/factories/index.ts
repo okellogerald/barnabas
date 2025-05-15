@@ -16,8 +16,10 @@ export const initializeModels = async () => {
         RoleAction,
         User,
         VolunteerOpportunity,
+        Church,
     } = await import("@/models");
 
+    modelFactory.register("Church", Church);
     modelFactory.register("Fellowship", Fellowship);
     modelFactory.register("VolunteerOpportunity", VolunteerOpportunity);
     modelFactory.register("Member", Member);
@@ -34,6 +36,7 @@ export const initializeSchemas = async () => {
     const { MemberSchemas } = await import("@/data/member");
     const { InterestSchemas } = await import("@/data/interest");
     const { VolunteerOpportunitySchemas } = await import("@/data/volunteer");
+    const { churchSchema } = await import("@/data/church");
 
     schemaFactory.register("member", MemberSchemas.memberSchema);
     schemaFactory.register("interest", InterestSchemas.interestSchema);
@@ -41,6 +44,7 @@ export const initializeSchemas = async () => {
         "volunteer-opportunity",
         VolunteerOpportunitySchemas.volunteerOpportunity,
     );
+    schemaFactory.register("church", churchSchema);
 };
 
 // ✅ Unified initialization

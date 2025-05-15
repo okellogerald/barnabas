@@ -27,7 +27,7 @@ export const MemberQueries = {
     ): UseQueryResult<{ members: Member[]; total: number }, Error> =>
         useQuery({
             queryKey: [
-                QueryKeys.Members.list(),
+                QueryKeys.Members.list(options),
                 MemberQueryBuilder.is(options) ? options.build() : options,
             ],
             queryFn: async () => {
@@ -157,9 +157,7 @@ export const MemberQueries = {
                 if (updatedMember.fellowshipId) {
                     queryClient.invalidateQueries({
                         queryKey: [
-                            QueryKeys.Fellowships.members(
-                                updatedMember.fellowshipId,
-                            ),
+                            QueryKeys.Members.count(),
                         ],
                     });
                 }
@@ -209,9 +207,7 @@ export const MemberQueries = {
                 if (memberData?.fellowshipId) {
                     queryClient.invalidateQueries({
                         queryKey: [
-                            QueryKeys.Fellowships.members(
-                                memberData.fellowshipId,
-                            ),
+                            QueryKeys.Members.count(),
                         ],
                     });
 

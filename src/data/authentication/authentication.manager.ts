@@ -1,5 +1,5 @@
 import { AuthRepository, LoginRequest } from "@/data/authentication";
-import { User } from "@/models";
+import { User } from "@/models/user.model";
 import { useAuthStore } from "../../hooks/auth/use-auth-store";
 import { useStore } from "zustand";
 import {

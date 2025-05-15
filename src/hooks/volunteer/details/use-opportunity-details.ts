@@ -2,7 +2,7 @@ import { useCallback, useMemo } from "react";
 import { Form } from "antd";
 import { mapQueryToAsyncState, SuccessState, UI_STATE_TYPE } from "@/lib/state";
 import { VolunteerOpportunity } from "@/models";
-import { VolunteerQueries } from "../../data/volunteer/volunteer.queries";
+import { VolunteerQueries } from "../../../data/volunteer/volunteer.queries";
 import { UpdateVolunteerOpportunityDTO } from "@/data/volunteer";
 import { useAppNavigation } from "@/app";
 

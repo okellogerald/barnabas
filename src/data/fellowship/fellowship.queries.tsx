@@ -96,7 +96,7 @@ export const FellowshipQueries = {
     fellowshipId: string,
   ): UseQueryResult<number, Error> =>
     useQuery({
-      queryKey: [QueryKeys.Fellowships.members(fellowshipId)],
+      queryKey: [QueryKeys.Members.count()],
       queryFn: async () => {
         // Assuming you have a MemberRepository with similar methods
         const MemberManager = (await import('@/data/member')).MemberManager;

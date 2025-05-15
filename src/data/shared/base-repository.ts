@@ -1,9 +1,9 @@
 import { type AppRouter, initClient } from "@ts-rest/core";
-import { AuthenticationManager } from "@/data/authentication/authentication.manager";
 import { v4 as uuidv4 } from "uuid";
 import type { InitClientArgs } from "@ts-rest/core";
-import { ApiError } from "@/data/shared";
-import { AppConfig } from "@/app";
+import { ApiError } from "@/lib/error/error.api";
+import { AppConfig } from "@/app/config";
+import { useAuthStore } from "@/hooks/auth";
 
 /**
  * BaseRepository
@@ -63,10 +63,9 @@ export class BaseRepository<TContract extends AppRouter> {
             ? `${this.root.replace(/\/$/, "")}/${this.endpoint}` // Remove trailing slash from `this.root` and append the endpoint
             : `${AppConfig.API_BASE_URL.replace(/\/$/, "")}/${this.endpoint}`; // Remove trailing slash from `AppConfig.API_BASE_URL` and append the endpoint
 
-        console.log("Base URL: ", baseUrl);
-
         // Get token from auth manager
-        const token = AuthenticationManager.instance.getToken() || "";
+        // const token = AuthenticationManager.instance.getToken() || "";
+        const token = useAuthStore.getState().token || "";
 
         const args: InitClientArgs = {
             baseUrl,
@@ -104,8 +103,9 @@ export class BaseRepository<TContract extends AppRouter> {
 
         // Throw ApiError with status code and message
         throw new ApiError(
-            result.status,
             errorMessage || this.getDefaultErrorMessage(result.status),
+            undefined,
+            result.body,
         );
     }
 
