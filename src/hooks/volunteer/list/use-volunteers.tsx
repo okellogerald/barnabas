@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import { Form, TableProps } from 'antd';
 import { mapQueryToAsyncState, SuccessState, UI_STATE_TYPE } from '@/lib/state';
 import { VolunteerOpportunity } from '@/models';
@@ -6,6 +6,8 @@ import { VolunteerQueries } from '../../../data/volunteer/volunteer.queries';
 import { VolunteerOpportunityQueryBuilder } from '@/data/volunteer';
 import { SortDirection } from '@/lib/query';
 import { Navigation } from '@/app';
+import { TeamOutlined } from '@ant-design/icons';
+import { useOpportunityMemberCounts } from './use-volunteer-members';
 
 /**
  * Custom success state for the volunteer opportunities list
@@ -24,6 +26,8 @@ export class VolunteerListSuccessState extends SuccessState<{ opportunities: Vol
     onChange: (page: number, pageSize?: number) => void;
   };
   readonly loading: boolean;
+  readonly loadingCounts: boolean;
+  readonly memberCounts: Record<string, number>;
 
   constructor(args: {
     data: { opportunities: VolunteerOpportunity[], total: number };
@@ -40,6 +44,8 @@ export class VolunteerListSuccessState extends SuccessState<{ opportunities: Vol
       onChange: (page: number, pageSize?: number) => void;
     };
     loading: boolean;
+    loadingCounts: boolean;
+    memberCounts: Record<string, number>;
     actions: {
       refresh: () => void;
       updateFilters: (filters: any) => void;
@@ -51,6 +57,8 @@ export class VolunteerListSuccessState extends SuccessState<{ opportunities: Vol
     this.filters = args.filters;
     this.pagination = args.pagination;
     this.loading = args.loading;
+    this.loadingCounts = args.loadingCounts;
+    this.memberCounts = args.memberCounts;
     this._updateFilters = args.actions.updateFilters;
     this._clearFilters = args.actions.clearFilters;
   }
@@ -98,22 +106,6 @@ export function useVolunteerList() {
     sortDirection: SortDirection.ASC
   });
 
-  // Create table columns
-  const columns = useMemo(() => [
-    {
-      title: "Name",
-      dataIndex: "name",
-      key: "name",
-      sorter: true,
-    },
-    {
-      title: "Description",
-      dataIndex: "description",
-      key: "description",
-      ellipsis: true,
-    }
-  ], []);
-
   // Create query criteria
   const queryCriteria = useMemo(() => {
     const builder = VolunteerOpportunityQueryBuilder.newInstance();
@@ -131,13 +123,32 @@ export function useVolunteerList() {
     // Apply pagination
     builder.paginate(currentPage, pageSize);
 
-    // No need to include interestedMembers
-
     return builder;
   }, [filters, currentPage, pageSize]);
 
   // Fetch data using the query
   const opportunitiesQuery = VolunteerQueries.useList(queryCriteria);
+
+  // Extract opportunity IDs for the member count hook
+  const opportunityIds = useMemo(() => {
+    if (!opportunitiesQuery.data?.opportunities) return [];
+    return opportunitiesQuery.data.opportunities.map(opportunity => opportunity.id);
+  }, [opportunitiesQuery.data?.opportunities]);
+
+  // Use our custom hook to fetch member counts
+  const { counts: memberCounts, loading: countsLoading } = useOpportunityMemberCounts(opportunityIds);
+
+  // Apply member counts to opportunity objects
+  useEffect(() => {
+    if (!opportunitiesQuery.data?.opportunities || !memberCounts) return;
+
+    opportunitiesQuery.data.opportunities.forEach(opportunity => {
+      if (memberCounts[opportunity.id] !== undefined) {
+        // Update the opportunity with member count
+        (opportunity as any).memberCount = memberCounts[opportunity.id];
+      }
+    });
+  }, [opportunitiesQuery.data?.opportunities, memberCounts]);
 
   // Handle page change
   const handlePageChange = useCallback((page: number, size?: number) => {
@@ -165,6 +176,35 @@ export function useVolunteerList() {
     form.resetFields();
     setCurrentPage(1);
   }, [form]);
+
+  // Create table columns
+  const columns = useMemo(() => [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+      sorter: true,
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      ellipsis: true,
+    },
+    {
+      title: "Interested Members",
+      key: "memberCount",
+      render: (_: any, opportunity: VolunteerOpportunity) => {
+        const count = memberCounts[opportunity.id] || 0;
+        return (
+          <span>
+            <TeamOutlined style={{ marginRight: 8 }} />
+            {count} {count === 1 ? 'member' : 'members'}
+          </span>
+        );
+      },
+    }
+  ], [memberCounts]);
 
   // Create table props
   const tableProps = useMemo(() => ({
@@ -194,8 +234,14 @@ export function useVolunteerList() {
           onChange: handlePageChange,
         },
         loading: opportunitiesQuery.isRefetching,
+        loadingCounts: countsLoading,
+        memberCounts,
         actions: {
-          refresh: () => opportunitiesQuery.refetch(),
+          refresh: () => {
+            opportunitiesQuery.refetch();
+            // No need to explicitly refetch counts as they'll be refreshed
+            // when opportunity IDs change
+          },
           updateFilters,
           clearFilters,
         }
