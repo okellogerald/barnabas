@@ -1,4 +1,4 @@
-import { renderWithNull } from "../shared/null_display";
+import { renderWithNull } from "../shared/null-display";
 
 export const IDView = (props: { id?: string | null }) => {
     if (!props.id) return renderWithNull(props.id);

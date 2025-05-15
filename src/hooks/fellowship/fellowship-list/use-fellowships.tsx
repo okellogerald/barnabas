@@ -2,7 +2,7 @@ import { useCallback, useMemo, useEffect } from "react";
 import { TableProps } from "antd";
 import { mapQueryToAsyncState, SuccessState, UI_STATE_TYPE } from "@/lib/state";
 import { Fellowship } from "@/models";
-import { useFellowshipFilterStore } from "./use-filter-store";
+import { useFellowshipFilterStore } from "./use-fellowships-filter-store";
 import { Navigation } from "@/app";
 import _ from "lodash";
 import { useFellowshipMemberCounts } from "./use-fellowship-member-count";

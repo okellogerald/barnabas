@@ -1,7 +1,7 @@
 import { ColumnType } from "antd/es/table";
 import { Avatar, Badge, Space, Typography } from "antd";
 import { Member } from "../../models";
-import { NULL_DISPLAY, renderWithNull } from "../shared/null_display";
+import { NULL_DISPLAY, renderWithNull } from "../shared/null-display";
 
 const { Text } = Typography;
 

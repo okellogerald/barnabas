@@ -1,6 +1,6 @@
 import { Typography } from "antd";
 import dayjs from "dayjs";
-import { DateView } from "./date_view";
+import { DateView } from "./date-view";
 
 const { Text } = Typography
 

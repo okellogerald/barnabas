@@ -1,4 +1,5 @@
-import { QueryBuilder, SortDirection } from "@/lib/query";
+import { QueryBuilder } from "@/lib/query/query.builder";
+import { SortDirection } from "@/lib/query/query.types";
 
 // Symbol for member query builder type
 export const MEMBER_QUERY_BUILDER_TYPE = Symbol(

@@ -1,6 +1,7 @@
 -Statistics for the dashboard. You talked about implementing sth with cube.js
 -If possible, member-count for each `opportunity`
 -If possible, member-count for each `fellowship`
+-Remove member from fellowship endpoint
 
 >>UI
 - Add a members table on fellowship details page and opportunity details page.

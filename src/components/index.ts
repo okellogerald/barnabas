@@ -1,3 +1,3 @@
-export * from "./shared/date_view";
-export * from "./shared/null_display";
-export * from "./shared/lazy_component";
+export * from "./shared/date-view";
+export * from "./shared/null-display";
+export * from "./shared/lazy-component";
