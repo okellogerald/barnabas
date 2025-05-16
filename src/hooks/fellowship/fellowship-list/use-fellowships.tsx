@@ -219,9 +219,6 @@ export const useFellowshipsList = () => {
 
     // Use our custom hook to fetch member counts
     const { counts: memberCounts, loading: countsLoading } = useFellowshipMemberCounts(fellowshipIds);
-    console.log("member counts: ", memberCounts, countsLoading);
-    console.log("fellowshipIds: ", fellowshipIds);
-    console.log("fellowshipsQuery.data?.fellowships: ", fellowshipsQuery.data?.fellowships);
 
     // Apply member counts to fellowship objects
     useEffect(() => {
