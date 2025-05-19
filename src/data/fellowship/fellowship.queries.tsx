@@ -222,23 +222,5 @@ export const FellowshipQueries = {
           props.onError(error);
         }
       }
-    }),
-
-  /**
-   * Hook for searching fellowships by name or notes
-   * @param {string} searchTerm The search term
-   * @returns {UseQueryResult<{results: Fellowship[], total: number}, Error>} Query result with matching fellowships
-   */
-  useSearch: (searchTerm: string): UseQueryResult<{ results: Fellowship[], total: number }, Error> =>
-    useQuery({
-      queryKey: [QueryKeys.Fellowships.list(), { search: searchTerm }],
-      queryFn: async () => {
-        // const response = await fellowshipManager.search(searchTerm);
-        // return {
-        //   results: response.results.map(dto => Fellowship.fromDTO(dto)),
-        //   total: response.total
-        // };
-      },
-      enabled: !!searchTerm && searchTerm.length > 0,
-    }),
+    })
 };
