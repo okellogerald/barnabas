@@ -1,14 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Query, queryClient, QueryKeys } from "@/lib/query";
 import { UseMutationResult, UseQueryResult } from "@tanstack/react-query";
-import {
-  CreateVolunteerOpportunityDTO,
-  UpdateVolunteerOpportunityDTO,
-  VolunteerOpportunityQueryBuilder,
-  VolunteerOpportunityQueryCriteria,
-} from "@/data/volunteer";
 import { VolunteerManager } from "./volunteer.manager";
 import { VolunteerOpportunity } from "@/models/volunteer.model";
+import { VolunteerOpportunityQueryBuilder, VolunteerOpportunityQueryCriteria } from "./volunteer.query-builder";
+import { CreateVolunteerOpportunityDTO, UpdateVolunteerOpportunityDTO } from "./volunteer.schema";
 
 // Create a manager instance
 const volunteerManager = VolunteerManager.instance;
