@@ -40,6 +40,8 @@ export interface UseMemberEditResult {
     loading: boolean;
   };
 
+  member: Member | null;
+
   // Form instances and fields for each section
   personal: ReturnType<typeof usePersonalFields>;
   marital: ReturnType<typeof useMaritalFields>;
@@ -58,6 +60,7 @@ export interface UseMemberEditResult {
     // Navigation
     previousStep: () => void;
     goToStep: (step: number) => void;
+    navigateToMemberDetails: () => void;
 
     // Form actions
     submit: () => Promise<void>;
@@ -242,6 +245,14 @@ export const useMemberEdit = (): UseMemberEditResult => {
     sectionMutation
   ]);
 
+  const navigateToMemberDetails = useCallback((): void => {
+    if (memberId) {
+      Navigation.Members.toDetails(memberId);
+    } else {
+      notifyUtils.error("Member ID is not available for navigation");
+    }
+  }, [memberId])
+
   // Submit the form
   const submit = useCallback(async (): Promise<void> => {
     try {
@@ -277,6 +288,7 @@ export const useMemberEdit = (): UseMemberEditResult => {
         // Submit data
         await submitMutation.mutateAsync(formData);
         notifyUtils.dismiss(toastId);
+        navigateToMemberDetails();
       } catch (error) {
         notifyUtils.dismiss(toastId);
         notifyUtils.apiError(error);
@@ -305,6 +317,8 @@ export const useMemberEdit = (): UseMemberEditResult => {
       loading: submitMutation.isPending || sectionMutation.isPending,
     },
 
+    member: data ? Member.fromDTO(data) : null,
+
     // Section hooks
     personal,
     marital,
@@ -323,7 +337,8 @@ export const useMemberEdit = (): UseMemberEditResult => {
       previousStep: uiStore.previousStep,
       goToStep: uiStore.setCurrentStep,
       submit,
-      saveCurrentSection
+      saveCurrentSection,
+      navigateToMemberDetails,
     }
   };
 };

@@ -231,6 +231,7 @@ const MemberCreatePage: React.FC = () => {
               onFieldsChange={marital.onFieldsChange}
               title="Marital Information"
               description="Information about the member's marital status"
+              extra={marital.isMarried && <Alert type='info' message="All fields become required for married members, so please make sure all fields are filled with relevant data." />}
               fields={marital.fields}
               layout={marital.layout}
             />

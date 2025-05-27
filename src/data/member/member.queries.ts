@@ -22,12 +22,30 @@ export const MemberQueries = {
      * @param {MemberQueryCriteria | MemberQueryBuilder} options Optional criteria or builder for filtering and pagination
      * @returns {UseQueryResult<{members: Member[], total: number}, Error>} Query result with members and total
      */
-    useList: (
+    usePaginatedList: (
         options?: MemberQueryCriteria | MemberQueryBuilder,
     ): UseQueryResult<{ members: Member[]; total: number }, Error> =>
         useQuery({
             queryKey: [
-                QueryKeys.Members.list(options),
+                ...QueryKeys.Members.list(),
+                MemberQueryBuilder.is(options) ? options.build() : options,
+            ],
+            queryFn: async () => {
+                return await memberManager.getPaginatedMembers(options);
+            },
+        }),
+
+    /**
+     * Hook to fetch a list of members
+     * @param {MemberQueryCriteria | MemberQueryBuilder} options Optional criteria or builder for filtering and pagination
+     * @returns {UseQueryResult<{members: Member[], total: number}, Error>} Query result with members and total
+     */
+    useList: (
+        options?: MemberQueryCriteria | MemberQueryBuilder,
+    ): UseQueryResult<Member[], Error> =>
+        useQuery({
+            queryKey: [
+                ...QueryKeys.Members.list(),
                 MemberQueryBuilder.is(options) ? options.build() : options,
             ],
             queryFn: async () => {
@@ -45,7 +63,7 @@ export const MemberQueries = {
     ): UseQueryResult<number, Error> =>
         useQuery({
             queryKey: [
-                QueryKeys.Members.count(),
+                ...QueryKeys.Members.count(),
                 MemberQueryBuilder.is(options) ? options.build() : options,
             ],
             queryFn: async () => {
@@ -106,7 +124,7 @@ export const MemberQueries = {
 
                 // If the new member is assigned to a fellowship, invalidate fellowship queries too
                 Query.Fellowships.invalidateList();
-                
+
                 // Call the onSuccess callback if provided
                 if (props?.onSuccess) {
                     props.onSuccess(member);
@@ -162,7 +180,7 @@ export const MemberQueries = {
                     });
                 }
             }
-            
+
             // Call the onSuccess callback if provided
             if (props?.onSuccess) {
                 props.onSuccess(updatedMember);
@@ -263,7 +281,7 @@ export const MemberQueries = {
                 QueryKeys.Members.detail(updatedMember.id),
                 updatedMember,
             );
-            
+
             // Call the onSuccess callback if provided
             if (props?.onSuccess) {
                 props.onSuccess(updatedMember);
@@ -294,7 +312,7 @@ export const MemberQueries = {
                     .search(searchTerm)
                     .paginate(1, 10);
 
-                return await memberManager.getMembers(builder);
+                return await memberManager.getPaginatedMembers(builder);
             },
             enabled: !!searchTerm && searchTerm.length > 0,
         }),
@@ -326,7 +344,7 @@ export const MemberQueries = {
                 // Create a builder and apply the criteria
                 const builder = MemberQueryBuilder.createFromCriteria(criteria);
 
-                return await memberManager.getMembers(builder);
+                return await memberManager.getPaginatedMembers(builder);
             },
             enabled: !!fellowshipId,
         }),
@@ -345,7 +363,7 @@ export const MemberQueries = {
                 // Create a builder and apply the criteria
                 const builder = MemberQueryBuilder.createFromCriteria(criteria);
 
-                return await memberManager.getMembers(builder);
+                return await memberManager.getPaginatedMembers(builder);
             },
             enabled: !!criteria,
         }),

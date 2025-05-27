@@ -26,7 +26,7 @@ export const VolunteerQueries = {
   > =>
     useQuery({
       queryKey: [
-        QueryKeys.Volunteers.list(),
+        ...QueryKeys.Volunteers.list(),
         VolunteerOpportunityQueryBuilder.is(options)
           ? options.build()
           : options,
@@ -45,7 +45,7 @@ export const VolunteerQueries = {
       | VolunteerOpportunityQueryBuilder,
   ) => {
     const queryKey = [
-      QueryKeys.Volunteers.count(),
+      ...QueryKeys.Volunteers.count(),
       VolunteerOpportunityQueryBuilder.is(options) ? options.build() : options,
     ];
 

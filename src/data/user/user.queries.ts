@@ -27,7 +27,7 @@ export const UserQueries = {
     params?: Partial<UserQueryParams>,
   ): UseQueryResult<{ users: User[]; total: number }, Error> =>
     useQuery({
-      queryKey: [QueryKeys.Users.list(), params],
+      queryKey: [...QueryKeys.Users.list(), params],
       queryFn: async () => {
         const _params: UserQueryParams = {
           ...UserRepository.defaultQueryParams,
@@ -47,7 +47,7 @@ export const UserQueries = {
     filters?: Partial<UserQueryParams>,
   ): UseQueryResult<number, Error> =>
     useQuery({
-      queryKey: [QueryKeys.Users.count(), filters],
+      queryKey: [...QueryKeys.Users.count(), filters],
       queryFn: async () => {
         return userManager.getUsersCount(filters);
       },

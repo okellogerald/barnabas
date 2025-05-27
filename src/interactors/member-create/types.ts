@@ -27,7 +27,6 @@ export type FormSectionKey =
  * Section-specific key types for type safety
  */
 export type PersonalInfoKeys =
-    | "envelopeNumber"
     | "firstName"
     | "middleName"
     | "lastName"

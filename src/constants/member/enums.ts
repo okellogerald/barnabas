@@ -34,6 +34,11 @@ export enum MarriageType {
     None = "None",
 }
 
+export enum ActiveMarriageType {
+    Christian = MarriageType.Christian,
+    NonChristian = MarriageType.NonChristian,
+}
+
 /**
  * Represents the education level options for church members.
  */

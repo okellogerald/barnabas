@@ -85,7 +85,7 @@ export const useEnvelopeAssign = (id: string) => {
                     const params = MemberQueryBuilder.newInstance()
                         .includeDefaultRelations()
                         .paginate(0, 9)
-                    const response = await MemberManager.instance.getMembers(params);
+                    const response = await MemberManager.instance.getPaginatedMembers(params);
                     return {
                         results: response.members,
                         total: response.total,

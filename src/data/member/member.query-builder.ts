@@ -237,6 +237,15 @@ export class MemberQueryBuilder extends QueryBuilder {
         return this.with("[dependants,fellowship,interests]");
     }
 
+    /**
+     * Removes all relation includes and joins from the query
+     */
+    removeAllRelations(): this {
+        this.options.includes = [];
+        this.options.join = [];
+        return this;
+    }
+
     // === 🏗️ Factory Methods ===
 
     /**

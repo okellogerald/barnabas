@@ -16,16 +16,14 @@ export const usePersonalFields = () => {
     const initialValues = ZodFormUtils.getDefaultsFromSchema(MemberCreatePersonalInfoSchema)
 
     // Handle field changes
-    const changeHandler = useCallback((changedFields: FieldData[]) => {
+    const changeHandler = useCallback((_: FieldData[]) => {
         // Personal fields don't have conditional behaviors,
         // but we could implement them here if needed
-        console.log("Personal fields changed:", changedFields);
     }, [form]);
 
     // Create the form fields
     const createFields = useCallback((): SchemaFormFieldsMap<MemberCreatePersonalInfo, PersonalInfoKeys> => {
         return {
-            envelopeNumber: builder.createTextField('envelopeNumber'),
             firstName: builder.createTextField('firstName'),
             middleName: builder.createTextField('middleName'),
             lastName: builder.createTextField('lastName'),
@@ -46,7 +44,7 @@ export const usePersonalFields = () => {
             rows: {
                 row1: ['firstName', 'middleName', 'lastName'] as PersonalInfoKeys[],
                 row2: ['gender', 'dateOfBirth', 'placeOfBirth'] as PersonalInfoKeys[],
-                row3: ['envelopeNumber', 'profilePhoto'] as PersonalInfoKeys[],
+                row3: ['profilePhoto'] as PersonalInfoKeys[],
             },
             span: 8, // 3 fields per row (24/3=8)
         },

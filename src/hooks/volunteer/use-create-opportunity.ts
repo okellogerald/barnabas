@@ -12,6 +12,7 @@ import {
     UpdateVolunteerOpportunityDTO,
 } from "@/data/volunteer";
 import { useAppNavigation } from "@/app";
+import { Query } from "@/lib/query";
 
 /**
  * Extended success state for volunteer opportunity detail view
@@ -156,6 +157,7 @@ export function useCreateVolunteerOpportunity() {
             try {
                 const created = await createMutation.mutateAsync(data);
                 navigate.Opportunities.toDetails(created.id);
+                Query.VolunteerOpportunities.invalidateList();
                 return created;
             } catch (error) {
                 console.error("Failed to create opportunity:", error);

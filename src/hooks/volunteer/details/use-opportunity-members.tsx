@@ -13,6 +13,7 @@ import { useAppNavigation } from '@/app';
 import NiceModal from '@ebay/nice-modal-react';
 import { ConfirmDeleteModal } from '@/components/shared';
 import { EyeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { notifyUtils } from '@/utilities';
 
 // Define interface for opportunity members success state actions
 interface OpportunityMembersSuccessStateActions extends SuccessStateActions {
@@ -22,6 +23,7 @@ interface OpportunityMembersSuccessStateActions extends SuccessStateActions {
   removeMember: (interestId: string, memberName: string) => void;
   viewMemberDetails: (memberId: string) => void;
   openMemberSelector: () => void;
+  closeMemberSelector: () => void;
 }
 
 /**
@@ -49,6 +51,7 @@ export class OpportunityMembersSuccessState extends SuccessState<{
   readonly canAddMembers: boolean;
   readonly canRemoveMembers: boolean;
   readonly canViewMembers: boolean;
+  readonly memberSelectorVisible: boolean;
 
   override actions: OpportunityMembersSuccessStateActions;
 
@@ -70,6 +73,7 @@ export class OpportunityMembersSuccessState extends SuccessState<{
     canAddMembers: boolean;
     canRemoveMembers: boolean;
     canViewMembers: boolean;
+    memberSelectorVisible?: boolean;
     actions: OpportunityMembersSuccessStateActions;
   }) {
     super(args.data, args.actions);
@@ -84,6 +88,7 @@ export class OpportunityMembersSuccessState extends SuccessState<{
     this.canAddMembers = args.canAddMembers;
     this.canRemoveMembers = args.canRemoveMembers;
     this.canViewMembers = args.canViewMembers;
+    this.memberSelectorVisible = args.memberSelectorVisible || false;
     this.actions = args.actions;
   }
 
@@ -106,10 +111,6 @@ export class OpportunityMembersSuccessState extends SuccessState<{
 
   viewMemberDetails(memberId: string): void {
     this.actions.viewMemberDetails(memberId);
-  }
-
-  openMemberSelector(): void {
-    this.actions.openMemberSelector();
   }
 
   // Get interest ID for a member
@@ -189,6 +190,8 @@ export const useOpportunityMembers = (opportunityId: string, isTabActive: boolea
 
   // Handle adding a member to the opportunity
   const handleAddMember = useCallback(async (memberId: string) => {
+    const toastId = notifyUtils.showLoading("Adding member to opportunity...");
+
     try {
       // Create a new interest
       const interestData: CreateInterestDTO = {
@@ -197,12 +200,14 @@ export const useOpportunityMembers = (opportunityId: string, isTabActive: boolea
       };
 
       await createInterestMutation.mutateAsync(interestData);
-      message.success('Member added to opportunity successfully');
+      notifyUtils.dismiss(toastId);
+      notifyUtils.success('Member added to opportunity successfully');
       handleCloseMemberSelector();
       return true;
     } catch (error) {
+      notifyUtils.dismiss(toastId);
       console.error('Error adding member to opportunity:', error);
-      message.error('Failed to add member to opportunity');
+      notifyUtils.error('Failed to add member to opportunity');
       return false;
     }
   }, [opportunityId, createInterestMutation, handleCloseMemberSelector]);
@@ -333,46 +338,43 @@ export const useOpportunityMembers = (opportunityId: string, isTabActive: boolea
   }, [interestsQuery]);
 
   // Map queries to AsyncState
-  return {
-    state: mapQueriesToAsyncState(
-      [interestsQuery, opportunityQuery] as const,
-      {
-        loadingMessage: 'Loading interested members...',
-        resourceType: 'Opportunity Members',
-        resourceId: opportunityId,
-        onSuccess: ([interests, opportunity]) => {
-          return new OpportunityMembersSuccessState({
-            data: {
-              opportunityId,
-              opportunityName: opportunity?.name || 'Unknown Opportunity',
-              members,
-              interests,
-              total: members.length,
-            },
-            tableProps,
-            pagination: {
-              current: currentPage,
-              pageSize,
-              total: members.length,
-            },
-            isLoading: interestsQuery.isLoading || interestsQuery.isFetching,
-            canAddMembers,
-            canRemoveMembers,
-            canViewMembers,
-            actions: {
-              refresh: handleRefresh,
-              changePage: handlePageChange,
-              addMember: handleAddMember,
-              removeMember: showRemoveMemberConfirm,
-              viewMemberDetails: handleViewMemberDetails,
-              openMemberSelector: handleOpenMemberSelector,
-            }
-          });
-        }
+  return mapQueriesToAsyncState(
+    [interestsQuery, opportunityQuery] as const,
+    {
+      loadingMessage: 'Loading interested members...',
+      resourceType: 'Opportunity Members',
+      resourceId: opportunityId,
+      onSuccess: ([interests, opportunity]) => {
+        return new OpportunityMembersSuccessState({
+          data: {
+            opportunityId,
+            opportunityName: opportunity?.name || 'Unknown Opportunity',
+            members,
+            interests,
+            total: members.length,
+          },
+          tableProps,
+          pagination: {
+            current: currentPage,
+            pageSize,
+            total: members.length,
+          },
+          isLoading: interestsQuery.isLoading || interestsQuery.isFetching,
+          canAddMembers,
+          canRemoveMembers,
+          canViewMembers,
+          memberSelectorVisible,
+          actions: {
+            refresh: handleRefresh,
+            changePage: handlePageChange,
+            addMember: handleAddMember,
+            removeMember: showRemoveMemberConfirm,
+            viewMemberDetails: handleViewMemberDetails,
+            openMemberSelector: () => handleOpenMemberSelector(),
+            closeMemberSelector: handleCloseMemberSelector,
+          }
+        });
       }
-    ),
-    memberSelectorVisible,
-    openMemberSelector: handleOpenMemberSelector,
-    closeMemberSelector: handleCloseMemberSelector,
-  };
-};
+    }
+  )
+}

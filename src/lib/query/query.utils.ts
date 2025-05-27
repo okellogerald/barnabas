@@ -11,10 +11,12 @@ export const QueryUtils = (queryClient: QueryClient) => ({
         invalidateList: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Fellowships.list(),
+                exact: false,
             }),
         invalidateCount: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Fellowships.count(),
+                exact: false,
             }),
         invalidateDetail: (id: string) =>
             queryClient.invalidateQueries({
@@ -81,6 +83,7 @@ export const QueryUtils = (queryClient: QueryClient) => ({
         invalidateCount: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Users.count(),
+                exact: false,
             }),
         invalidateDetail: (userId: string) =>
             queryClient.invalidateQueries({
@@ -97,10 +100,12 @@ export const QueryUtils = (queryClient: QueryClient) => ({
         invalidateList: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Roles.list(),
+                exact: false,
             }),
         invalidateCount: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Roles.count(),
+                exact: false,
             }),
         invalidateDetail: (roleId: string) =>
             queryClient.invalidateQueries({
@@ -125,10 +130,12 @@ export const QueryUtils = (queryClient: QueryClient) => ({
         invalidateList: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Volunteers.list(),
+                exact: false,
             }),
         invalidateCount: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Volunteers.count(),
+                exact: false,
             }),
         invalidateDetail: (opportunityId: string) =>
             queryClient.invalidateQueries({
@@ -149,10 +156,12 @@ export const QueryUtils = (queryClient: QueryClient) => ({
         invalidateList: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Envelopes.list(),
+                exact: false,
             }),
         invalidateCount: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Envelopes.count(),
+                exact: false,
             }),
         invalidateDetail: (envelopeId: string) =>
             queryClient.invalidateQueries({
@@ -181,10 +190,12 @@ export const QueryUtils = (queryClient: QueryClient) => ({
         invalidateList: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Interests.list(),
+                exact: false,
             }),
         invalidateCount: () =>
             queryClient.invalidateQueries({
                 queryKey: QueryKeys.Interests.count(),
+                exact: false,
             }),
         invalidateDetail: (interestId: string) =>
             queryClient.invalidateQueries({

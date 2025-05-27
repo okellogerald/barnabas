@@ -1,4 +1,4 @@
-import { MaritalStatus, MarriageType } from '@/constants';
+import { ActiveMarriageType, MaritalStatus, MarriageType } from '@/constants';
 import { MaritalInfoKeys } from '../types';
 import { MemberCreateMaritalInfoSchema, MemberCreateMaritalInfo } from '../schemas/schemas.marital';
 import { SchemaFormFieldsMap, useSchemaFormBuilder } from '@/components/form/schema_based';
@@ -13,8 +13,10 @@ import { ZodFormUtils } from '@/utilities/zod.utils';
 export const useMaritalFields = () => {
   const [form] = Form.useForm<MemberCreateMaritalInfo>();
   const [fieldState, setFieldState] = useState<'enabled' | 'disabled'>('enabled');
-  const builder = useSchemaFormBuilder(MemberCreateMaritalInfoSchema)
-  const initialValues = ZodFormUtils.getDefaultsFromSchema(MemberCreateMaritalInfoSchema)
+  const builder = useSchemaFormBuilder(MemberCreateMaritalInfoSchema);
+  const initialValues = ZodFormUtils.getDefaultsFromSchema(MemberCreateMaritalInfoSchema);
+
+  const [maritalStatus, setMaritalStatus] = useState<MaritalStatus | undefined>(initialValues.maritalStatus);
 
   // Handle field change event - specifically for marital status changes
   const changeHandler = useCallback((changedFields: FieldData[]) => {
@@ -44,6 +46,19 @@ export const useMaritalFields = () => {
         // Enable fields
         setFieldState('enabled');
       }
+
+      setMaritalStatus(status);
+      if (status === MaritalStatus.Married) {
+        // Set default marriage type if married
+        form.setFields([
+          { name: 'marriageType', value: MarriageType.Christian },
+          { name: 'dateOfMarriage', value: undefined },
+          { name: 'spouseName', value: undefined },
+          { name: 'placeOfMarriage', value: undefined },
+          { name: 'spousePhoneNumber', value: undefined },
+        ]);
+
+      }
     }
   }, [form]);
 
@@ -66,14 +81,19 @@ export const useMaritalFields = () => {
         placeholder: "Select marital status"
       }),
 
-      marriageType: builder.createEnumSelectField('marriageType', MarriageType, {
-        placeholder: "Select marriage type",
-        disabled: fieldState === 'disabled',
-        value: fieldState === "disabled" ? MarriageType.None : undefined,
-      }),
+      marriageType: maritalStatus === MaritalStatus.Married ?
+        builder.createEnumSelectField('marriageType', ActiveMarriageType, {
+          value: ActiveMarriageType.Christian,
+        })
+        :
+        builder.createEnumSelectField('marriageType', MarriageType, {
+          placeholder: "Select marriage type",
+          disabled: fieldState === 'disabled',
+          value: fieldState === "disabled" ? MarriageType.None : undefined,
+        }),
 
       dateOfMarriage: builder.createDateField('dateOfMarriage', {
-        disabled: fieldState === 'disabled'
+        disabled: fieldState === 'disabled',
       }),
 
       spouseName: builder.createTextField('spouseName', {
@@ -94,6 +114,7 @@ export const useMaritalFields = () => {
     form,
     builder,
     fields: createFields(),
+    isMarried: maritalStatus === MaritalStatus.Married,
     layout: {
       rows: {
         row1: ['maritalStatus', 'marriageType'] as MaritalInfoKeys[],

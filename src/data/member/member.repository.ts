@@ -49,7 +49,7 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
      * @param builderOrCriteria - A MemberQueryBuilder or MemberQueryCriteria for filtering data
      * @returns {Promise<GetMembersResponse>} Object containing member data array and total count
      */
-    async getAll(
+    async getPaginated(
         builderOrCriteria?: MemberQueryBuilder | MemberQueryCriteria,
     ): Promise<GetMembersResponse> {
         try {
@@ -65,7 +65,53 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
                 query,
             });
 
+            if (
+                result.body && Array.isArray(result.body) &&
+                result.body.length === 0
+            ) {
+                return { results: [], total: 0 };
+            }
+
             return this.handleResponse<GetMembersResponse>(
+                result,
+                200,
+            );
+        } catch (error) {
+            console.error("Error in getAll:", error);
+            throw new Error("Failed to retrieve members.");
+        }
+    }
+
+    /**
+     * Get all members
+     * @param builderOrCriteria - A MemberQueryBuilder or MemberQueryCriteria for filtering data
+     * @returns {Promise<GetMembersResponse>} Object containing member data array and total count
+     */
+    async getList(
+        builderOrCriteria?: MemberQueryBuilder | MemberQueryCriteria,
+    ): Promise<MemberDTO[]> {
+        try {
+            const query = MemberQueryBuilder.from(builderOrCriteria).removeAllRelations().build()
+            // // Convert builder to query params object if it's a builder
+            // const query = MemberQueryBuilder.is(builderOrCriteria)
+            //     ? builderOrCriteria.build()
+            //     : builderOrCriteria
+            //     ? builderOrCriteria
+            //     : {};
+
+            // Execute the query
+            const result = await this.client.getAll({
+                query,
+            });
+
+            if (
+                result.body && Array.isArray(result.body) &&
+                result.body.length === 0
+            ) {
+                return [];
+            }
+
+            return this.handleResponse<MemberDTO[]>(
                 result,
                 200,
             );
@@ -89,7 +135,7 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
                 .where("id", id);
 
             // Get all members matching the criteria
-            const result = await this.getAll(builder);
+            const result = await this.getPaginated(builder);
 
             // Find the member with the matching ID
             return result.results.find((m) => m.id === id);
@@ -186,7 +232,7 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
                 .search(searchTerm)
                 .includeDefaultRelations();
 
-            return await this.getAll(builder);
+            return await this.getPaginated(builder);
         } catch (error) {
             console.error(`Error in search with term ${searchTerm}:`, error);
             throw new Error(
@@ -220,7 +266,7 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
                 builder.applyCriteria(criteria);
             }
 
-            return await this.getAll(builder);
+            return await this.getPaginated(builder);
         } catch (error) {
             console.error(
                 `Error in getByFellowship with id ${fellowshipId}:`,
@@ -243,7 +289,7 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
                 .filterByBaptismStatus(isBaptized)
                 .includeDefaultRelations();
 
-            return await this.getAll(builder);
+            return await this.getPaginated(builder);
         } catch (error) {
             console.error(
                 `Error in getByBaptismStatus with status ${isBaptized}:`,

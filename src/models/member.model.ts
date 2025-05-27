@@ -58,7 +58,6 @@ export class Member {
   dependants: Dependant[];
   fellowship: Fellowship | null; // Will be Fellowship type at runtime
   interests: VolunteerOpportunity[]; // Will be VolunteerOpportunity[] at runtime
-  envelope: any | null; // Will be Envelope type at runtime
 
   constructor(dto: MemberDTO) {
     this.id = dto.id;
@@ -219,12 +218,8 @@ export class Member {
     return this.fellowshipAbsenceReason || "Does not attend fellowship";
   }
 
-  hasEnvelope(): boolean {
-    return !!this.envelope;
-  }
-
   getEnvelopeNumber() {
-    return this.envelope?.envelopeNumber || null;
+    return this.envelopeNumber || null;
   }
 
   /**

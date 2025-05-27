@@ -120,7 +120,7 @@ export const useFellowshipEdit = () => {
     });
 
     // Map members query to members list
-    const members = fellowshipMembersQuery.data?.members || [];
+    const members = fellowshipMembersQuery.data || [];
     const membersLoading = fellowshipMembersQuery.isLoading;
 
     return {

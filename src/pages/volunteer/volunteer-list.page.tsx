@@ -280,6 +280,10 @@ const VolunteerOpportunityListPage: React.FC = () => {
                           <Text type="secondary">Describe requirements, responsibilities, and expectations</Text>
                         </Space>
                       }
+                      rules={[
+                        { required: true, message: 'Please enter opportunity description' },
+                        { max: 500, message: 'Description cannot exceed 500 characters' }
+                      ]}
                     >
                       <TextArea
                         rows={4}

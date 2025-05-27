@@ -104,7 +104,7 @@ export class MemberManager {
      * @throws {PermissionError} If the user does not have the MEMBER_FIND_ALL permission.
      * @throws {Error} If there is an error retrieving members from the repository.
      */
-    public async getMembers(
+    public async getPaginatedMembers(
         options?: MemberQueryCriteria | MemberQueryBuilder,
     ): Promise<GetMembersResponse> {
         if (!this._permManager.canPerformAction(Actions.MEMBER_FIND_ALL)) {
@@ -116,13 +116,48 @@ export class MemberManager {
             const builder = MemberQueryBuilder.from(options);
 
             // Execute the query
-            const response = await this._repo.getAll(builder);
+            const response = await this._repo.getPaginated(builder);
 
             // Convert DTOs returned by the repo into Member model instances
             const members = response.results.map(Member.fromDTO);
 
             // Return the members for the current page and the total count
             return { members, total: response.total };
+        } catch (error) {
+            console.error("Error retrieving members:", error);
+            throw new Error("Failed to retrieve members.");
+        }
+    }
+
+    /**
+     * Retrieves a list of members
+     * enforcing the MEMBER_FIND_ALL permission.
+     *
+     * @param {MemberQueryCriteria | MemberQueryBuilder} options - Optional criteria or builder for filtering, sorting, and pagination.
+     * @returns {Promise<GetMembersResponse>} A promise that resolves to an object containing the list of members
+     * for the requested page/filter and the total count of members matching the query.
+     * @throws {PermissionError} If the user does not have the MEMBER_FIND_ALL permission.
+     * @throws {Error} If there is an error retrieving members from the repository.
+     */
+    public async getMembers(
+        options?: MemberQueryCriteria | MemberQueryBuilder,
+    ): Promise<Member[]> {
+        if (!this._permManager.canPerformAction(Actions.MEMBER_FIND_ALL)) {
+            throw PermissionError.fromAction(Actions.MEMBER_FIND_ALL);
+        }
+
+        try {
+            // Create a query builder from the options
+            const builder = MemberQueryBuilder.from(options);
+
+            // Execute the query
+            const response = await this._repo.getList(builder);
+
+            // Convert DTOs returned by the repo into Member model instances
+            const members = response.map(Member.fromDTO);
+
+            // Return the members for the current page and the total count
+            return members;
         } catch (error) {
             console.error("Error retrieving members:", error);
             throw new Error("Failed to retrieve members.");

@@ -1,13 +1,9 @@
-import {
-    CreateVolunteerOpportunityDTO,
-    UpdateVolunteerOpportunityDTO,
-    VolunteerOpportunityQueryBuilder,
-    VolunteerOpportunityQueryCriteria,
-    VolunteerOpportunityRepository,
-} from "@/data/volunteer";
 import { VolunteerOpportunity } from "@/models";
 import { Actions, AuthorizationManager } from "@/data/authorization";
 import { PermissionError } from "@/lib/error";
+import { VolunteerOpportunityRepository } from "./volunteer.repository";
+import { VolunteerOpportunityQueryBuilder, VolunteerOpportunityQueryCriteria } from "./volunteer.query-builder";
+import { CreateVolunteerOpportunityDTO, UpdateVolunteerOpportunityDTO } from "./volunteer.schema";
 
 /**
  * @typedef {object} GetOpportunitiesResponse

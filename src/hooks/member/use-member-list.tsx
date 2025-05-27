@@ -5,7 +5,7 @@ import { persist } from 'zustand/middleware';
 import { Member } from '@/models';
 import { SuccessState, SuccessStateActions, UI_STATE_TYPE } from '@/lib/state';
 import { MemberQueries } from '@/data/member';
-import { MemberQueryCriteria } from '@/data/member/member.query-builder';
+import { MemberQueryBuilder, MemberQueryCriteria } from '@/data/member/member.query-builder';
 import { SortDirection } from '@/lib/query';
 import { mapQueryToAsyncState } from '@/lib/state';
 import { MemberColumns, MemberExpandedRowView } from '@/components/member';
@@ -372,9 +372,9 @@ export const useMemberList = () => {
     const [expandedMember, setExpandedMember] = useState<Member | undefined>(undefined);
 
     // Create query criteria from filter state
-    const queryCriteria = useMemo((): MemberQueryCriteria => {
+    const queryBuilder = useMemo((): MemberQueryBuilder => {
         // Convert filter store state to query criteria
-        return {
+        const criteria: MemberQueryCriteria = {
             // Pagination
             page: filterState.currentPage,
             pageSize: filterState.pageSize,
@@ -398,6 +398,7 @@ export const useMemberList = () => {
                 ? SortDirection.ASC
                 : SortDirection.DESC,
         };
+        return MemberQueryBuilder.createFromCriteria(criteria).includeDefaultRelations();
     }, [
         filterState.currentPage,
         filterState.pageSize,
@@ -407,7 +408,7 @@ export const useMemberList = () => {
     ]);
 
     // Fetch members data
-    const membersQuery = MemberQueries.useList(queryCriteria);
+    const membersQuery = MemberQueries.usePaginatedList(queryBuilder);
 
     // Table state
     const tableState: MembersTableState = useMemo(() => ({

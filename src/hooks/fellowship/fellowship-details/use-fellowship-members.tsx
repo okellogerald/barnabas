@@ -148,7 +148,7 @@ export const useFellowshipMembers = (fellowshipId: string, isTabActive: boolean 
                         .includeDefaultRelations()
                         .paginate(currentPage, pageSize);
 
-                    return await MemberManager.instance.getMembers(queryBuilder);
+                    return await MemberManager.instance.getPaginatedMembers(queryBuilder);
                 },
                 enabled: !!fellowshipId && isTabActive,
             },

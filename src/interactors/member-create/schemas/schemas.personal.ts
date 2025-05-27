@@ -6,10 +6,6 @@ import { CommonSchemas } from "@/data/shared";
  * Schema for personal information
  */
 export const MemberCreatePersonalInfoSchema = z.object({
-    envelopeNumber: z.string().optional().describe(
-        "Unique envelope number assigned to the member",
-    ),
-
     firstName: CommonSchemas.name
         .describe("Member's first name"),
 

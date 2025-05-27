@@ -373,6 +373,7 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
 
 import { Table, Empty, Flex } from 'antd';
 import { UserAddOutlined, ReloadOutlined } from '@ant-design/icons';
+import { MemberSelector } from '@/components/member/member_selector';
 
 interface OpportunityMembersTabProps {
   opportunityId: string;
@@ -389,10 +390,7 @@ const OpportunityMembersTab: React.FC<OpportunityMembersTabProps> = ({
   isActive
 }) => {
   // Get members data from hook
-  const {
-    state,
-    openMemberSelector,
-  } = useOpportunityMembers(opportunityId, isActive);
+  const state = useOpportunityMembers(opportunityId, isActive);
 
   // Render members table when data is loaded
   const renderMembersTable = ({ state }: { state: OpportunityMembersSuccessState }) => {
@@ -419,7 +417,7 @@ const OpportunityMembersTab: React.FC<OpportunityMembersTabProps> = ({
                 <Button
                   type="primary"
                   icon={<UserAddOutlined />}
-                  onClick={() => openMemberSelector()}
+                  onClick={() => state.actions.openMemberSelector()}
                 >
                   Add Member
                 </Button>
@@ -439,7 +437,7 @@ const OpportunityMembersTab: React.FC<OpportunityMembersTabProps> = ({
                 <Button
                   type="primary"
                   icon={<UserAddOutlined />}
-                  onClick={() => openMemberSelector()}
+                  onClick={() => state.actions.openMemberSelector()}
                 >
                   Add Interested Member
                 </Button>
@@ -457,10 +455,20 @@ const OpportunityMembersTab: React.FC<OpportunityMembersTabProps> = ({
       state={state}
       views={{
         SuccessView: ({ state }) => {
-          if (OpportunityMembersSuccessState.is(state)) {
-            return renderMembersTable({ state });
-          }
-          return null;
+          if (!OpportunityMembersSuccessState.is(state)) return null;
+
+          return (<>
+            {renderMembersTable({ state })}
+            {/* Member selector modal */}
+            <MemberSelector
+              visible={state.memberSelectorVisible}
+              onCancel={() => state.actions.closeMemberSelector()}
+              onSelect={(member) => {
+                state.actions.addMember(member.id);
+                state.actions.closeMemberSelector()
+              }}
+            />
+          </>)
         }
       }}
     />
