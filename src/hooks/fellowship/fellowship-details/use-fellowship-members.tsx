@@ -131,17 +131,11 @@ export const useFellowshipMembers = (fellowshipId: string, isTabActive: boolean 
     const canRemoveMembers = AuthenticationManager.instance.hasPermission(Actions.MEMBER_UPDATE);
     const canViewMembers = AuthenticationManager.instance.hasPermission(Actions.MEMBER_FIND_BY_ID);
 
-    // member fetch params
-    const queryBuilder = MemberQueryBuilder.newInstance()
-        .filterByFellowshipId(fellowshipId)
-        .includeDefaultRelations()
-        .paginate(currentPage, pageSize);
-
     // Queries for members data and fellowship details
     const [membersQuery, fellowshipQuery] = useQueries({
         queries: [
             {
-                queryKey: QueryKeys.Members.list(queryBuilder),
+                queryKey: QueryKeys.Members.list(),
                 queryFn: async () => {
                     const queryBuilder = MemberQueryBuilder.newInstance()
                         .filterByFellowshipId(fellowshipId)
