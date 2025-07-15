@@ -61,6 +61,23 @@ make migrate-dev # Setup database with sample data
 - Frontend: http://localhost:5173
 - API: http://localhost:3000
 
+4. **Add Sample Data**
+   Ensure you're using **Bash version 4 or higher**. Then, run the following command in your terminal:
+
+```bash
+./sample-data-generator.sh
+```
+
+> 💡 **Note for non-macOS users:**
+> The first line of the script (`#!/opt/homebrew/bin/bash`) specifies the path to the Bash interpreter, which on macOS may point to `/opt/homebrew/bin/bash`. On other operating systems, this path might be different. If the script doesn't run, you can either:
+
+* Modify the first line to point to the correct Bash path on your system, or
+* Remove the line entirely and run the script explicitly with Bash like this:
+
+  ```bash
+  bash sample-data-generator.sh
+  ```
+
 ### Development Features
 - **Hot reload** for frontend changes
 - **Separate dev database** (port 3307) 
