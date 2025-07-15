@@ -2,9 +2,9 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     ports:
-      - "4173:4173"
+      - "${FRONTEND_PORT}:4173" 
     environment:
       VITE_MODE: ${VITE_MODE}
       VITE_DEFAULT_PAGE_SIZE: ${VITE_DEFAULT_PAGE_SIZE}
@@ -17,7 +17,7 @@ services:
 
   api:
     build: 
-      context: /Users/mac/Downloads/Programs/barnabas/barnabas-backend
+      context: ${API_CONTEXT_PATH}
     environment:
       PORT: ${API_PORT}
       MYSQL_HOST: db
@@ -41,12 +41,14 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mysql_data_prod:/var/lib/mysql
+    ports:
+      - "${MYSQL_PORT}:3306"
     networks:
       - barnabas-network
 
 volumes:
-  mysql_data:
+  mysql_data_prod:
 
 networks:
   barnabas-network:

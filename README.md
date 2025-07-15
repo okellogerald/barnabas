@@ -1,68 +1,94 @@
 # Barnabas Project
 
-## Local Development Setup Guide
-
-This guide explains how to set up the Barnabas project (Frontend and API) for local development using Docker and Docker Compose.
+## Quick Start
 
 ### Prerequisites
+- Git
+- Docker & Docker Compose
 
-Before you begin, ensure you have the following installed:
+### Setup & Run
 
-* Git
-* Docker & Docker Compose
-
-### Getting Started
-
-**1. Clone the Repositories**
-
-Clone both repositories into a common parent directory. This structure is assumed by the default docker-compose configuration.
-
+1. **Clone the repositories:**
 ```bash
-# Create a parent directory if needed, e.g., 'projects'
-# mkdir projects && cd projects
-
-# Clone the frontend repository (this one, contains docker-compose.yml)
 git clone <your-frontend-repo-url> barnabas
-
-# Clone the API repository alongside the frontend
-git clone <your-api-repo-url> church-manager-api
+git clone <your-api-repo-url> barnabas-backend
 ```
 
-**2. Configure Docker Compose (Important!)**
+2. **Configure environment:**
+```bash
+cd barnabas
+cp .env.example .env
+# Edit .env with your settings
+```
 
-The provided `docker-compose.yml` file uses a specific setup that might require adjustments for your machine:
-
-* Open the `docker-compose.yml` file located in the `barnabas` directory.
-* **Locate the `api` service:**
-    * The `build.context` is set to an absolute path (`/Users/mac/Downloads/Programs/other/church-manager-api`). You **MUST** change this to the correct relative path to your cloned `church-manager-api` directory. If you followed step 1, this should be: `../church-manager-api`.
-
-**3. Create Environment File**
-
-Docker Compose uses a `.env` file in the same directory (`barnabas`) to configure environment variables for the services.
-
-* Ensure you are in the `barnabas` project directory:
-    ```bash
-    cd barnabas
-    ```
-* Create a `.env` file (`barnabas/.env`) following `.env.example`
-
-**4. Start Docker Services**
-
-From the `barnabas` directory (containing `docker-compose.yml` and `.env`):
-
+3. **Start the application:**
 ```bash
 make up
-```
-
-**5. Database Setup**
-
-From the `barnabas` directory (containing `docker-compose.yml` and `.env`):
-
-```bash
 make migrate
 ```
 
-### Accessing the Applications
+4. **Access the app:**
+- Frontend: http://localhost:4173 [or FRONTEND_PORT from .env]
+- API: http://localhost:3000 [or API_PORT from .env]
 
-* **Frontend:** [http://localhost:4173](http://localhost:4173)
-* **API:** [http://localhost:3000](http://localhost:3000) (or the port you set for `API_PORT` in `.env`)
+### Available Commands
+```bash
+make up          # Start production environment
+make down        # Stop production environment
+make migrate     # Setup database
+make logs        # View logs
+make help        # Show all commands
+```
+
+## For Developers & Contributors
+
+### Development Setup
+If you're contributing code, use the development environment:
+
+1. **Configure development environment:**
+```bash
+cp .env.example .env.dev
+# Edit .env.dev with your settings
+```
+
+2. **Start development environment:**
+```bash
+make up-dev      # Start development environment (with hot reload)
+make migrate-dev # Setup database with sample data
+```
+
+3. **Access development app:**
+- Frontend: http://localhost:5173
+- API: http://localhost:3000
+
+### Development Features
+- **Hot reload** for frontend changes
+- **Separate dev database** (port 3307) 
+- **Sample data** included for testing
+- **Live API** with auto-restart
+
+### Development Commands
+```bash
+make up-dev      # Start development environment
+make down-dev    # Stop development environment
+make migrate-dev # Setup database with sample data
+make logs-dev    # View development logs
+make status-dev  # Show development container status
+```
+
+### Making Changes
+1. **Frontend:** Edit files in `src/` - changes appear instantly
+2. **Database:** Run `make migrate-dev` after schema changes
+3. **API:** Clone the backend repo and edit there
+
+### Troubleshooting
+```bash
+make clean           # Clean Docker system
+make down && make up # Restart everything (production)
+make down-dev && make up-dev # Restart everything (development)
+```
+
+---
+
+**Note:** Use `make up` for regular usage, `make up-dev` only for development.
+```
