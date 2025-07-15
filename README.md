@@ -108,4 +108,3 @@ make down-dev && make up-dev # Restart everything (development)
 ---
 
 **Note:** Use `make up` for regular usage, `make up-dev` only for development.
-```
