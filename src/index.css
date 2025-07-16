@@ -1,21 +1,24 @@
 @import url('react-toastify/dist/ReactToastify.css');
 
+:root {
+  --main-font-family: "Avenir", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --toastify-font-family: "Avenir";
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-
-  --toastify-font-family: "MarkPro";
 }
 
 html,
 body {
-  width: "100%";
-  font-family: "MarkPro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  width: 100%;
+  font-family: var(--main-font-family);
   background-color: white;
-  color: "#525f7f";
+  color: #525f7f;
 }
 
 .ant-modal-root {
-  font-family: "MarkPro";
+  font-family: var(--main-font-family);
 }

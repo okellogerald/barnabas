@@ -9,7 +9,7 @@ export default function ThemeProvider({ children }: { children: React.ReactNode;
 
 const themeConfig: ThemeConfig = {
     token: {
-        fontFamily: "MarkPro",
+        fontFamily: "Avenir",
         colorPrimary: ThemeColors.Primary.DEFAULT,
         colorError: ThemeColors.Status.ERROR,
         colorTextBase: ThemeColors.Text.PRIMARY,
