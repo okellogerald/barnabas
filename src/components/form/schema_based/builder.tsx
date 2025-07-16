@@ -6,6 +6,7 @@ import { EnumSelect } from '@/components/form';
 import { SchemaFormFieldDefinition } from './types';
 import { useRef } from 'react';
 import React from 'react';
+import { TZ_PHONE_NUMBER_PATTERN } from '@/constants';
 
 /**
  * Type guard to check if a rule is a RuleObject (not a RuleRender function)
@@ -288,7 +289,7 @@ export class SchemaFormBuilder<T extends z.ZodObject<any>> {
         // Ensure phone validation is included using our helper method
         if (!this.hasRuleWithProperty(rules, 'pattern')) {
             rules.push({
-                pattern: /^(?:\+255|0)(?:6[125-9]|7[13-9])\d{7}$/,
+                pattern: TZ_PHONE_NUMBER_PATTERN,
                 message: 'Please enter a valid phone number',
             } as RuleObject);
         }

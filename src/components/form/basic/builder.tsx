@@ -1,3 +1,4 @@
+import { TZ_PHONE_NUMBER_PATTERN } from "@/constants/patterns";
 import { DatePicker, Input, FormItemProps, InputNumber } from "antd";
 import { Rule } from "antd/es/form";
 import dayjs from "dayjs";
@@ -272,8 +273,7 @@ export class FormFieldBuilder<T extends object> {
             rules: [
                 ...rules,
                 {
-                    // pattern: /^[+]?[\d\s-()]*$/,
-                    pattern: /^\+[1-9]\d{0,2}([-\s]?\d{1,4}){2,4}$/,
+                    pattern: TZ_PHONE_NUMBER_PATTERN,
                     message: "Please enter a valid phone number"
                 }
             ],
