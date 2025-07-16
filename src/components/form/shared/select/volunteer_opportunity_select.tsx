@@ -30,9 +30,7 @@ export const VolunteerOpportunitySelect: React.FC<Omit<SelectProps<string | stri
             sortBy: "name",
             sortDirection: SortDirection.ASC,
         }
-        const opps = await VolunteerManager.instance.getAll(criteria);
-        console.log("Volunteer opportunities:", opps);
-        return opps;
+        return await VolunteerManager.instance.getAll(criteria);
     }
 
     return (

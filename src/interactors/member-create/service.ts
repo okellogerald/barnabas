@@ -27,7 +27,7 @@ export const memnberCreateService = {
             Navigation.Members.toList();
         } catch (error) {
             notifyUtils.dismiss(toastId);
-            notifyUtils.apiError(error);
+            notifyUtils.error(error);
         }
     },
 };

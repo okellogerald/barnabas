@@ -1,6 +1,6 @@
 import { UseQueryResult } from "@tanstack/react-query";
 import { AsyncState, AsyncStateFactory } from "./types";
-import { ApiError } from "@/data/shared";
+import { ApiError } from "@/lib/error";
 
 type StateDeterminationParams<T> = {
   queryResult: UseQueryResult<T, unknown>;
@@ -52,7 +52,7 @@ export function determineQueryState<T>({
     // Handle ApiError with status codes
     if (error instanceof ApiError) {
       // Handle authentication error (401)
-      if (error.statusCode === 401) {
+      if (error.status === 401) {
         return onAuthenticationError
           ? onAuthenticationError(error)
           : AsyncStateFactory.unauthenticated({
@@ -65,7 +65,7 @@ export function determineQueryState<T>({
       }
       
       // Handle authorization error (403)
-      if (error.statusCode === 403) {
+      if (error.status === 403) {
         return onAuthorizationError
           ? onAuthorizationError(error)
           : AsyncStateFactory.unauthorized({
@@ -75,7 +75,7 @@ export function determineQueryState<T>({
       }
       
       // Handle not found (404)
-      if (error.statusCode === 404) {
+      if (error.status === 404) {
         return onNotFound
           ? onNotFound(resourceType, resourceId)
           : AsyncStateFactory.notFound({

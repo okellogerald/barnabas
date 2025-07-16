@@ -1,165 +1,273 @@
+import z from "zod";
 import { ErrorCategory, ErrorContext } from "./error.types";
 
 /**
- * Custom API error class that extends the standard Error.
- * Provides structured information about API errors, including category, status, context, and original error details.
+ * API error class for Church Management API
+ * Maintains backward compatibility while handling the standard API error format:
+ * {
+ *   "statusCode": 400,
+ *   "message": "Validation failed",
+ *   "error": "Validation Error",
+ *   "details": { "field": "error message" }
+ * }
  */
 export class ApiError extends Error {
-    /** The category of the API error. */
-    category: ErrorCategory;
+  /** The category of the API error */
+  readonly category: ErrorCategory;
 
-    /** The HTTP status code associated with the error (if available). */
-    status?: number;
+  /** The HTTP status code (maps to statusCode from API) */
+  readonly status: number;
 
-    /** Additional context information about the error. */
-    context: ErrorContext;
+  /** Additional context information about the error */
+  readonly context: ErrorContext;
 
-    /** The original error object that caused this ApiError. */
-    originalError: any;
+  /** The original error object that caused this ApiError */
+  readonly originalError: any;
 
-    /**
-     * Constructs a new ApiError instance.
-     *
-     * @param message The error message.
-     * @param category The category of the error (default: ErrorCategory.UNKNOWN).
-     * @param originalError The original error object (optional).
-     * @param context Additional context information (optional).
-     */
-    constructor(
-        message: string,
-        category: ErrorCategory = ErrorCategory.UNKNOWN,
-        originalError?: any,
-        context: ErrorContext = {},
+  /** Field-specific validation errors (maps to details from API) */
+  readonly details?: Record<string, string>;
+
+  constructor(
+    statusCode: number,
+    message: string,
+    details?: Record<string, string>,
+    category: ErrorCategory = ErrorCategory.UNKNOWN,
+    originalError?: any,
+    context: ErrorContext = {}
+  ) {
+    super(message);
+
+    Object.setPrototypeOf(this, ApiError.prototype);
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ApiError);
+    }
+
+    this.name = "ApiError";
+    this.category = category;
+    this.context = context;
+    this.originalError = originalError;
+    this.status = statusCode;
+    this.details = details;
+  }
+
+  /**
+   * Creates an ApiError from various error sources with automatic category detection
+   */
+  static from(
+    error: any,
+    fallbackCategory: ErrorCategory = ErrorCategory.UNKNOWN,
+    context: ErrorContext = {}
+  ): ApiError {
+    if (error instanceof ApiError || ApiError.is(error)) {
+      return error;
+    }
+
+    let message = "An unexpected error occurred";
+    let category = fallbackCategory;
+    let details: Record<string, string> | undefined = undefined;
+    let statusCode = 500;
+
+    // Handle our standard API error format
+    if (
+      error &&
+      typeof error === "object" &&
+      typeof error.statusCode === "number" &&
+      typeof error.message === "string"
     ) {
-        super(message);
-
-        // Set the prototype explicitly.
-        Object.setPrototypeOf(this, ApiError.prototype);
-
-        // Maintain proper stack trace for where our error was thrown
-        if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, ApiError);
-        }
-
-        this.name = "ApiError";
-        this.category = category;
-        this.context = context;
-        this.originalError = originalError;
-
-        // Extract status from original error if available
-        if (originalError?.response?.status) {
-            this.status = originalError.response.status;
-        } else if (originalError?.status) {
-            this.status = originalError.status;
-        }
+      message = error.message;
+      statusCode = error.statusCode;
+      // Auto-detect category based on status code
+      category = ApiError.categorizeByStatus(error.statusCode);
     }
 
-    /**
-     * Gets a user-friendly message for this error, considering various error scenarios.
-     *
-     * @returns A user-friendly error message.
-     */
-    getUserFriendlyMessage(): string {
-        const baseMessage = this.getBaseErrorMessage();
-
-        // Use the message from constructor if meaningful
-        if (this.message && this.message !== baseMessage) {
-            return this.message;
-        }
-
-        return this.extractMessageFromOriginalError(baseMessage);
+    if (
+      error.details &&
+      typeof error.details === "object" &&
+      !Array.isArray(error.details) &&
+      Object.values(error.details).every((v) => typeof v === "string")
+    ) {
+      details = error.details as Record<string, string>;
     }
 
-    /**
-     * Generates the base error message based on the error category and entity.
-     *
-     * @returns The base error message.
-     */
-    private getBaseErrorMessage(): string {
-        const entity = this.context.entity ? ` ${this.context.entity}` : "";
+    return new ApiError(statusCode, message, details, category, error, context);
+  }
 
-        switch (this.category) {
-            case ErrorCategory.FETCH:
-                return `Failed to load ${entity} data`;
-            case ErrorCategory.CREATE:
-                return `Failed to create new ${entity}`;
-            case ErrorCategory.UPDATE:
-                return `Failed to update ${entity}`;
-            case ErrorCategory.DELETE:
-                return `Failed to delete ${entity}`;
-            case ErrorCategory.AUTH:
-                return "Authentication error";
-            case ErrorCategory.PERMISSION:
-                return "Permission denied";
-            case ErrorCategory.VALIDATION:
-                return `Invalid ${entity} data`;
-            case ErrorCategory.NOT_FOUND:
-                return `${entity || "Resource"} not found`;
-            case ErrorCategory.NETWORK:
-                return "Network connection error";
-            default:
-                return `An error occurred`;
-        }
+  /**
+   * Categorizes error based on HTTP status code
+   */
+  private static categorizeByStatus(statusCode: number): ErrorCategory {
+    switch (statusCode) {
+      case 400:
+        return ErrorCategory.VALIDATION;
+      case 401:
+        return ErrorCategory.AUTH;
+      case 403:
+        return ErrorCategory.PERMISSION;
+      case 404:
+        return ErrorCategory.NOT_FOUND;
+      case 0:
+        return ErrorCategory.NETWORK;
+      default:
+        return ErrorCategory.UNKNOWN;
+    }
+  }
+
+  /**
+   * Gets a user-friendly error message considering context and category
+   */
+  getUserFriendlyMessage(): string {
+    // For validation errors with details, show field-specific messages
+    if (this.category === ErrorCategory.VALIDATION && this.details) {
+      const fieldErrors = Object.entries(this.details)
+        .map(([_, message]) => `${message}`)
+        .join("; ");
+      return `${this.message}: ${fieldErrors}`;
     }
 
-    /**
-     * Extracts a meaningful message from the original error, considering API-specific formats and network errors.
-     *
-     * @param baseMessage The base error message.
-     * @returns The extracted or formatted error message.
-     */
-    private extractMessageFromOriginalError(baseMessage: string): string {
-        const error = this.originalError;
-
-        if (!error) return baseMessage;
-
-        // Handle API-specific error formats from Church Membership Management API
-        if (error?.response?.data) {
-            const responseData = error.response.data;
-
-            // Handle validation errors
-            if (responseData.statusCode === 400) {
-                if (
-                    typeof responseData.message === "object" &&
-                    !Array.isArray(responseData.message)
-                ) {
-                    // Handle object format: {"fieldName": "error message"}
-                    const fieldErrors = Object.entries(responseData.message)
-                        .map(([field, message]) => `${field}: ${message}`)
-                        .join("; ");
-                    return `${baseMessage}: ${fieldErrors}`;
-                } else if (Array.isArray(responseData.message)) {
-                    // Handle array format: ["error1", "error2"]
-                    return `${baseMessage}: ${responseData.message.join("; ")}`;
-                }
-            }
-
-            // Handle other API errors with standard message field
-            if (
-                responseData.message && typeof responseData.message === "string"
-            ) {
-                return `${baseMessage}: ${responseData.message}`;
-            }
-        }
-
-        // Handle network errors
-        if (error?.message === "Network Error") {
-            return "Unable to connect to the server. Please check your internet connection.";
-        }
-
-        // Return base message with error message if available
-        return error?.message
-            ? `${baseMessage}: ${error.message}`
-            : baseMessage;
+    // Use context to make error more specific
+    if (this.context.entity && this.context.operation) {
+      return `Failed to ${this.context.operation} ${this.context.entity}: ${this.message}`;
+    } else if (this.context.entity) {
+      const action = this.getCategoryAction();
+      return `Failed to ${action} ${this.context.entity}: ${this.message}`;
     }
 
-    /**
-     * Type guard to determine if an error is an ApiError instance.
-     *
-     * @param error Any error value.
-     * @returns True if the error is an ApiError, false otherwise.
-     */
-    static is(error: unknown): error is ApiError {
-        return error instanceof ApiError;
+    return this.message;
+  }
+
+  /**
+   * Gets the action verb based on error category
+   */
+  private getCategoryAction(): string {
+    switch (this.category) {
+      case ErrorCategory.FETCH:
+        return "load";
+      case ErrorCategory.CREATE:
+        return "create";
+      case ErrorCategory.UPDATE:
+        return "update";
+      case ErrorCategory.DELETE:
+        return "delete";
+      default:
+        return "process";
     }
+  }
+
+  /**
+   * Gets validation details for form field highlighting
+   */
+  getValidationErrors(): Record<string, string> {
+    return this.details || {};
+  }
+
+  /**
+   * Type guard to check if error is ApiError
+   */
+  static is(error: unknown): error is ApiError {
+    return (
+      z
+        .object({
+          statusCode: z.number(),
+          message: z.string(),
+          error: z.string(),
+          details: z.record(z.string()).nullish(),
+        })
+        .safeParse(error).success === true
+    );
+  }
+
+  /**
+   * Check if this is a validation error
+   */
+  isValidationError(): boolean {
+    return (
+      this.category === ErrorCategory.VALIDATION ||
+      (this.status === 400 && !!this.details)
+    );
+  }
+
+  /**
+   * Check if this is an authentication error
+   */
+  isAuthError(): boolean {
+    return this.category === ErrorCategory.AUTH || this.status === 401;
+  }
+
+  /**
+   * Check if this is an authorization error
+   */
+  isAuthorizationError(): boolean {
+    return this.category === ErrorCategory.PERMISSION || this.status === 403;
+  }
+
+  /**
+   * Check if this is a not found error
+   */
+  isNotFoundError(): boolean {
+    return this.category === ErrorCategory.NOT_FOUND || this.status === 404;
+  }
+
+  /**
+   * Check if this is a network error
+   */
+  isNetworkError(): boolean {
+    return this.category === ErrorCategory.NETWORK || this.status === 0;
+  }
+
+  /**
+   * Check if this is a fetch/read operation error
+   */
+  isFetchError(): boolean {
+    return this.category === ErrorCategory.FETCH;
+  }
+
+  /**
+   * Check if this is a create operation error
+   */
+  isCreateError(): boolean {
+    return this.category === ErrorCategory.CREATE;
+  }
+
+  /**
+   * Check if this is an update operation error
+   */
+  isUpdateError(): boolean {
+    return this.category === ErrorCategory.UPDATE;
+  }
+
+  /**
+   * Check if this is a delete operation error
+   */
+  isDeleteError(): boolean {
+    return this.category === ErrorCategory.DELETE;
+  }
+
+  /**
+   * Returns a string representation of the ApiError
+   */
+  toString(): string {
+    const parts = [`ApiError: ${this.message}`];
+
+    if (this.status !== 500) {
+      parts.push(`(Status: ${this.status})`);
+    }
+
+    if (this.category !== ErrorCategory.UNKNOWN) {
+      parts.push(`[${this.category.toUpperCase()}]`);
+    }
+
+    if (this.context.entity) {
+      parts.push(`Entity: ${this.context.entity}`);
+    }
+
+    if (this.details && Object.keys(this.details).length > 0) {
+      const detailsStr = Object.entries(this.details)
+        .map(([field, message]) => `${field}: ${message}`)
+        .join(", ");
+      parts.push(`Details: {${detailsStr}}`);
+    }
+
+    return parts.join(" ");
+  }
 }
