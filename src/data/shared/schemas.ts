@@ -78,7 +78,7 @@ const phoneNumberSchema = z
   })
   .describe("Phone number");
 
-const nameSchema = z.string().min(2, "Name must be at least 2 characters");
+const nameSchema = z.string().trim().min(2, "Name must be at least 2 characters");
 
 export const CommonSchemas = {
   id: idSchema,
