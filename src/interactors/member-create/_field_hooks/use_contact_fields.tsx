@@ -44,7 +44,7 @@ export const useContactFields = () => {
                 row2: ['residenceNumber', 'residenceBlock'] as ContactInfoKeys[],
                 row3: ['postalBox', 'residenceArea'] as ContactInfoKeys[],
             },
-            span: 8, // 3 fields per row (24/3=8)
+            span: 12, // 2 fields per row (24/2=12)
         },
         onFieldsChange: changeHandler,
         initialValues

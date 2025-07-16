@@ -121,7 +121,7 @@ export const useMaritalFields = () => {
         row2: ['spouseName', 'spousePhoneNumber'] as MaritalInfoKeys[],
         row3: ['dateOfMarriage', 'placeOfMarriage'] as MaritalInfoKeys[],
       },
-      span: 8, // 3 fields per row (24/3=8)
+      span: 12, // 2 fields per row (24/2=12)
     },
     onFieldsChange: changeHandler,
     initialValues

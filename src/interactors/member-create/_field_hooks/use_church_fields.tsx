@@ -183,7 +183,7 @@ export const useChurchFields = () => {
                 row5: ['partakesLordSupper'] as ChurchInfoKeys[],
                 row6: ['formerChurch'] as ChurchInfoKeys[],
             },
-            span: 8, // 3 fields per row (24/3=8)
+            span: 12, // 2 fields per row (24/2=12)
         },
         onFieldsChange: changeHandler,
         initialValues,

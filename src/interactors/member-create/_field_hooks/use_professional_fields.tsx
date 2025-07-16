@@ -43,7 +43,7 @@ export const useProfessionalFields = () => {
                 row1: ['occupation', 'placeOfWork'] as ProfessionalInfoKeys[],
                 row2: ['educationLevel', 'profession'] as ProfessionalInfoKeys[],
             },
-            span: 8, // 3 fields per row (24/3=8)
+            span: 12, // 2 fields per row (24/2=12)
         },
         onFieldsChange: changeHandler,
         initialValues
