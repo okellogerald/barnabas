@@ -64,18 +64,18 @@ make migrate-dev # Setup database with sample data
 4. **Add Sample Data**
    Ensure you're using **Bash version 4 or higher**. Then, run the following command in your terminal:
 
-```bash
-./sample-data-generator.sh
+```
+make generate-sample
 ```
 
-> 💡 **Note for non-macOS users:**
+> 💡 ***Note for non-macOS users:***
 > The first line of the script (`#!/opt/homebrew/bin/bash`) specifies the path to the Bash interpreter, which on macOS may point to `/opt/homebrew/bin/bash`. On other operating systems, this path might be different. If the script doesn't run, you can either:
 
 * Modify the first line to point to the correct Bash path on your system, or
 * Remove the line entirely and run the script explicitly with Bash like this:
 
-  ```bash
-  bash sample-data-generator.sh
+  ```
+  make generate-sample
   ```
 
 ### Development Features

@@ -25,6 +25,11 @@ up-dev:
 	@echo "MySQL: localhost:$$(grep MYSQL_PORT $(ENV_DEV) | cut -d'=' -f2)"
 	@echo "To stop: make down-dev"
 
+# Sample data generator
+generate-sample:
+	DEBUG=true ./sample-data-generator.sh
+	@echo "Sample data generated"
+
 # Migration commands
 migrate:
 	docker compose -f $(COMPOSE_FILE_PROD) --env-file $(ENV_PROD) exec api npx knex migrate:latest
