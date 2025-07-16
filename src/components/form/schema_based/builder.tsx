@@ -288,7 +288,7 @@ export class SchemaFormBuilder<T extends z.ZodObject<any>> {
         // Ensure phone validation is included using our helper method
         if (!this.hasRuleWithProperty(rules, 'pattern')) {
             rules.push({
-                pattern: /^\+?[1-9]\d{0,2}([-\s]?\d{1,4}){2,4}$/,
+                pattern: /^(?:\+255|0)(?:6[125-9]|7[13-9])\d{7}$/,
                 message: 'Please enter a valid phone number',
             } as RuleObject);
         }
@@ -302,7 +302,7 @@ export class SchemaFormBuilder<T extends z.ZodObject<any>> {
         const renderFn = () => (
             <Input
                 disabled={config.disabled}
-                placeholder={config.placeholder || 'Enter phone number (e.g. +255 123 456 789)'}
+                placeholder={config.placeholder || 'Enter phone number (e.g. 0712345678)'}
                 data-testid={`${name}-input`}
             />
         );
