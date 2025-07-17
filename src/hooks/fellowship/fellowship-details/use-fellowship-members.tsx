@@ -138,7 +138,7 @@ export const useFellowshipMembers = (fellowshipId: string, isTabActive: boolean 
                 queryKey: QueryKeys.Members.list(),
                 queryFn: async () => {
                     const queryBuilder = MemberQueryBuilder.newInstance()
-                        .filterByFellowshipId(fellowshipId)
+                        .filterByFellowship(fellowshipId)
                         .includeDefaultRelations()
                         .paginate(currentPage, pageSize);
 

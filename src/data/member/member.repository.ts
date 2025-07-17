@@ -1,10 +1,7 @@
 import { BaseRepository } from "@/data/shared";
 import { memberContract } from "./member.api-contract";
 import { CreateMemberDTO, MemberDTO, UpdateMemberDTO } from "./member.schema";
-import {
-  MemberQueryBuilder,
-  MemberQueryCriteria,
-} from "./member.query-builder";
+import { MemberQueryBuilder, MemberQueryCriteria } from "./member.query-builder";
 import { z } from "zod";
 
 type GetMembersResponse = {
@@ -18,22 +15,15 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
   }
 
   async getCount(
-    criteria?: Exclude<
-      MemberQueryCriteria,
-      "page" | "pageSize" | "sort" | "sortDirection"
-    >
+    criteria?: Exclude<MemberQueryCriteria, "page" | "pageSize" | "sort" | "sortDirection">
   ): Promise<number> {
     try {
       // Convert builder to query params object if it's a builder
-      const query = MemberQueryBuilder.from(criteria)
-        .configureForCount()
-        .build();
+      const query = MemberQueryBuilder.from(criteria).configureForCount().build();
       const result = await this.client.getCount({ query });
       if (result.status === 200) {
         const firstItem = result.body[0];
-        const validationResult = z
-          .object({ "count(*)": z.number() })
-          .safeParse(firstItem);
+        const validationResult = z.object({ "count(*)": z.number() }).safeParse(firstItem);
         if (validationResult.success) {
           return validationResult.data["count(*)"];
         }
@@ -51,9 +41,7 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
    * @param builderOrCriteria - A MemberQueryBuilder or MemberQueryCriteria for filtering data
    * @returns {Promise<GetMembersResponse>} Object containing member data array and total count
    */
-  async getPaginated(
-    builderOrCriteria?: MemberQueryBuilder | MemberQueryCriteria
-  ): Promise<GetMembersResponse> {
+  async getPaginated(builderOrCriteria?: MemberQueryBuilder | MemberQueryCriteria): Promise<GetMembersResponse> {
     try {
       // Convert builder to query params object if it's a builder
       const query = MemberQueryBuilder.is(builderOrCriteria)
@@ -67,11 +55,7 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
         query,
       });
 
-      if (
-        result.body &&
-        Array.isArray(result.body) &&
-        result.body.length === 0
-      ) {
+      if (result.body && Array.isArray(result.body) && result.body.length === 0) {
         return { results: [], total: 0 };
       }
 
@@ -87,22 +71,14 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
    * @param builderOrCriteria - A MemberQueryBuilder or MemberQueryCriteria for filtering data
    * @returns {Promise<GetMembersResponse>} Object containing member data array and total count
    */
-  async getList(
-    builderOrCriteria?: MemberQueryBuilder | MemberQueryCriteria
-  ): Promise<MemberDTO[]> {
+  async getList(builderOrCriteria?: MemberQueryBuilder | MemberQueryCriteria): Promise<MemberDTO[]> {
     try {
-      const query = MemberQueryBuilder.from(builderOrCriteria)
-        .removeAllRelations()
-        .build();
+      const query = MemberQueryBuilder.from(builderOrCriteria).build();
 
       // Execute the query
       const result = await this.client.getAll({ query });
 
-      if (
-        result.body &&
-        Array.isArray(result.body) &&
-        result.body.length === 0
-      ) {
+      if (result.body && Array.isArray(result.body) && result.body.length === 0) {
         return [];
       }
 
@@ -121,10 +97,7 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
   async getById(id: string): Promise<MemberDTO | undefined> {
     try {
       // Create a query builder for fetching a single member by ID
-      const builder = MemberQueryBuilder.newInstance()
-        .includeDefaultRelations()
-        .paginate(1, 1)
-        .where("id", id);
+      const builder = MemberQueryBuilder.newInstance().includeDefaultRelations().paginate(1, 1).where("id", id);
 
       // Get all members matching the criteria
       const result = await this.getPaginated(builder);
@@ -207,9 +180,7 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
    */
   async search(searchTerm: string): Promise<GetMembersResponse> {
     try {
-      const builder = MemberQueryBuilder.newInstance()
-        .search(searchTerm)
-        .includeDefaultRelations();
+      const builder = MemberQueryBuilder.newInstance().filterBySearch(searchTerm).includeDefaultRelations();
 
       return await this.getPaginated(builder);
     } catch (error) {
@@ -230,9 +201,7 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
   ): Promise<GetMembersResponse> {
     try {
       // Create a builder and set the fellowship filter
-      const builder = MemberQueryBuilder.newInstance()
-        .filterByFellowshipId(fellowshipId)
-        .includeDefaultRelations();
+      const builder = MemberQueryBuilder.newInstance().filterByFellowship(fellowshipId).includeDefaultRelations();
 
       // Apply additional criteria if provided
       if (additionalCriteria) {
@@ -257,16 +226,11 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
    */
   async getByBaptismStatus(isBaptized: boolean): Promise<GetMembersResponse> {
     try {
-      const builder = MemberQueryBuilder.newInstance()
-        .filterByBaptismStatus(isBaptized)
-        .includeDefaultRelations();
+      const builder = MemberQueryBuilder.newInstance().filterByBaptismStatus(isBaptized).includeDefaultRelations();
 
       return await this.getPaginated(builder);
     } catch (error) {
-      console.error(
-        `Error in getByBaptismStatus with status ${isBaptized}:`,
-        error
-      );
+      console.error(`Error in getByBaptismStatus with status ${isBaptized}:`, error);
       throw error;
     }
   }
