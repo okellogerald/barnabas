@@ -5,8 +5,7 @@ import { TZ_PHONE_NUMBER_PATTERN } from "@/constants/patterns";
 /**
  * Transforms a date field to an ISO string
  */
-export const dateTransformer = (date: Date | dayjs.Dayjs) =>
-  dayjs(date).format("YYYY-MM-DD");
+export const dateTransformer = (date: Date | dayjs.Dayjs) => dayjs(date).format("YYYY-MM-DD");
 
 // Create a custom Zod type for Dayjs
 const dayjsSchema = z.custom<dayjs.Dayjs>(
@@ -87,10 +86,7 @@ export const CommonSchemas = {
   dayjs: dayjsSchema,
   createPaginatedResponseSchema,
   date: dateSchema,
-  previousDate: dateSchema.refine(
-    (date) => !date || date <= new Date(),
-    "Date can't be in the future"
-  ),
+  previousDate: dateSchema.refine((date) => !date || date <= new Date(), "Date can't be in the future"),
   phoneNumber: phoneNumberSchema,
   name: nameSchema,
 };

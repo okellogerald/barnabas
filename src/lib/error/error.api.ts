@@ -56,41 +56,29 @@ export class ApiError extends Error {
    */
   static from(
     error: any,
+    statusCode?: number,
     fallbackCategory: ErrorCategory = ErrorCategory.UNKNOWN,
     context: ErrorContext = {}
   ): ApiError {
-    if (error instanceof ApiError || ApiError.is(error)) {
+    if (ApiError.is(error)) {
       return error;
     }
 
     let message = "An unexpected error occurred";
     let category = fallbackCategory;
-    let details: Record<string, string> | undefined = undefined;
-    let statusCode = 500;
+    let details: Record<string, string> | undefined;
+    let status = statusCode ?? 500;
 
-    // Handle our standard API error format
-    if (
-      error &&
-      typeof error === "object" &&
-      typeof error.statusCode === "number" &&
-      typeof error.message === "string"
-    ) {
+    if (ApiError.isStandardApiError(error)) {
       message = error.message;
-      statusCode = error.statusCode;
-      // Auto-detect category based on status code
+      status = error.statusCode;
       category = ApiError.categorizeByStatus(error.statusCode);
+      if (error.details) {
+        details = error.details;
+      }
     }
 
-    if (
-      error.details &&
-      typeof error.details === "object" &&
-      !Array.isArray(error.details) &&
-      Object.values(error.details).every((v) => typeof v === "string")
-    ) {
-      details = error.details as Record<string, string>;
-    }
-
-    return new ApiError(statusCode, message, details, category, error, context);
+    return new ApiError(status, message, details, category, error, context);
   }
 
   /**
@@ -165,26 +153,32 @@ export class ApiError extends Error {
    * Type guard to check if error is ApiError
    */
   static is(error: unknown): error is ApiError {
-    return (
-      z
-        .object({
-          statusCode: z.number(),
-          message: z.string(),
-          error: z.string(),
-          details: z.record(z.string()).nullish(),
-        })
-        .safeParse(error).success === true
-    );
+    return error instanceof ApiError;
+  }
+
+  static isStandardApiError(error: unknown): error is {
+    statusCode: number;
+    message: string;
+    error: string;
+    details?: Record<string, string>;
+  } {
+    const result = z
+      .object({
+        statusCode: z.number(),
+        message: z.string(),
+        error: z.string(),
+        details: z.record(z.string()).optional(),
+      })
+      .safeParse(error);
+
+    return result.success;
   }
 
   /**
    * Check if this is a validation error
    */
   isValidationError(): boolean {
-    return (
-      this.category === ErrorCategory.VALIDATION ||
-      (this.status === 400 && !!this.details)
-    );
+    return this.category === ErrorCategory.VALIDATION || (this.status === 400 && !!this.details);
   }
 
   /**

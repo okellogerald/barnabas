@@ -1,11 +1,6 @@
 import { BaseRepository } from "@/data/shared";
 import { roleContract } from "./role.api-contract";
-import {
-  CreateRoleDTO,
-  RoleDTO,
-  RoleQueryParams,
-  UpdateRoleDTO,
-} from "./role.schema";
+import { CreateRoleDTO, RoleDTO, RoleQueryParams, UpdateRoleDTO } from "./role.schema";
 
 type GetRolesResponse = {
   results: RoleDTO[];
@@ -36,15 +31,13 @@ export class RoleRepository extends BaseRepository<typeof roleContract> {
    * @returns Object containing role data array and total count.
    * @throws Error if there's an issue retrieving roles.
    */
-  async getAll(
-    queryParams: RoleQueryParams = RoleRepository.defaultQueryParams,
-  ): Promise<GetRolesResponse> {
+  async getAll(queryParams: RoleQueryParams = RoleRepository.defaultQueryParams): Promise<GetRolesResponse> {
     try {
       const result = await this.client.getAll({ query: queryParams });
       return this.handleResponse<GetRolesResponse>(result, 200);
     } catch (error) {
       console.error("Error in getAll:", error);
-      throw new Error("Failed to retrieve roles.");
+      throw error;
     }
   }
 
@@ -55,9 +48,7 @@ export class RoleRepository extends BaseRepository<typeof roleContract> {
    * @returns Role data.
    * @throws Error if the role is not found or there's an issue retrieving the role.
    */
-  async getById(
-    id: string,
-  ): Promise<RoleDTO | undefined> {
+  async getById(id: string): Promise<RoleDTO | undefined> {
     try {
       const result = await this.client.getById({
         params: { id },
@@ -68,7 +59,7 @@ export class RoleRepository extends BaseRepository<typeof roleContract> {
       return this.handleResponse<RoleDTO>(result, 200);
     } catch (error) {
       console.error(`Error in getById with id ${id}:`, error);
-      throw new Error(`Failed to retrieve role with ID ${id}.`);
+      throw error;
     }
   }
 
@@ -84,7 +75,7 @@ export class RoleRepository extends BaseRepository<typeof roleContract> {
       return this.handleResponse<RoleDTO>(result, 201);
     } catch (error) {
       console.error("Error in create:", error);
-      throw new Error("Failed to create role.");
+      throw error;
     }
   }
 
@@ -104,7 +95,7 @@ export class RoleRepository extends BaseRepository<typeof roleContract> {
       return this.handleResponse<RoleDTO>(result, 200);
     } catch (error) {
       console.error(`Error in update with id ${id}:`, error);
-      throw new Error(`Failed to update role with ID ${id}.`);
+      throw error;
     }
   }
 
@@ -120,7 +111,7 @@ export class RoleRepository extends BaseRepository<typeof roleContract> {
       return this.handleResponse<RoleDTO>(result, 200);
     } catch (error) {
       console.error(`Error in delete with id ${id}:`, error);
-      throw new Error(`Failed to delete role with ID ${id}.`);
+      throw error;
     }
   }
 
@@ -140,7 +131,7 @@ export class RoleRepository extends BaseRepository<typeof roleContract> {
       return this.handleResponse<RoleDTO>(result, 200);
     } catch (error) {
       console.error(`Error in assignPermissions with id ${id}:`, error);
-      throw new Error(`Failed to assign permissions to role with ID ${id}.`);
+      throw error;
     }
   }
 
@@ -152,13 +143,10 @@ export class RoleRepository extends BaseRepository<typeof roleContract> {
   async getAllPermissions(): Promise<Array<{ id: string; name: string }>> {
     try {
       const result = await this.client.getAllPermissions();
-      return this.handleResponse<Array<{ id: string; name: string }>>(
-        result,
-        200,
-      );
+      return this.handleResponse<Array<{ id: string; name: string }>>(result, 200);
     } catch (error) {
       console.error("Error in getAllPermissions:", error);
-      throw new Error("Failed to retrieve available permissions.");
+      throw error;
     }
   }
 }

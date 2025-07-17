@@ -18,12 +18,7 @@ export const notifyUtils = {
    * @param options Optional toast options
    * @returns ToastId
    */
-  success(
-    message: string,
-    description?: string,
-    duration?: number,
-    options?: ToastOptions
-  ): ToastId {
+  success(message: string, description?: string, duration?: number, options?: ToastOptions): ToastId {
     return toast.success(description ? `${message}: ${description}` : message, {
       ...options,
       autoClose: duration || DEFAULT_DURATION,
@@ -39,13 +34,7 @@ export const notifyUtils = {
    * @param options Optional toast options
    * @returns ToastId
    */
-  error(
-    error: any,
-    description?: string,
-    duration?: number,
-    options?: ToastOptions
-  ): ToastId {
-    console.log("notify error: ", error)
+  error(error: any, description?: string, duration?: number, options?: ToastOptions): ToastId {
     if (typeof error === "string") {
       return toast.error(description ? `${error}: ${description}` : error, {
         ...options,
@@ -54,16 +43,15 @@ export const notifyUtils = {
     }
 
     if (ApiError.is(error)) return notifyUtils.apiError(error);
+    if (ApiError.isStandardApiError(error)) return notifyUtils.apiError(ApiError.from(error));
+
     if (PermissionError.is(error)) return notifyUtils.permissionError(error);
 
     if (error instanceof Error) {
-      return toast.error(
-        description ? `${error.message}: ${description}` : error.message,
-        {
-          ...options,
-          autoClose: duration || DEFAULT_DURATION,
-        }
-      );
+      return toast.error(description ? `${error.message}: ${description}` : error.message, {
+        ...options,
+        autoClose: duration || DEFAULT_DURATION,
+      });
     }
 
     return toast.error("An unknown error happened", {
@@ -81,12 +69,7 @@ export const notifyUtils = {
    * @param options Optional toast options
    * @returns ToastId
    */
-  warning(
-    message: string,
-    description?: string,
-    duration?: number,
-    options?: ToastOptions
-  ): ToastId {
+  warning(message: string, description?: string, duration?: number, options?: ToastOptions): ToastId {
     return toast.warn(description ? `${message}: ${description}` : message, {
       ...options,
       autoClose: duration || DEFAULT_DURATION,
@@ -102,12 +85,7 @@ export const notifyUtils = {
    * @param options Optional toast options
    * @returns ToastId
    */
-  info(
-    message: string,
-    description?: string,
-    duration?: number,
-    options?: ToastOptions
-  ): ToastId {
+  info(message: string, description?: string, duration?: number, options?: ToastOptions): ToastId {
     return toast.info(description ? `${message}: ${description}` : message, {
       ...options,
       autoClose: duration || DEFAULT_DURATION,

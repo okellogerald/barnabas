@@ -41,7 +41,7 @@ export class RoleActionRepository extends BaseRepository<typeof roleContract> {
       return this.handleResponse<GetRoleActionsResponse>(result, 200);
     } catch (error) {
       console.error("Error in getAll:", error);
-      throw new Error("Failed to retrieve roles.");
+      throw error;
     }
   }
 
@@ -52,9 +52,7 @@ export class RoleActionRepository extends BaseRepository<typeof roleContract> {
    * @returns Role data.
    * @throws Error if the role is not found or there's an issue retrieving the role.
    */
-  async getById(
-    id: string,
-  ): Promise<RoleActionDTO | undefined> {
+  async getById(id: string): Promise<RoleActionDTO | undefined> {
     try {
       const result = await this.client.getById({
         params: { roleId: this.roleId, actionId: id },
@@ -65,7 +63,7 @@ export class RoleActionRepository extends BaseRepository<typeof roleContract> {
       return this.handleResponse<RoleActionDTO>(result, 200);
     } catch (error) {
       console.error(`Error in getById with id ${id}:`, error);
-      throw new Error(`Failed to retrieve role with ID ${id}.`);
+      throw error;
     }
   }
 }

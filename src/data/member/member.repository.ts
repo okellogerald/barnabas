@@ -133,27 +133,16 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
       return result.results.find((m) => m.id === id);
 
       // TODO: When the API supports direct getById with eager, use this code instead:
-      /*
-            const query: Record<string, any> = {};
+      // const result = await this.client.getById({
+      //   params: { id },
+      //   query: builder.build(),
+      // });
 
-            // Add eager loading if specified
-            if (eager) {
-                query.eager = eager;
-            } else {
-                query.eager = MemberRepository.defaultQueryParams.eager;
-            }
+      // if (result.status === 404) {
+      //   return;
+      // }
 
-            const result = await this.client.getById({
-                params: { id },
-                query,
-            });
-
-            if (result.status === 404) {
-                return null;
-            }
-
-            return this.handleResponse<MemberDTO>(result, 200);
-            */
+      // return this.handleResponse<MemberDTO>(result, 200);
     } catch (error) {
       console.error(`Error retrieving member by ID (${id}):`, error);
       throw error;
@@ -167,9 +156,7 @@ export class MemberRepository extends BaseRepository<typeof memberContract> {
    */
   async create(data: CreateMemberDTO): Promise<MemberDTO> {
     try {
-      const result = await this.client.create({
-        body: data,
-      });
+      const result = await this.client.create({ body: data });
       return this.handleResponse<MemberDTO>(result, 201);
     } catch (error) {
       console.error("Error in create:", error);

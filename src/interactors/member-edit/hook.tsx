@@ -291,7 +291,7 @@ export const useMemberEdit = (): UseMemberEditResult => {
         navigateToMemberDetails();
       } catch (error) {
         notifyUtils.dismiss(toastId);
-        notifyUtils.apiError(error);
+        notifyUtils.error(error);
         throw error;
       }
     } catch (error) {
