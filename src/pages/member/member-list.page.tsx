@@ -1,8 +1,9 @@
-import { Gender, MaritalStatus, MemberRole } from "@/constants";
+import { FellowshipSelect } from "@/components/form";
+import { Gender, MaritalStatus, MemberRole, EducationLevel } from "@/constants";
 import { canApplyFilters, memberFilterStore, MemberListSuccessState, useMemberList } from "@/hooks/member/use-member-list";
 import { isLoadingState, isErrorState, AsyncStateMatcher } from "@/lib/state";
 import { DownOutlined, SortAscendingOutlined, SortDescendingOutlined, FilterOutlined, SearchOutlined, RedoOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Divider, Drawer, Dropdown, Flex, Form, Input, Select, Space, Tag, Tooltip, Typography } from "antd";
+import { Button, Checkbox, Divider, Drawer, Dropdown, Flex, Form, Input, Select, Space, Tag, Tooltip, Typography, Row, Col } from "antd";
 import { useState, useEffect } from "react";
 
 // ===============================================================
@@ -74,7 +75,7 @@ const MemberSorting: React.FC<{ state: MemberListSuccessState }> = ({ state }) =
 
 // ----------------- Filter Component -----------------------
 /**
- * Filter drawer content for member list filtering
+ * Enhanced filter drawer with improved layout and new filters
  */
 const MemberFiltersDrawer: React.FC<{
   state: MemberListSuccessState;
@@ -85,7 +86,7 @@ const MemberFiltersDrawer: React.FC<{
   const filterState = memberFilterStore();
   const filters = filterState.filters;
 
-  // Local state for filter values
+  // Extended local state for filter values
   const [localFilters, setLocalFilters] = useState({
     search: filters.search || '',
     firstName: filters.firstName || '',
@@ -94,6 +95,9 @@ const MemberFiltersDrawer: React.FC<{
     gender: filters.gender,
     maritalStatus: filters.maritalStatus,
     memberRole: filters.memberRole,
+    educationLevel: filters.educationLevel,
+    profession: filters.profession || '',
+    hasEnvelope: filters.hasEnvelope,
     isBaptized: filters.isBaptized,
     isConfirmed: filters.isConfirmed,
     attendsFellowship: filters.attendsFellowship
@@ -117,7 +121,7 @@ const MemberFiltersDrawer: React.FC<{
 
   // Clear all filters
   const handleClearFilters = () => {
-    setLocalFilters({
+    const clearedFilters = {
       search: '',
       firstName: '',
       lastName: '',
@@ -125,10 +129,14 @@ const MemberFiltersDrawer: React.FC<{
       gender: undefined,
       maritalStatus: undefined,
       memberRole: undefined,
+      educationLevel: undefined,
+      profession: '',
+      hasEnvelope: undefined,
       isBaptized: undefined,
       isConfirmed: undefined,
       attendsFellowship: undefined
-    });
+    };
+    setLocalFilters(clearedFilters);
     form.resetFields();
     state.actions.table.clearFilters();
     onClose();
@@ -142,7 +150,7 @@ const MemberFiltersDrawer: React.FC<{
           <span>Filter Members</span>
         </Space>
       }
-      width={320}
+      width={450} // Increased width for better layout
       placement="right"
       onClose={onClose}
       open={visible}
@@ -168,78 +176,118 @@ const MemberFiltersDrawer: React.FC<{
         onValuesChange={handleFilterChange}
         initialValues={localFilters}
       >
-        <Form.Item name="search" label="Search">
-          <Input
-            placeholder="Search members..."
-            prefix={<SearchOutlined />}
-          />
-        </Form.Item>
+        {/* Search & Quick Filters Section */}
+        <div style={{ marginBottom: 16 }}>
+          <Form.Item name="search" label="Search" style={{ marginBottom: 12 }}>
+            <Input
+              placeholder="Search members..."
+              prefix={<SearchOutlined />}
+            />
+          </Form.Item>
 
-        <Divider orientation="left">Personal</Divider>
+          <Form.Item name="hasEnvelope" valuePropName="checked" style={{ marginBottom: 0 }}>
+            <Checkbox>Has Envelope Number</Checkbox>
+          </Form.Item>
+        </div>
 
-        <Form.Item name="firstName" label="First Name">
-          <Input placeholder="Enter first name" />
-        </Form.Item>
+        <Divider orientation="left" style={{ margin: '16px 0 12px 0' }}>Personal Information</Divider>
 
-        <Form.Item name="lastName" label="Last Name">
-          <Input placeholder="Enter last name" />
-        </Form.Item>
+        {/* Personal Info - Two Column Layout */}
+        <Row gutter={12}>
+          <Col span={12}>
+            <Form.Item name="firstName" label="First Name">
+              <Input placeholder="First name" />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item name="lastName" label="Last Name">
+              <Input placeholder="Last name" />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        <Form.Item name="gender" label="Gender">
-          <Select allowClear placeholder="Select gender">
-            {Object.values(Gender).map(gender => (
-              <Select.Option key={gender} value={gender}>{gender}</Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+        <Row gutter={12}>
+          <Col span={12}>
+            <Form.Item name="gender" label="Gender">
+              <Select allowClear placeholder="Select gender">
+                {Object.values(Gender).map(gender => (
+                  <Select.Option key={gender} value={gender}>{gender}</Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item name="maritalStatus" label="Marital Status">
+              <Select allowClear placeholder="Select status">
+                {Object.values(MaritalStatus).map(status => (
+                  <Select.Option key={status} value={status}>{status}</Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
 
-        <Form.Item name="maritalStatus" label="Marital Status">
-          <Select allowClear placeholder="Select marital status">
-            {Object.values(MaritalStatus).map(status => (
-              <Select.Option key={status} value={status}>{status}</Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+        <Divider orientation="left" style={{ margin: '16px 0 12px 0' }}>Church Information</Divider>
 
-        <Divider orientation="left">Church Info</Divider>
+        {/* Church Info - Two Column Layout */}
+        <Row gutter={12}>
+          <Col span={12}>
+            <Form.Item name="fellowshipId" label="Fellowship">
+              <FellowshipSelect 
+                value={localFilters.fellowshipId}
+                onChange={(value) => setLocalFilters(prev => ({ ...prev, fellowshipId: value }))}
+                placeholder="Select fellowship"
+              />
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item name="memberRole" label="Member Role">
+              <Select allowClear placeholder="Select role">
+                {Object.values(MemberRole).map(role => (
+                  <Select.Option key={role} value={role}>{role}</Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+        </Row>
 
-        {/* <Form.Item name="fellowshipId" label="Fellowship">
-          <Select
-            allowClear
-            placeholder="Select fellowship"
-            loading={fellowshipsQuery.isLoading}
-            options={
-              isSuccessState(fellowshipsQuery) 
-                ? fellowshipsQuery.data.fellowships.map(f => ({
-                  label: f.name,
-                  value: f.id
-                }))
-                : []
-            }
-          />
-        </Form.Item> */}
+        <Row gutter={12}>
+          <Col span={12}>
+            <Form.Item name="educationLevel" label="Education Level">
+              <Select allowClear placeholder="Select education">
+                {Object.values(EducationLevel).map(level => (
+                  <Select.Option key={level} value={level}>{level}</Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item name="profession" label="Profession">
+              <Input placeholder="Enter profession" />
+            </Form.Item>
+          </Col>
+        </Row>
 
-        <Form.Item name="memberRole" label="Member Role">
-          <Select allowClear placeholder="Select role">
-            {Object.values(MemberRole).map(role => (
-              <Select.Option key={role} value={role}>{role}</Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+        <Divider orientation="left" style={{ margin: '16px 0 12px 0' }}>Church Status</Divider>
 
-        <Divider orientation="left">Status</Divider>
-
-        <Form.Item name="isBaptized" valuePropName="checked">
-          <Checkbox>Baptized Members</Checkbox>
-        </Form.Item>
-
-        <Form.Item name="isConfirmed" valuePropName="checked">
-          <Checkbox>Confirmed Members</Checkbox>
-        </Form.Item>
-
-        <Form.Item name="attendsFellowship" valuePropName="checked">
-          <Checkbox>Attends Fellowship</Checkbox>
-        </Form.Item>
+        {/* Status - Checkbox Grid */}
+        <Row gutter={[12, 8]}>
+          <Col span={12}>
+            <Form.Item name="isBaptized" valuePropName="checked" style={{ marginBottom: 8 }}>
+              <Checkbox>Baptized</Checkbox>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item name="isConfirmed" valuePropName="checked" style={{ marginBottom: 8 }}>
+              <Checkbox>Confirmed</Checkbox>
+            </Form.Item>
+          </Col>
+          <Col span={24}>
+            <Form.Item name="attendsFellowship" valuePropName="checked" style={{ marginBottom: 0 }}>
+              <Checkbox>Attends Fellowship</Checkbox>
+            </Form.Item>
+          </Col>
+        </Row>
       </Form>
     </Drawer>
   );
@@ -351,15 +399,16 @@ const ErrorView: React.FC<{ state: any }> = ({ state }) => (
 // ===============================================================
 
 /**
- * Member list page component
+ * Enhanced Member list page component
  * 
- * This component displays a list of church members with filtering, sorting and pagination.
- * It includes:
- * - Table view with key member information
- * - Filter drawer for advanced filtering options
- * - Sorting controls
- * - Add member button
- * - Status indicators
+ * This component displays a list of church members with enhanced filtering capabilities:
+ * - Wider filter drawer (450px) for better layout
+ * - Two-column layout within drawer for efficient space usage
+ * - AsyncSelect for fellowship selection with search
+ * - Education level and profession filters
+ * - Envelope status filter
+ * - Logical grouping with clear sections
+ * - Improved typography and spacing
  */
 const MemberListPage: React.FC = () => {
   const state = useMemberList();
