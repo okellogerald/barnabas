@@ -5,7 +5,7 @@ import { AsyncStateMatcher } from '@/lib/state';
 import { Member } from '@/models';
 import { MemberQueries } from '@/data/member/member.queries';
 import { mapQueryToAsyncState, SuccessState, UI_STATE_TYPE } from '@/lib/state';
-import { MemberQueryCriteria } from '@/data/member';
+import { MemberQueryBuilder } from '@/data/member';
 
 const { Text } = Typography;
 
@@ -196,7 +196,7 @@ export const MemberSelector: React.FC<MemberSelectorProps> = ({
     const shouldUpdateSelection = useMemo(() => {
         if (!visible) return false;
         if (initialSelectedMembers.length !== selectedMembers.length) return true;
-        return !initialSelectedMembers.every(initial => 
+        return !initialSelectedMembers.every(initial =>
             selectedMembers.some(selected => selected.id === initial.id)
         );
     }, [visible, initialSelectedMembers, selectedMembers]);
@@ -208,16 +208,23 @@ export const MemberSelector: React.FC<MemberSelectorProps> = ({
     }, [shouldUpdateSelection, initialSelectedMembers]);
 
     // Memoize query parameters to prevent unnecessary re-renders
-    const queryParams = useMemo((): MemberQueryCriteria => ({
-        page: currentPage,
-        pageSize,
-        ...(filter.hasEnvelope === false ? { hasEnvelope: false } : filter.hasEnvelope === true ? { hasEnvelope: true } : {}),
-        ...(filter.fellowshipId ? { fellowshipId: filter.fellowshipId } : {}),
-        ...(searchTerm ? { searchTerm } : {})
-    }), [currentPage, pageSize, filter.hasEnvelope, filter.fellowshipId, searchTerm]);
+    const queryBuilder = useMemo(function (): MemberQueryBuilder {
+        let builder = MemberQueryBuilder.newInstance().includeDefaultRelations()
+        if (filter.hasEnvelope !== undefined) {
+            builder = builder.filterByEnvelopeStatus(filter.hasEnvelope)
+        }
+        if (filter.fellowshipId) {
+            builder = builder.filterByFellowship(filter.fellowshipId)
+        }
+        if (searchTerm) {
+            builder = builder.filterBySearch(searchTerm)
+        }
+        return builder.paginate(currentPage, pageSize)
+    }, [currentPage, pageSize, filter.hasEnvelope, filter.fellowshipId, searchTerm]);
 
     // Query for members
-    const memberQuery = MemberQueries.usePaginatedList(queryParams);
+    const memberQuery = MemberQueries.usePaginatedList(queryBuilder);
+    console.log(memberQuery)
 
     // Memoized callbacks to prevent re-renders
     const handleSearch = useCallback((value: string) => {
@@ -237,7 +244,7 @@ export const MemberSelector: React.FC<MemberSelectorProps> = ({
         // Multiple selection logic
         setSelectedMembers(prev => {
             const isAlreadySelected = prev.some(selected => selected.id === member.id);
-            
+
             if (isAlreadySelected) {
                 // Remove from selection
                 return prev.filter(selected => selected.id !== member.id);
@@ -272,9 +279,9 @@ export const MemberSelector: React.FC<MemberSelectorProps> = ({
             if (!data || typeof data !== 'object') {
                 throw new Error('Invalid member data received');
             }
-            
+
             const members = data.members;
-            
+
             const total = data.total;
 
             return new MemberSelectionSuccessState({
@@ -315,9 +322,9 @@ export const MemberSelector: React.FC<MemberSelectorProps> = ({
             <Button key="cancel" onClick={onCancel}>
                 Cancel
             </Button>,
-            <Button 
-                key="confirm" 
-                type="primary" 
+            <Button
+                key="confirm"
+                type="primary"
                 onClick={handleConfirmSelection}
                 disabled={selectedMembers.length === 0}
             >
@@ -332,7 +339,7 @@ export const MemberSelector: React.FC<MemberSelectorProps> = ({
         if (!record || !record.id) {
             return {};
         }
-        
+
         return {
             onClick: () => {
                 try {
@@ -349,7 +356,7 @@ export const MemberSelector: React.FC<MemberSelectorProps> = ({
                     console.error('Error handling member selection:', error);
                 }
             },
-            style: { 
+            style: {
                 cursor: 'pointer',
                 backgroundColor: selectedMembers.some(selected => selected.id === record.id) ? '#f6ffed' : undefined
             }
@@ -392,13 +399,13 @@ export const MemberSelector: React.FC<MemberSelectorProps> = ({
                                         enterButton={<SearchOutlined />}
                                         onSearch={handleSearch}
                                     />
-                                    
+
                                     {/* Show selection info for multiple mode */}
                                     {mode === 'multiple' && (
                                         <div>
                                             <Text type="secondary">
-                                                {selectedMembers.length === 0 
-                                                    ? "No members selected" 
+                                                {selectedMembers.length === 0
+                                                    ? "No members selected"
                                                     : `${selectedMembers.length} member${selectedMembers.length !== 1 ? 's' : ''} selected`
                                                 }
                                                 {maxSelections && ` (max ${maxSelections})`}
@@ -436,7 +443,7 @@ export const MemberSelector: React.FC<MemberSelectorProps> = ({
                     }
                 }}
             />
-            
+
             <style>{`
                 .selected-row {
                     background-color: #f6ffed !important;

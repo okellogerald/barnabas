@@ -309,7 +309,7 @@ export const MemberQueries = {
                 // Create a builder with search configuration
                 const builder = MemberQueryBuilder.newInstance()
                     .includeDefaultRelations()
-                    .search(searchTerm)
+                    .filterBySearch(searchTerm)
                     .paginate(1, 10);
 
                 return await memberManager.getPaginatedMembers(builder);

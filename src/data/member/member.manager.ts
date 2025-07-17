@@ -100,6 +100,7 @@ export class MemberManager {
 
       // Execute the query
       const response = await this._repo.getPaginated(builder);
+      console.log(response)
 
       // Convert DTOs returned by the repo into Member model instances
       const members = response.results.map(Member.fromDTO);
