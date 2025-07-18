@@ -6,33 +6,30 @@ import { CommonSchemas } from "@/data/shared";
  * Schema for a single dependant
  */
 export const MemberCreateDependantSchema = z.object({
-    firstName: CommonSchemas.name
-        .min(2, "First name must be at least 2 characters")
-        .describe("Dependant's first name"),
+  firstName: CommonSchemas.name.min(2, "First name must be at least 2 characters").describe("Dependant's first name"),
 
-    lastName: CommonSchemas.name
-        .describe("Dependant's last name"),
+  lastName: CommonSchemas.name.describe("Dependant's last name"),
 
-    dateOfBirth: CommonSchemas.previousDate
-        .describe("Dependant's date of birth"),
+  dateOfBirth: CommonSchemas.previousDate.describe("Dependant's date of birth"),
 
-    relationship: z.nativeEnum(DependantRelationship)
-        .describe("Relationship of the dependant to the church member"),
+  relationship: z.nativeEnum(DependantRelationship).describe("Relationship of the dependant to the church member"),
 });
 
 /**
  * Schema for the dependants section - a list of dependants
  */
 export const MemberCreateDependantsSchema = z.object({
-    dependants: z.array(MemberCreateDependantSchema).default([])
-        .describe("List of people who are dependants of the church member"),
+  dependants: z
+    .array(MemberCreateDependantSchema)
+    .default([])
+    .describe("List of people who are dependants of the church member"),
 });
 
 /**
  * TypeScript type for a single dependant
  */
 export type DependantInfo = z.infer<typeof MemberCreateDependantSchema> & {
-    id?: string;
+  id?: string;
 };
 
 /**
@@ -44,15 +41,15 @@ export type DependantsInfo = z.infer<typeof MemberCreateDependantsSchema>;
  * Default values for the dependants section
  */
 export const DEFAULT_DEPENDANTS_INFO: DependantsInfo = {
-    dependants: [],
+  dependants: [],
 };
 
 /**
  * List of fields required for each dependant
  */
 export const REQUIRED_DEPENDANT_FIELDS: (keyof DependantInfo)[] = [
-    "firstName",
-    "lastName",
-    "dateOfBirth",
-    "relationship",
+  "firstName",
+  "lastName",
+  "dateOfBirth",
+  "relationship",
 ];

@@ -138,9 +138,6 @@ export class MemberManager {
       // Convert DTOs returned by the repo into Member model instances
       const members = response.map(Member.fromDTO);
 
-      console.log("options: ", options)
-      console.log("members: ", members)
-
       // Return the members for the current page and the total count
       return members;
     } catch (error) {

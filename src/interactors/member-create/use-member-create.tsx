@@ -173,6 +173,13 @@ export const useMemberCreate = (): UseMemberCreateResult => {
       // Get the current step key
       const currentStepKey = uiStore.getCurrentStepKey();
 
+      // Check for pending image uploads on personal information step
+      if (currentStepKey === "personal" && personal.hasPendingImageUploads()) {
+        const pendingMessage = personal.getPendingImageMessage();
+        notifyUtils.error(pendingMessage || "Please save or cancel your profile image before proceeding");
+        return;
+      }
+
       // Validate the current step's fields in the appropriate form
       if (currentStepKey === "dependants") {
         const dependantValues = dependant.form.getFieldsValue();

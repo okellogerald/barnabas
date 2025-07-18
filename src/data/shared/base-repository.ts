@@ -62,23 +62,72 @@ export class BaseRepository<TContract extends AppRouter> {
    * Uses authentication token if available.
    */
   get client() {
+    return this.getClient("application/json");
+  }
+
+  /**
+   * Gets a client configured for multipart/form-data requests (file uploads)
+   */
+  get multipartClient() {
+    return this.getClient("multipart/form-data");
+  }
+
+  /**
+   * Gets a client with custom content type
+   * @param contentType - The content type to use for requests
+   */
+  private getClient(contentType: string) {
     // Ensure that both `this.root` and `AppConfig.API_BASE_URL` don't end with a '/'
     const baseUrl = this.root
       ? `${this.root.replace(/\/$/, "")}/${this.endpoint}` // Remove trailing slash from `this.root` and append the endpoint
       : `${AppConfig.API_BASE_URL.replace(/\/$/, "")}/${this.endpoint}`; // Remove trailing slash from `AppConfig.API_BASE_URL` and append the endpoint
 
     // Get token from auth manager
-    // const token = AuthenticationManager.instance.getToken() || "";
     const token = useAuthStore.getState().token || "";
+
+    const baseHeaders: Record<string, string> = {
+      Authorization: token ? `Bearer ${token}` : "",
+      "x-request-id": uuidv4(),
+      Accept: "application/json",
+    };
+
+    // Only set Content-Type for non-multipart requests
+    // For multipart, the browser will set it automatically with the boundary
+    if (contentType !== "multipart/form-data") {
+      baseHeaders["Content-Type"] = contentType;
+    }
 
     const args: InitClientArgs = {
       baseUrl,
-      baseHeaders: {
-        Authorization: token ? `Bearer ${token}` : "",
-        "x-request-id": uuidv4(),
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
+      baseHeaders,
+    };
+
+    return initClient(this.contract, args);
+  }
+
+  /**
+   * Gets a client with completely custom headers
+   * @param customHeaders - Custom headers to merge with base headers
+   */
+  protected getClientWithCustomHeaders(customHeaders: Record<string, string>) {
+    const baseUrl = this.root
+      ? `${this.root.replace(/\/$/, "")}/${this.endpoint}`
+      : `${AppConfig.API_BASE_URL.replace(/\/$/, "")}/${this.endpoint}`;
+
+    const token = useAuthStore.getState().token || "";
+
+    const baseHeaders: Record<string, string> = {
+      Authorization: token ? `Bearer ${token}` : "",
+      "x-request-id": uuidv4(),
+      Accept: "application/json",
+    };
+
+    // Merge custom headers with base headers
+    const mergedHeaders = { ...baseHeaders, ...customHeaders };
+
+    const args: InitClientArgs = {
+      baseUrl,
+      baseHeaders: mergedHeaders,
     };
 
     return initClient(this.contract, args);
