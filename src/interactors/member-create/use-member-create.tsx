@@ -17,6 +17,8 @@ import { useMemberCreateUIStore } from "./stores/store.ui";
 import { useStore } from "zustand";
 import { FormSectionKey } from "./types";
 import { FellowshipManager } from "@/data/fellowship";
+import { useMemberFormReset } from "./use-form-reset";
+import { useAppNavigation } from "@/app";
 
 /**
  * Result of the member create hook
@@ -49,6 +51,7 @@ export interface UseMemberCreateResult {
 
     // Form actions
     reset: () => void;
+    showResetConfirmation: () => Promise<void>;
     submit: () => Promise<void>;
   };
 }
@@ -60,6 +63,7 @@ export interface UseMemberCreateResult {
 export const useMemberCreate = (): UseMemberCreateResult => {
   // Get UI state from store
   const uiStore = useStore(useMemberCreateUIStore);
+  const navigation = useAppNavigation();
 
   // Create mutation for form submission
   const submitFormMutation = useMutation({
@@ -75,6 +79,29 @@ export const useMemberCreate = (): UseMemberCreateResult => {
   const professional = useProfessionalFields();
   const dependant = useDependantFields();
   const interest = useInterestFields();
+
+  // Set up form reset functionality
+  const { showResetConfirmation } = useMemberFormReset({
+    onReset: async () => {
+      // Reset all your forms
+      reset()
+
+      // Navigate to members list
+      navigation.Members.toList();
+    },
+    hasUnsavedChanges: () => {
+      // Your custom logic to check if there are changes
+      // For simplicity, you can just return true or implement your own logic
+      return (
+        personal.form.isFieldsTouched() ||
+        marital.form.isFieldsTouched() ||
+        church.form.isFieldsTouched() ||
+        contact.form.isFieldsTouched() ||
+        professional.form.isFieldsTouched() ||
+        interest.form.isFieldsTouched()
+      );
+    }
+  });
 
   // Parse URL parameters for fellowship context
   useEffect(() => {
@@ -297,7 +324,8 @@ export const useMemberCreate = (): UseMemberCreateResult => {
       previousStep: uiStore.previousStep,
       goToStep: uiStore.setCurrentStepIndex,
       reset,
-      submit
+      submit,
+      showResetConfirmation,
     }
   };
 };

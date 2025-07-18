@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Typography, Divider, Space, Button, Row, Col, Steps, Alert, Form, FormInstance, Input, DatePicker, Table, Flex } from 'antd';
 import { SaveOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { useMemberCreate } from '@/interactors/member-create/hook';
+import { useMemberCreate } from '@/interactors/member-create/use-member-create';
 import { SchemaFormSection } from '@/components/form/schema_based';
 import { MemberCreateMaritalInfo } from '@/interactors/member-create/schemas/schemas.marital';
 import { MemberCreatePersonalInfo } from '@/interactors/member-create/schemas/schemas.personal';
@@ -327,7 +327,7 @@ const MemberCreatePage: React.FC = () => {
           <Col>
             <Space>
               <Button
-                onClick={actions.reset}
+                onClick={actions.showResetConfirmation}
               >
                 Reset
               </Button>
