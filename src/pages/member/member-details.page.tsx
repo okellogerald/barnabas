@@ -14,7 +14,9 @@ import {
     Avatar,
     Timeline,
     Row,
-    Col
+    Col,
+    Select,
+    Tooltip
 } from 'antd';
 import {
     LeftOutlined,
@@ -31,7 +33,10 @@ import {
     CalendarOutlined,
     PhoneOutlined,
     MailOutlined,
-    CopyOutlined
+    CopyOutlined,
+    FileTextOutlined,
+    CheckOutlined,
+    CloseOutlined
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 
@@ -42,6 +47,7 @@ import { Dependant, Member } from '@/models';
 import { MemberDetailsSuccessState, useMemberDetails } from '@/hooks/member/use-member-details';
 
 const { Title, Text } = Typography;
+const { Option } = Select;
 
 /**
  * Member Details Page
@@ -145,6 +151,107 @@ const MemberDetailsHeader: React.FC<{ state: MemberDetailsSuccessState }> = ({ s
 };
 
 /**
+ * Envelope Assignment Component
+ * 
+ * Allows quick assignment or release of envelopes for the member
+ */
+const EnvelopeAssignmentCard: React.FC<{ state: MemberDetailsSuccessState }> = ({ state }) => {
+    const { member, availableEnvelopes, isAssigningEnvelope, isReleasingEnvelope, selectedEnvelopeId } = state;
+    const { actions } = state;
+
+    const currentEnvelope = member.envelopeNumber;
+    const hasEnvelope = !!currentEnvelope;
+
+    return (
+        <Card
+            title={
+                <Flex align="center" gap="small">
+                    <FileTextOutlined />
+                    <span>Envelope Assignment</span>
+                </Flex>
+            }
+            variant="outlined"
+        >
+            <Flex vertical gap="middle">
+                {/* Current envelope status */}
+                <Row gutter={[24, 16]}>
+                    <Col xs={24} md={12}>
+                        <Flex vertical gap={4}>
+                            <Text type="secondary">Current Envelope</Text>
+                            {hasEnvelope ? (
+                                <Flex align="center" gap="small">
+                                    <Tag color="green" icon={<FileTextOutlined />}>
+                                        Envelope #{currentEnvelope}
+                                    </Tag>
+                                    <Tooltip title="Release this envelope from the member">
+                                        <Button
+                                            type="text"
+                                            danger
+                                            icon={<CloseOutlined />}
+                                            size="small"
+                                            loading={isReleasingEnvelope}
+                                            onClick={() => actions.releaseEnvelope()}
+                                        >
+                                            Release
+                                        </Button>
+                                    </Tooltip>
+                                </Flex>
+                            ) : (
+                                <Badge status="error" text="No envelope assigned" />
+                            )}
+                        </Flex>
+                    </Col>
+
+                    {/* Envelope assignment section */}
+                    {!hasEnvelope && (
+                        <Col xs={24} md={12}>
+                            <Flex vertical gap={4}>
+                                <Text type="secondary">Assign Envelope</Text>
+                                <Flex gap="small" align="center">
+                                    <Select
+                                        style={{ width: 160 }}
+                                        placeholder="Select envelope"
+                                        value={selectedEnvelopeId}
+                                        onChange={(value) => actions.selectEnvelope(value)}
+                                        loading={!availableEnvelopes}
+                                        disabled={isAssigningEnvelope}
+                                    >
+                                        {availableEnvelopes?.map(envelope => (
+                                            <Option key={envelope.id} value={envelope.id}>
+                                                Envelope #{envelope.envelopeNumber}
+                                            </Option>
+                                        ))}
+                                    </Select>
+                                    <Button
+                                        type="primary"
+                                        icon={<CheckOutlined />}
+                                        loading={isAssigningEnvelope}
+                                        disabled={!selectedEnvelopeId}
+                                        onClick={() => selectedEnvelopeId && actions.assignEnvelope(selectedEnvelopeId)}
+                                    >
+                                        Assign
+                                    </Button>
+                                </Flex>
+                            </Flex>
+                        </Col>
+                    )}
+                </Row>
+
+                {/* Help text */}
+                <div style={{ marginTop: '8px' }}>
+                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                        {hasEnvelope
+                            ? 'This member currently has an envelope assigned. Click "Release" to make it available for others (confirmation required).'
+                            : 'Assign an available envelope to this member for their church contributions.'
+                        }
+                    </Text>
+                </div>
+            </Flex>
+        </Card>
+    );
+};
+
+/**
  * Main Component Content View
  * 
  * Renders the complete member information using consistent styling with 
@@ -208,6 +315,9 @@ const MemberContentView: React.FC<{ state: MemberDetailsSuccessState }> = ({ sta
                     </Flex>
                 </Flex>
             </Card>
+
+            {/* Envelope Assignment Card */}
+            <EnvelopeAssignmentCard state={state} />
 
             {/* Personal Information Card */}
             <Card
