@@ -65,7 +65,7 @@ const EnvelopeListPage: React.FC = () => {
         envelopeState.refresh();
       }
     } catch (error) {
-      notifyUtils.apiError(error);
+      notifyUtils.error(error);
       console.error("Failed to create envelope block:", error);
     }
   }, [blockManager, ui, envelopeState]);
@@ -79,7 +79,7 @@ const EnvelopeListPage: React.FC = () => {
         envelopeState.refresh();
       }
     } catch (error) {
-      notifyUtils.apiError(error);
+      notifyUtils.error(error);
       console.error("Failed to delete envelope block:", error);
     }
   }, [blockManager, ui, envelopeState]);

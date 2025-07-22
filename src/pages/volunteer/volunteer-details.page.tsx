@@ -82,7 +82,7 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
       // Show success message
       notifyUtils.success('Volunteer opportunity updated successfully');
     } catch (error) {
-      notifyUtils.apiError(error);
+      notifyUtils.error(error);
     }
   };
 
@@ -102,7 +102,7 @@ const VolunteerOpportunityDetailPage: React.FC = () => {
           await state.delete();
           notifyUtils.success('Volunteer opportunity deleted successfully');
         } catch (error) {
-          notifyUtils.apiError(error);
+          notifyUtils.error(error);
         }
       },
     });

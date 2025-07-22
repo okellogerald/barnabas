@@ -13,54 +13,47 @@ import { ErrorCategory, ErrorContext } from "./error.types";
  * @param context Additional context information.
  * @returns An ApiError instance representing the handled error.
  */
-export const handleApiError = (
-    error: any,
-    category: ErrorCategory,
-    context: ErrorContext = {},
-): ApiError => {
-    // If it's already an ApiError, just return it
-    if (ApiError.is(error)) {
-        return error;
-    }
+export const handleApiError = (error: any, category: ErrorCategory, context: ErrorContext = {}): ApiError => {
+  // If it's already an ApiError, just return it
+  if (ApiError.is(error)) {
+    return error;
+  }
 
-    // Special handling for permission errors
-    if (PermissionError.is(error)) {
-        const apiError = new ApiError(
-            error.message,
-            ErrorCategory.PERMISSION,
-            error,
-            { ...context },
-        );
+  // Special handling for permission errors
+  if (PermissionError.is(error)) {
+    const apiError = new ApiError(403, error.message, undefined, ErrorCategory.PERMISSION, error, { ...context });
 
-        // Log and notify
-        console.error(`Permission error:`, {
-            message: apiError.getUserFriendlyMessage(),
-            requiredPermissions: error.requiredPermissions,
-            context,
-        });
-
-        notifyUtils.error(apiError.getUserFriendlyMessage());
-        return apiError;
-    }
-
-    // Create ApiError instance for other error types
-    const apiError = new ApiError(
-        "", // Empty message to use the generated one
-        category,
-        error,
-        context,
-    );
-
-    // Log the error with full context for debugging
-    console.error(`API error (${category}):`, {
-        message: apiError.getUserFriendlyMessage(),
-        status: apiError.status,
-        context: apiError.context,
-        originalError: error,
+    // Log and notify
+    console.error(`Permission error:`, {
+      message: apiError.getUserFriendlyMessage(),
+      requiredPermissions: error.requiredPermissions,
+      context,
     });
 
-    // Show user-friendly notification
     notifyUtils.error(apiError.getUserFriendlyMessage());
-
     return apiError;
+  }
+
+  // Create ApiError instance for other error types
+  const apiError = new ApiError(
+    500,
+    "", // Empty message to use the generated one
+    undefined,
+    category,
+    error,
+    context
+  );
+
+  // Log the error with full context for debugging
+  console.error(`API error (${category}):`, {
+    message: apiError.getUserFriendlyMessage(),
+    status: apiError.status,
+    context: apiError.context,
+    originalError: error,
+  });
+
+  // Show user-friendly notification
+  notifyUtils.error(apiError.getUserFriendlyMessage());
+
+  return apiError;
 };

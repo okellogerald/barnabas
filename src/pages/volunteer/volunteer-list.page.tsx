@@ -67,7 +67,7 @@ const VolunteerOpportunityListPage: React.FC = () => {
       // Display success message
       notifyUtils.success('Volunteer opportunity created successfully');
     } catch (error) {
-      notifyUtils.apiError(error);
+      notifyUtils.error(error);
     }
   };
 
