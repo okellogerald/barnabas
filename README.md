@@ -78,12 +78,6 @@ make generate-sample
   make generate-sample
   ```
 
-### Development Features
-- **Hot reload** for frontend changes
-- **Separate dev database** (port 3307) 
-- **Sample data** included for testing
-- **Live API** with auto-restart
-
 ### Development Commands
 ```bash
 make up-dev      # Start development environment
@@ -92,11 +86,6 @@ make migrate-dev # Setup database with sample data
 make logs-dev    # View development logs
 make status-dev  # Show development container status
 ```
-
-### Making Changes
-1. **Frontend:** Edit files in `src/` - changes appear instantly
-2. **Database:** Run `make migrate-dev` after schema changes
-3. **API:** Clone the backend repo and edit there
 
 ### Troubleshooting
 ```bash
