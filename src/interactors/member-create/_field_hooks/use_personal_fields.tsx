@@ -6,7 +6,7 @@ import { useCallback, useRef } from 'react';
 import { Form } from 'antd';
 import { FieldData } from "rc-field-form/lib/interface";
 import { ZodFormUtils } from '@/utilities';
-import { ProfileImageUpload, ProfileImageUploadRef } from '@/components/form/shared';
+import { ProfileImageUpload, ProfileImageUploadRef } from '@/components/form';
 
 /**
  * Hook to create and setup personal form fields
@@ -18,18 +18,9 @@ export const usePersonalFields = () => {
     const profileImageRef = useRef<ProfileImageUploadRef>(null);
 
     // Handle field changes
-    const changeHandler = useCallback((changedFields: FieldData[]) => {
+    const changeHandler = useCallback((_: FieldData[]) => {
         // Personal fields don't have conditional behaviors,
         // but we could implement them here if needed
-        // Check if profilePhoto field changed
-        const profilePhotoChange = changedFields.find(field =>
-            Array.isArray(field.name) && field.name[0] === 'profilePhoto'
-        );
-
-        if (profilePhotoChange) {
-            console.log('Profile photo filename updated:', profilePhotoChange.value);
-            console.log('Current form values:', form.getFieldsValue());
-        }
     }, [form]);
 
     // Check if there are pending image uploads
@@ -45,6 +36,25 @@ export const usePersonalFields = () => {
         return '';
     }, []);
 
+    // Upload pending image and return filename
+    const uploadPendingImage = useCallback(async (): Promise<string | undefined> => {
+        if (!profileImageRef.current?.hasPendingChanges()) {
+            return; // No pending upload
+        }
+
+        try {
+            const filename = await profileImageRef.current.uploadPendingImage();
+            if (filename) {
+                // Update the form field with the new filename
+                form.setFieldValue('profilePhoto', filename);
+            }
+            return filename;
+        } catch (error) {
+            console.error('Failed to upload profile image:', error);
+            throw error;
+        }
+    }, [form]);
+
     // Create the form fields
     const createFields = useCallback((): SchemaFormFieldsMap<MemberCreatePersonalInfo, PersonalInfoKeys> => {
         return {
@@ -59,9 +69,7 @@ export const usePersonalFields = () => {
             profilePhoto: builder.createCustomField('profilePhoto', () => (
                 <ProfileImageUpload
                     ref={profileImageRef}
-                    placeholder="Upload Profile Photo"
                     size="large"
-                    autoUpload={false} // Enable manual save mode
                 />
             )),
         };
@@ -81,8 +89,9 @@ export const usePersonalFields = () => {
         },
         onFieldsChange: changeHandler,
         initialValues,
-        // Additional methods for checking pending uploads
+        // Additional methods for handling pending uploads
         hasPendingImageUploads,
         getPendingImageMessage,
+        uploadPendingImage,
     };
 };

@@ -6,7 +6,7 @@ import { useCallback, useRef } from 'react';
 import { Form } from 'antd';
 import { FieldData } from "rc-field-form/lib/interface";
 import { Member } from '@/models';
-import { ProfileImageUpload, ProfileImageUploadRef } from '@/components/form/shared';
+import { ProfileImageUpload, ProfileImageUploadRef } from '@/components/form';
 
 /**
  * Hook to create and setup personal form fields for member editing
@@ -48,6 +48,25 @@ export const usePersonalFields = (memberData?: Member) => {
         return '';
     }, []);
 
+    // Upload pending image and return filename
+    const uploadPendingImage = useCallback(async (): Promise<string | undefined> => {
+        if (!profileImageRef.current?.hasPendingChanges()) {
+            return; // No pending upload
+        }
+
+        try {
+            const filename = await profileImageRef.current.uploadPendingImage();
+            if (filename) {
+                // Update the form field with the new filename
+                form.setFieldValue('profilePhoto', filename);
+            }
+            return filename;
+        } catch (error) {
+            console.error('Failed to upload profile image:', error);
+            throw error;
+        }
+    }, [form]);
+
     // Create the form fields
     const createFields = useCallback((): SchemaFormFieldsMap<MemberEditPersonalInfo, PersonalInfoKeys> => {
         return {
@@ -62,9 +81,7 @@ export const usePersonalFields = (memberData?: Member) => {
             profilePhoto: builder.createCustomField('profilePhoto', () => (
                 <ProfileImageUpload
                     ref={profileImageRef}
-                    placeholder="Upload Profile Photo"
                     size="large"
-                    autoUpload={false} // Enable manual save mode for better UX in edit form
                 />
             )),
         };
@@ -84,8 +101,9 @@ export const usePersonalFields = (memberData?: Member) => {
         },
         onFieldsChange: changeHandler,
         initialValues,
-        // Additional methods for checking pending uploads
+        // Additional methods for handling pending uploads
         hasPendingImageUploads,
         getPendingImageMessage,
+        uploadPendingImage,
     };
 };

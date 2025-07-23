@@ -129,12 +129,6 @@ export const useMemberEdit = (): UseMemberEditResult => {
   // Create a function to get form values for the current section
   const getCurrentSectionValues = useCallback(() => {
     const currentStepKey = uiStore.getCurrentStepKey();
-    // Check for pending image uploads on personal information step
-    if (currentStepKey === "personal" && personal.hasPendingImageUploads()) {
-      const pendingMessage = personal.getPendingImageMessage();
-      notifyUtils.error(pendingMessage || "Please save or cancel your profile image before proceeding");
-      return;
-    }
 
     switch (currentStepKey) {
       case 'personal':
@@ -191,6 +185,20 @@ export const useMemberEdit = (): UseMemberEditResult => {
   // Save the current section
   const saveCurrentSection = useCallback(async (): Promise<void> => {
     const currentStepKey = uiStore.getCurrentStepKey();
+
+    if (currentStepKey === "personal" && personal.hasPendingImageUploads()) {
+      console.log('Found pending image uploads, uploading before section save...');
+
+      try {
+        // Upload the pending image first
+        const uploadedFilename = await personal.uploadPendingImage();
+        console.log('Image uploaded successfully:', uploadedFilename);
+      } catch (error) {
+        console.error('Image upload failed:', error);
+        notifyUtils.error('Failed to upload profile image. Please try again.');
+        return; // Stop section save if image upload fails
+      }
+    }
 
     try {
       // Validate the current form based on section

@@ -2,6 +2,7 @@ import { ColumnType } from "antd/es/table";
 import { Avatar, Badge, Space, Typography } from "antd";
 import { Member } from "../../models";
 import { NULL_DISPLAY, renderWithNull } from "../shared/null-display";
+import { ImageManager } from "@/data/image";
 
 const { Text } = Typography;
 
@@ -263,7 +264,7 @@ const MemberAvatarColumn: ColumnType<Member> = {
     fixed: 'left',
     render: (_, record) => (
         <Avatar
-            src={record.profilePhoto}
+            src={record.profilePhoto ? ImageManager.instance.getImageUrl(record.profilePhoto) : undefined}
             size="default"
         >
             {record.firstName?.[0]}{record.lastName?.[0]}

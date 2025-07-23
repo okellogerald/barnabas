@@ -1,6 +1,6 @@
 import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
-import { Upload, Button, Avatar, Space, Modal, Alert, Dropdown, MenuProps } from 'antd';
-import { UploadOutlined, DeleteOutlined, EyeOutlined, UserOutlined, SaveOutlined, CloseOutlined, MoreOutlined } from '@ant-design/icons';
+import { Upload, Button, Avatar, Space, Modal, Tooltip } from 'antd';
+import { UploadOutlined, DeleteOutlined, EyeOutlined, UserOutlined, CloseOutlined } from '@ant-design/icons';
 import { UploadFile, RcFile } from 'antd/es/upload/interface';
 import { ImageQueries, ImageUtils } from '@/data/image';
 import { notifyUtils } from '@/utilities';
@@ -10,7 +10,6 @@ interface ProfileImageUploadProps {
   onChange?: (filename: string | null) => void; // Callback when image changes
   disabled?: boolean;
   size?: 'small' | 'default' | 'large';
-  placeholder?: string;
   className?: string;
   autoUpload?: boolean; // If false, shows manual save/cancel buttons
 }
@@ -19,6 +18,7 @@ interface ProfileImageUploadProps {
 export interface ProfileImageUploadRef {
   hasPendingChanges: () => boolean;
   getPendingMessage: () => string;
+  uploadPendingImage: () => Promise<string | undefined>;
 }
 
 /**
@@ -32,9 +32,8 @@ export const ProfileImageUpload = forwardRef<ProfileImageUploadRef, ProfileImage
   onChange,
   disabled = false,
   size = 'default',
-  placeholder = 'Upload Profile Photo',
   className,
-  autoUpload = true, // Default to auto upload for backward compatibility
+  autoUpload = false, // Default to auto upload for backward compatibility
 }, ref) => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewVisible, setPreviewVisible] = useState(false);
@@ -50,7 +49,7 @@ export const ProfileImageUpload = forwardRef<ProfileImageUploadRef, ProfileImage
       setFileList([]);
       setPendingFile(null);
       setHasPendingChanges(false);
-      
+
       // Clean up preview URL if it was a blob
       if (previewUrl && previewUrl.startsWith('blob:')) {
         ImageUtils.revokePreviewUrl(previewUrl);
@@ -81,7 +80,7 @@ export const ProfileImageUpload = forwardRef<ProfileImageUploadRef, ProfileImage
   // Custom upload handler
   const customUpload = async (options: any) => {
     const { file, onSuccess, onError } = options;
-    
+
     if (autoUpload) {
       // Auto upload immediately
       try {
@@ -101,9 +100,10 @@ export const ProfileImageUpload = forwardRef<ProfileImageUploadRef, ProfileImage
   // Manual save handler
   const handleSave = async () => {
     if (!pendingFile) return;
-    
+
     try {
-      await uploadMutation.mutateAsync(pendingFile);
+      const result = await uploadMutation.mutateAsync(pendingFile);
+      return result.filename
     } catch (error) {
       // Error is handled by mutation onError callback
     }
@@ -125,7 +125,7 @@ export const ProfileImageUpload = forwardRef<ProfileImageUploadRef, ProfileImage
     // Create preview URL
     const preview = ImageUtils.createPreviewUrl(file);
     setPreviewUrl(preview);
-    
+
     // Validate file
     const isValidType = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(file.type);
     if (!isValidType) {
@@ -149,7 +149,7 @@ export const ProfileImageUpload = forwardRef<ProfileImageUploadRef, ProfileImage
     setFileList([]);
     setPendingFile(null);
     setHasPendingChanges(false);
-    
+
     // Revoke any existing preview URLs
     if (previewUrl && previewUrl.startsWith('blob:')) {
       ImageUtils.revokePreviewUrl(previewUrl);
@@ -161,28 +161,16 @@ export const ProfileImageUpload = forwardRef<ProfileImageUploadRef, ProfileImage
     setPreviewVisible(true);
   };
 
-  // Create dropdown menu items for image actions
-  const createImageActionMenuItems = (): MenuProps['items'] => {
-    const items: MenuProps['items'] = [];
-    
-    if (displayImageUrl) {
-      items.push({
-        key: 'preview',
-        label: 'Preview',
-        icon: <EyeOutlined />,
-        onClick: handlePreview,
-      });
-      
-      items.push({
-        key: 'remove',
-        label: 'Remove',
-        icon: <DeleteOutlined />,
-        onClick: handleRemove,
-        danger: true,
-      });
+  // Handle button actions
+  const handleButtonAction = (action: string) => {
+    switch (action) {
+      case 'preview':
+        handlePreview();
+        break;
+      case 'remove':
+        handleRemove();
+        break;
     }
-    
-    return items;
   };
 
   // Cleanup preview URLs on unmount
@@ -200,97 +188,107 @@ export const ProfileImageUpload = forwardRef<ProfileImageUploadRef, ProfileImage
   useImperativeHandle(ref, () => ({
     hasPendingChanges: () => hasPendingChanges,
     getPendingMessage: () => 'Profile image is selected but not saved yet',
+    uploadPendingImage: () => handleSave(),
   }), [hasPendingChanges]);
 
   return (
     <div className={className}>
       <Space direction="vertical" align="center" style={{ width: '100%' }}>
-        {/* Avatar Display */}
-        <Avatar
-          size={avatarSize}
-          src={displayImageUrl}
-          icon={!displayImageUrl ? <UserOutlined /> : undefined}
-          style={{
-            backgroundColor: !displayImageUrl ? '#f56a00' : undefined,
-            border: '2px solid #d9d9d9',
-          }}
-        />
+        {/* Avatar Display with pending state indication */}
+        <div style={{ position: 'relative' }}>
+          <Avatar
+            size={avatarSize}
+            src={displayImageUrl}
+            icon={!displayImageUrl ? <UserOutlined /> : undefined}
+            style={{
+              backgroundColor: !displayImageUrl ? '#f56a00' : undefined,
+              border: '2px solid #d9d9d9',
+              // Add visual indication for pending changes
+              opacity: (!autoUpload && hasPendingChanges) ? 0.6 : 1,
+              filter: (!autoUpload && hasPendingChanges) ? 'grayscale(0.3)' : 'none',
+              transition: 'all 0.3s ease',
+            }}
+          />
 
-        {/* Pending Changes Alert */}
+          {/* Pending changes indicator overlay */}
+          {!autoUpload && hasPendingChanges && (
+            <Tooltip title="Image will be uploaded when you save the form">
+              <div
+                style={{
+                  position: 'absolute',
+                  top: -2,
+                  right: -2,
+                  width: 16,
+                  height: 16,
+                  borderRadius: '50%',
+                  backgroundColor: '#faad14',
+                  border: '2px solid white',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '8px',
+                  fontWeight: 'bold',
+                  color: 'white',
+                  animation: 'pulse 1.5s infinite',
+                }}
+              >
+                !
+              </div>
+            </Tooltip>
+          )}
+        </div>
+
+        {/* Compact Button Group */}
+        <Space.Compact size={size === 'small' ? 'small' : 'middle'}>
+          <Upload
+            fileList={fileList}
+            onChange={handleChange}
+            customRequest={customUpload}
+            beforeUpload={beforeUpload}
+            showUploadList={false}
+            disabled={disabled || uploadMutation.isPending}
+            accept="image/*"
+            id="hidden-upload"
+          >
+            <Button
+              icon={<UploadOutlined />}
+              loading={uploadMutation.isPending}
+              disabled={disabled}
+              size={size === 'small' ? 'small' : 'middle'}
+            >
+              Upload
+            </Button>
+          </Upload>
+
+          <Button
+            icon={<EyeOutlined />}
+            disabled={disabled || !displayImageUrl}
+            onClick={() => handleButtonAction('preview')}
+          >
+            Preview
+          </Button>
+
+          <Button
+            icon={<DeleteOutlined />}
+            disabled={disabled || !displayImageUrl}
+            onClick={() => handleButtonAction('remove')}
+            danger
+          >
+            Remove
+          </Button>
+        </Space.Compact>
+
+        {/* Cancel button for pending changes */}
         {!autoUpload && hasPendingChanges && (
-          <Alert
-            message="Image selected but not saved yet"
-            type="warning"
-            showIcon
-            style={{ marginBottom: 8 }}
+          <Button
+            icon={<CloseOutlined />}
+            onClick={handleCancel}
+            disabled={disabled || uploadMutation.isPending}
+            size={size === 'small' ? 'small' : 'middle'}
+            title="Cancel image selection"
+            type="text"
           />
         )}
-
-        {/* Upload Controls */}
-        <Space direction="vertical" align="center">
-          <Space>
-            <Upload
-              fileList={fileList}
-              onChange={handleChange}
-              customRequest={customUpload}
-              beforeUpload={beforeUpload}
-              showUploadList={false}
-              disabled={disabled || uploadMutation.isPending}
-              accept="image/*"
-            >
-              <Button
-                icon={<UploadOutlined />}
-                loading={uploadMutation.isPending}
-                disabled={disabled}
-                size={size === 'small' ? 'small' : 'middle'}
-              >
-                {placeholder}
-              </Button>
-            </Upload>
-
-            {/* Compact actions dropdown for existing image */}
-            {displayImageUrl && (
-              <Dropdown
-                menu={{ items: createImageActionMenuItems() }}
-                placement="bottomRight"
-                disabled={disabled}
-                trigger={['click']}
-              >
-                <Button
-                  icon={<MoreOutlined />}
-                  size={size === 'small' ? 'small' : 'middle'}
-                  disabled={disabled}
-                >
-                  Actions
-                </Button>
-              </Dropdown>
-            )}
-          </Space>
-
-          {/* Manual Save/Cancel Controls */}
-          {!autoUpload && hasPendingChanges && (
-            <Space>
-              <Button
-                type="primary"
-                icon={<SaveOutlined />}
-                onClick={handleSave}
-                loading={uploadMutation.isPending}
-                disabled={disabled}
-                size={size === 'small' ? 'small' : 'middle'}
-              >
-                Save Image
-              </Button>
-              <Button
-                icon={<CloseOutlined />}
-                onClick={handleCancel}
-                disabled={disabled || uploadMutation.isPending}
-                size={size === 'small' ? 'small' : 'middle'}
-              >
-                Cancel
-              </Button>
-            </Space>
-          )}
-        </Space>
       </Space>
 
       {/* Preview Modal */}
@@ -310,6 +308,17 @@ export const ProfileImageUpload = forwardRef<ProfileImageUploadRef, ProfileImage
           />
         </div>
       </Modal>
+
+      {/* CSS for pulse animation */}
+      <style>
+        {`
+          @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+          }
+        `}
+      </style>
     </div>
   );
 });

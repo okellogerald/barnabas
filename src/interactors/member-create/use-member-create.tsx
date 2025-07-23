@@ -173,13 +173,6 @@ export const useMemberCreate = (): UseMemberCreateResult => {
       // Get the current step key
       const currentStepKey = uiStore.getCurrentStepKey();
 
-      // Check for pending image uploads on personal information step
-      if (currentStepKey === "personal" && personal.hasPendingImageUploads()) {
-        const pendingMessage = personal.getPendingImageMessage();
-        notifyUtils.error(pendingMessage || "Please save or cancel your profile image before proceeding");
-        return;
-      }
-
       // Validate the current step's fields in the appropriate form
       if (currentStepKey === "dependants") {
         const dependantValues = dependant.form.getFieldsValue();
@@ -274,6 +267,20 @@ export const useMemberCreate = (): UseMemberCreateResult => {
 
   // Submit the form
   const submit = useCallback(async (): Promise<void> => {
+    if (personal.hasPendingImageUploads()) {
+      console.log('Found pending image uploads, uploading before section save...');
+
+      try {
+        // Upload the pending image first
+        const uploadedFilename = await personal.uploadPendingImage();
+        console.log('Image uploaded successfully:', uploadedFilename);
+      } catch (error) {
+        console.error('Image upload failed:', error);
+        notifyUtils.error('Failed to upload profile image. Please try again.');
+        return; // Stop submission save if image upload fails
+      }
+    }
+
     // Validate all forms
     await Promise.all([
       personal.form.validateFields(),
@@ -289,6 +296,7 @@ export const useMemberCreate = (): UseMemberCreateResult => {
       ...getFormValues(),
       dependants: dependant.dependants.items,
     };
+
 
     // Submit data
     await submitFormMutation.mutateAsync(formData);

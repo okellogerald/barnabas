@@ -22,7 +22,6 @@ import {
     LeftOutlined,
     EditOutlined,
     DeleteOutlined,
-    PrinterOutlined,
     UserOutlined,
     BankOutlined,
     UserSwitchOutlined,
@@ -45,6 +44,7 @@ import { notifyUtils } from '@/utilities';
 import { AsyncStateMatcher, isErrorState, isLoadingState } from '@/lib/state';
 import { Dependant, Member } from '@/models';
 import { MemberDetailsSuccessState, useMemberDetails } from '@/hooks/member/use-member-details';
+import { ImageManager } from '@/data/image';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -129,9 +129,6 @@ const MemberDetailsHeader: React.FC<{ state: MemberDetailsSuccessState }> = ({ s
                 </Button>
 
                 <Space>
-                    <Button icon={<PrinterOutlined />} onClick={() => actions.print()}>
-                        Print
-                    </Button>
                     <Button icon={<EditOutlined />} type="primary" onClick={() => actions.edit()}>
                         Edit
                     </Button>
@@ -267,7 +264,7 @@ const MemberContentView: React.FC<{ state: MemberDetailsSuccessState }> = ({ sta
                 <Flex align="center" gap="large">
                     <Avatar
                         size={100}
-                        src={member.profilePhoto}
+                        src={member.profilePhoto ? ImageManager.instance.getImageUrl(member.profilePhoto) : undefined}
                         icon={!member.profilePhoto && <UserOutlined />}
                         style={{ backgroundColor: !member.profilePhoto ? '#1890ff' : undefined }}
                     />
