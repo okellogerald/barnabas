@@ -11,18 +11,18 @@ COMPOSE_FILE_PROD = docker-compose.prod.yml
 up:
 	docker compose -f $(COMPOSE_FILE_PROD) --env-file $(ENV_PROD) up --build -d
 	@echo "Production environment started"
-	@echo "Frontend: http://localhost:$$(grep FRONTEND_PORT $(ENV_PROD) | cut -d'=' -f2)"
-	@echo "API: http://localhost:$$(grep API_PORT $(ENV_PROD) | cut -d'=' -f2)"
-	@echo "MySQL: localhost:$$(grep MYSQL_PORT $(ENV_PROD) | cut -d'=' -f2)"
+	@echo "Frontend: http://localhost:$(grep FRONTEND_PORT $(ENV_PROD) | cut -d'=' -f2)"
+	@echo "API: $(grep VITE_API_BASE_URL $(ENV_PROD) | cut -d'=' -f2)"
+	@echo "MySQL: localhost:$(grep MYSQL_PORT $(ENV_PROD) | cut -d'=' -f2)"
 	@echo "To stop: make down"
 
 # Development commands
 up-dev:
 	docker compose -f $(COMPOSE_FILE_DEV) --env-file $(ENV_DEV) up --build -d
 	@echo "Development environment started"
-	@echo "Frontend: http://localhost:$$(grep FRONTEND_PORT $(ENV_DEV) | cut -d'=' -f2)"
-	@echo "API: http://localhost:$$(grep API_PORT $(ENV_DEV) | cut -d'=' -f2)"
-	@echo "MySQL: localhost:$$(grep MYSQL_PORT $(ENV_DEV) | cut -d'=' -f2)"
+	@echo "Frontend: http://localhost:$(grep FRONTEND_PORT $(ENV_DEV) | cut -d'=' -f2)"
+	@echo "API: $(grep VITE_API_BASE_URL $(ENV_DEV) | cut -d'=' -f2)"
+	@echo "MySQL: localhost:$(grep MYSQL_PORT $(ENV_DEV) | cut -d'=' -f2)"
 	@echo "To stop: make down-dev"
 
 # Sample data generator

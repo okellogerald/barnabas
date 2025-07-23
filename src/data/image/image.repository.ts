@@ -2,6 +2,7 @@ import { BaseRepository } from "@/data/shared";
 import { imageContract } from "./image.api-contract";
 import { ImageUploadResponseDTO } from "./schema";
 import { ApiError } from "@/lib/error";
+import { AppConfig } from "@/app/config";
 
 export class ImageRepository extends BaseRepository<typeof imageContract> {
   constructor() {
@@ -26,7 +27,7 @@ export class ImageRepository extends BaseRepository<typeof imageContract> {
       throw new ApiError(result.status, result.body.message);
     }
 
-    return this.handleResponse<ImageUploadResponseDTO>(result, 200);
+    return this.handleResponse<ImageUploadResponseDTO>(result, 201);
   }
 
   /**
@@ -37,7 +38,7 @@ export class ImageRepository extends BaseRepository<typeof imageContract> {
   getImageUrl(filename: string): string {
     // Return the full URL for accessing the image
     // This uses the public endpoint that doesn't require authentication
-    return `${this.root}/image/${filename}`;
+    return `${AppConfig.API_BASE_URL}/image/${filename}`;
   }
 
   /**
