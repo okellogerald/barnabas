@@ -100,7 +100,6 @@ make status-dev  # Show development container status
 
 ### Troubleshooting
 ```bash
-make clean           # Clean Docker system
 make down && make up # Restart everything (production)
 make down-dev && make up-dev # Restart everything (development)
 ```
