@@ -61,12 +61,16 @@ export class DesignTokens {
  * Implements a role-based color system for consistent theming
  */
 export class ThemeColors {
+    static readonly Sider = {
+        BACKGROUND_COLOR: "black" as ColorToken
+    }
+
     /**
      * Primary colors - Main brand colors
      */
     static readonly Primary = {
         /** Main brand color - Tembo Blue */
-        DEFAULT: "#28ABE3" as ColorToken,
+        DEFAULT: "#38085C" as ColorToken,
         /** Text/icons on primary color */
         ON: "#FFFFFF" as ColorToken,
         /** Container variant of primary */
@@ -80,7 +84,7 @@ export class ThemeColors {
      */
     static readonly Accent = {
         /** Secondary emphasis color */
-        DEFAULT: "#000000" as ColorToken,
+        DEFAULT: "#8E3d9A" as ColorToken,
         /** Text/icons on accent color */
         ON: "#FFFFFF" as ColorToken,
         /** Container variant of accent */

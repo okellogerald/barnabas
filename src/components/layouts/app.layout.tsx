@@ -16,7 +16,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { AuthenticationManager } from '@/data/authentication/authentication.manager';
 import { User } from '@/models';
 import { ItemType, MenuItemType } from 'antd/es/menu/interface';
-import { DesignTokens } from '@/app/theme/constants';
+import { DesignTokens, ThemeColors } from '@/app/theme/constants';
 import { Actions } from '@/data/authorization';
 
 const { Header, Sider, Content } = Layout;
@@ -128,6 +128,9 @@ const NavigationMenu: React.FC<NavigationMenuProps> = ({ currentPath, authManage
             mode="inline"
             selectedKeys={[currentPath]}
             items={menuItems}
+            style={{
+                backgroundColor: ThemeColors.Sider.BACKGROUND_COLOR,
+            }}
         />
     );
 };
@@ -296,7 +299,9 @@ const styles: StylesType = {
         left: 0,
         top: 0,
         bottom: 0,
-        zIndex: 100
+        zIndex: 100,
+        backgroundColor: ThemeColors.Sider.BACKGROUND_COLOR,
+        color: ThemeColors.Text.PRIMARY,
     },
     logoContainer: (collapsed: boolean): CSSProperties => ({
         padding: collapsed ? '16px 0' : '16px',
