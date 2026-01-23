@@ -1,0 +1,52 @@
+cubes:
+  - name: sessions
+    sql_table: sessions
+    data_source: default
+
+    joins:
+      - name: users
+        sql: "{CUBE.userId} = {users.id}"
+        relationship: many_to_one
+
+    dimensions:
+      - name: id
+        sql: id
+        type: string
+        primary_key: true
+
+      - name: ipAddress
+        sql: "{CUBE}.`ipAddress`"
+        type: string
+
+      - name: token
+        sql: token
+        type: string
+
+      - name: userAgent
+        sql: "{CUBE}.`userAgent`"
+        type: string
+
+      - name: userId
+        sql: "{CUBE}.`userId`"
+        type: string
+
+      - name: createdAt
+        sql: "{CUBE}.`createdAt`"
+        type: time
+
+      - name: updatedAt
+        sql: "{CUBE}.`updatedAt`"
+        type: time
+
+      - name: expiresAt
+        sql: "{CUBE}.`expiresAt`"
+        type: time
+
+    measures:
+      - name: count
+        type: count
+
+    pre_aggregations:
+      # Pre-aggregation definitions go here.
+      # Learn more in the documentation: https://cube.dev/docs/caching/pre-aggregations/getting-started
+
